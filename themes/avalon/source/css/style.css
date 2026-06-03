@@ -720,7 +720,7 @@ button {
 
 .hero-subtitle {
   margin: 14px 0 0;
-  color: rgba(52, 66, 77, 0.72);
+  color: #c94f73;
   font-size: clamp(15px, 2vw, 22px);
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -773,26 +773,26 @@ button {
 }
 
 .profile-simple h2 {
-  font-size: clamp(42px, 8vw, 88px);
-  line-height: 0.95;
+  font-size: clamp(30px, 5vw, 54px);
+  line-height: 1;
 }
 
 .profile-simple .alias {
   display: inline-flex;
-  margin-top: 14px;
-  padding: 8px 14px;
+  margin-top: 10px;
+  padding: 7px 12px;
   border: 1px solid rgba(239, 127, 157, 0.2);
   border-radius: 999px;
   background: rgba(255, 245, 248, 0.74);
   color: #d76485;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .profile-line {
-  margin: 16px 0 0;
+  margin: 12px 0 0;
   color: var(--ink);
-  font-size: clamp(20px, 3vw, 32px);
+  font-size: clamp(16px, 2.2vw, 22px);
   font-weight: 800;
   line-height: 1.2;
 }

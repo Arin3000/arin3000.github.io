@@ -1,0 +1,8 @@
+.deploy_git/
+.cache/
+db.json
+node_modules/
+public/
+*.log
+.DS_Store
+Thumbs.db

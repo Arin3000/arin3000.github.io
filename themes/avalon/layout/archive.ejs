@@ -1,0 +1,14 @@
+<section class="content-section section-reveal archive-page">
+  <div class="section-heading">
+    <p class="eyebrow">Archive</p>
+    <h1>文章归档</h1>
+  </div>
+  <div class="archive-list">
+    <% site.posts.sort('date', -1).forEach((post) => { %>
+      <a href="<%- url_for(post.path) %>">
+        <time><%= date(post.date, 'YYYY.MM.DD') %></time>
+        <span><%= post.title %></span>
+      </a>
+    <% }) %>
+  </div>
+</section>

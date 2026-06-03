@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="<%= config.description %>">
+  <title><%= page.title ? `${page.title} | ${config.title}` : config.title %></title>
+  <%- css('css/style') %>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <%- partial('partial/header') %>
+  <main>
+    <%- body %>
+  </main>
+  <%- partial('partial/footer') %>
+  <div class="lightbox" aria-hidden="true">
+    <button class="lightbox-close" type="button" aria-label="Close">x</button>
+    <img class="lightbox-image" alt="">
+  </div>
+  <%- js('js/main') %>
+</body>
+</html>

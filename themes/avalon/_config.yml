@@ -1,0 +1,21 @@
+profile:
+  name: Avalon
+  tagline: 相信的心，与爱的魔法~
+  role: Technical notes / Graphic design / Illustration
+  avatar: /assets/images/avatar/profile.jpg
+  hero: /assets/images/hero/main.jpg
+  background: /assets/images/hero/background.jpeg
+links:
+  - label: GitHub
+    url: https://github.com/arin3000
+  - label: Bilibili
+    url: https://space.bilibili.com/421015626
+  - label: Pixiv
+    url: https://www.pixiv.net/users/75350571
+  - label: Mail
+    url: mailto:avalon2967@gmail.com
+skills:
+  - 前端与工程化
+  - AI 工具与创作工作流
+  - 平面设计与视觉排版
+  - 二次元插画与角色表达

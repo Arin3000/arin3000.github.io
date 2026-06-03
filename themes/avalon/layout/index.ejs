@@ -1,0 +1,96 @@
+<%
+const themeCfg = theme || {};
+const profile = themeCfg.profile || {};
+const links = themeCfg.links || [];
+const skills = themeCfg.skills || [];
+const gallery = gallery_items();
+const posts = site.posts.sort('date', -1).limit(6).toArray();
+%>
+
+<section class="hero section-reveal">
+  <div class="hero-media">
+    <img src="<%- url_for(profile.hero || '/assets/images/hero/main.jpg') %>" alt="Avalon hero artwork">
+  </div>
+  <div class="hero-card">
+    <p class="eyebrow">portfolio / notes / gallery</p>
+    <h1><%= profile.name || config.title %></h1>
+    <p class="tagline"><%= profile.tagline || config.subtitle %></p>
+    <p class="role"><%= profile.role %></p>
+    <div class="hero-actions">
+      <% links.forEach((link) => { %>
+        <a href="<%- link.url %>" target="<%= link.url.startsWith('mailto:') ? '_self' : '_blank' %>" rel="noopener"><%= link.label %></a>
+      <% }) %>
+    </div>
+  </div>
+  <div class="petals" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<section id="profile" class="profile-band section-reveal">
+  <div class="profile-card">
+    <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="Avalon avatar">
+    <div>
+      <p class="eyebrow">Profile</p>
+      <h2>Avalon</h2>
+      <p>相信的心，与爱的魔法~</p>
+      <p>这里会收纳技术学习、项目记录、视觉设计和自己画的二次元插画。网站希望像一本清爽的个人杂志，轻一点，但有自己的秩序。</p>
+    </div>
+  </div>
+  <div class="resume-card">
+    <p class="eyebrow">Focus</p>
+    <div class="skill-list">
+      <% skills.forEach((item) => { %>
+        <span><%= item %></span>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section id="notes" class="content-section section-reveal">
+  <div class="section-heading">
+    <p class="eyebrow">Tech notes</p>
+    <h2>技术文档</h2>
+    <p>先把实践过程种下来，之后再慢慢长成体系。</p>
+  </div>
+  <div class="post-grid">
+    <% if (posts.length) { %>
+      <% posts.forEach((post) => { %>
+        <article class="post-card">
+          <% if (post.cover) { %>
+            <img src="<%- url_for(post.cover) %>" alt="">
+          <% } %>
+          <div class="post-card-body">
+            <time><%= date(post.date, 'YYYY.MM.DD') %></time>
+            <h3><a href="<%- url_for(post.path) %>"><%= post.title %></a></h3>
+            <p><%= strip_html(post.excerpt || post.content).slice(0, 88) %></p>
+          </div>
+        </article>
+      <% }) %>
+    <% } else { %>
+      <article class="empty-card">技术文档待补充。</article>
+    <% } %>
+  </div>
+</section>
+
+<section id="gallery" class="content-section gallery-section section-reveal">
+  <div class="section-heading">
+    <p class="eyebrow">Gallery timeline</p>
+    <h2>画廊</h2>
+    <p>按作品文件名日期倒序排列，最近的画放在最上面。</p>
+  </div>
+  <div class="timeline-gallery">
+    <% gallery.forEach((item) => { %>
+      <article class="art-item">
+        <div class="art-date"><%= item.date %></div>
+        <button class="art-frame" type="button" data-lightbox="<%- item.url %>" aria-label="Open <%= item.title %>">
+          <img src="<%- item.url %>" alt="<%= item.title %>" loading="lazy">
+        </button>
+        <div class="art-meta">
+          <h3><%= item.title %></h3>
+          <p>Original illustration by Avalon</p>
+        </div>
+      </article>
+    <% }) %>
+  </div>
+</section>

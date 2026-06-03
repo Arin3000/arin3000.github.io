@@ -815,9 +815,9 @@ button {
 
 .profile-name-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }
 
 .profile-simple h2 {
@@ -826,15 +826,16 @@ button {
 }
 
 .profile-simple .alias {
-  display: inline-flex;
+  display: block;
   margin-top: 0;
-  padding: 7px 12px;
-  border: 1px solid rgba(239, 127, 157, 0.2);
-  border-radius: 999px;
-  background: rgba(255, 245, 248, 0.74);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: #d76485;
-  font-size: 12px;
+  font-size: clamp(15px, 2vw, 20px);
   font-weight: 800;
+  line-height: 1;
 }
 
 .profile-line {

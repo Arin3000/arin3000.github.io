@@ -45,8 +45,10 @@ const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Numb
     <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="Arin avatar">
     <div>
       <p class="eyebrow">Profile</p>
-      <h2>Arin</h2>
-      <p class="alias">Arin = 灰</p>
+      <div class="profile-name-row">
+        <h2>Arin</h2>
+        <p class="alias">Arin = 灰</p>
+      </div>
       <p class="profile-line">全心全力</p>
     </div>
   </div>

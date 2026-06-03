@@ -707,6 +707,7 @@ button {
 }
 
 .cn-tagline {
+  position: relative;
   max-width: 680px;
   margin: 16px 0 0;
   color: var(--ink);
@@ -716,14 +717,45 @@ button {
   line-height: 1.12;
   white-space: normal;
   text-shadow: 0 16px 34px rgba(255, 255, 255, 0.72);
+  animation: heroTextIn 900ms cubic-bezier(0.16, 1, 0.3, 1) 180ms both, heroSoftGlow 5.8s ease-in-out 1.2s infinite;
+}
+
+.cn-tagline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  width: min(220px, 58%);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(201, 79, 115, 0), rgba(201, 79, 115, 0.82), rgba(169, 220, 207, 0));
+  transform-origin: left center;
+  animation: titleLineIn 900ms cubic-bezier(0.16, 1, 0.3, 1) 740ms both;
 }
 
 .hero-subtitle {
+  position: relative;
+  display: inline-block;
   margin: 14px 0 0;
   color: #c94f73;
   font-size: clamp(15px, 2vw, 22px);
   font-weight: 700;
   letter-spacing: 0.08em;
+  overflow: hidden;
+  animation: heroTextIn 850ms cubic-bezier(0.16, 1, 0.3, 1) 420ms both;
+}
+
+.hero-subtitle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.72) 42%, transparent 68%);
+  transform: translateX(-120%);
+  animation: subtitleShine 3.8s ease-in-out 1.5s infinite;
+}
+
+.hero-copy .eyebrow {
+  animation: heroTextIn 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .icon-actions {
@@ -737,6 +769,15 @@ button {
   bottom: clamp(38px, 7vw, 76px);
   z-index: 3;
 }
+
+.hero-socials .platform-link {
+  animation: socialIn 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-socials .platform-link:nth-child(1) { animation-delay: 620ms; }
+.hero-socials .platform-link:nth-child(2) { animation-delay: 720ms; }
+.hero-socials .platform-link:nth-child(3) { animation-delay: 820ms; }
+.hero-socials .platform-link:nth-child(4) { animation-delay: 920ms; }
 
 .icon-actions .platform-link {
   width: 52px;
@@ -772,6 +813,13 @@ button {
   height: 132px;
 }
 
+.profile-name-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
 .profile-simple h2 {
   font-size: clamp(30px, 5vw, 54px);
   line-height: 1;
@@ -779,7 +827,7 @@ button {
 
 .profile-simple .alias {
   display: inline-flex;
-  margin-top: 10px;
+  margin-top: 0;
   padding: 7px 12px;
   border: 1px solid rgba(239, 127, 157, 0.2);
   border-radius: 999px;
@@ -795,6 +843,71 @@ button {
   font-size: clamp(16px, 2.2vw, 22px);
   font-weight: 800;
   line-height: 1.2;
+}
+
+@keyframes heroTextIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroSoftGlow {
+  0%, 100% {
+    text-shadow: 0 16px 34px rgba(255, 255, 255, 0.72);
+  }
+  48% {
+    text-shadow: 0 18px 38px rgba(255, 255, 255, 0.92), 0 0 26px rgba(201, 79, 115, 0.16);
+  }
+}
+
+@keyframes titleLineIn {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes subtitleShine {
+  0%, 42% {
+    transform: translateX(-120%);
+  }
+  72%, 100% {
+    transform: translateX(120%);
+  }
+}
+
+@keyframes socialIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cn-tagline,
+  .cn-tagline::after,
+  .hero-subtitle,
+  .hero-subtitle::after,
+  .hero-copy .eyebrow,
+  .hero-socials .platform-link,
+  .petals span {
+    animation: none;
+  }
 }
 
 .script-title {

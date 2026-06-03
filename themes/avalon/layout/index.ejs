@@ -23,16 +23,17 @@ const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Numb
   <div class="hero-media">
     <img src="<%- url_for(profile.hero || '/assets/images/hero/main.jpg') %>" alt="Hero artwork">
   </div>
-  <div class="hero-card hero-card-minimal">
+  <div class="hero-card hero-copy">
     <p class="eyebrow">Portfolio / Notes / Gallery</p>
-    <p class="tagline jp-tagline"><%= profile.tagline || config.subtitle %></p>
-    <div class="hero-actions icon-actions">
-      <% links.forEach((link) => { %>
-        <a class="platform-link" href="<%- link.url %>" target="<%= link.url.startsWith('mailto:') ? '_self' : '_blank' %>" rel="noopener" aria-label="<%= link.label %>" title="<%= link.label %>">
-          <%- iconSvg[link.icon] || iconSvg.mail %>
-        </a>
-      <% }) %>
-    </div>
+    <p class="tagline cn-tagline">相信的心，与爱的魔法~</p>
+    <p class="hero-subtitle">君に出会い、夢に翔ける</p>
+  </div>
+  <div class="hero-actions icon-actions hero-socials">
+    <% links.forEach((link) => { %>
+      <a class="platform-link" href="<%- link.url %>" target="<%= link.url.startsWith('mailto:') ? '_self' : '_blank' %>" rel="noopener" aria-label="<%= link.label %>" title="<%= link.label %>">
+        <%- iconSvg[link.icon] || iconSvg.mail %>
+      </a>
+    <% }) %>
   </div>
   <div class="petals" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span>
@@ -46,6 +47,7 @@ const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Numb
       <p class="eyebrow">Profile</p>
       <h2>Arin</h2>
       <p class="alias">Arin = 灰</p>
+      <p class="profile-line">全心全力</p>
     </div>
   </div>
 </section>

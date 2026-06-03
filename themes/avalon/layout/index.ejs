@@ -2,23 +2,35 @@
 const themeCfg = theme || {};
 const profile = themeCfg.profile || {};
 const links = themeCfg.links || [];
-const skills = themeCfg.skills || [];
 const gallery = gallery_items();
 const posts = site.posts.sort('date', -1).limit(6).toArray();
+const iconSvg = {
+  github: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.4c-5.4 0-9.8 4.4-9.8 9.8 0 4.3 2.8 8 6.7 9.3.5.1.7-.2.7-.5v-1.8c-2.7.6-3.3-1.2-3.3-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.8.8.1-.6.3-1.1.6-1.3-2.2-.2-4.5-1.1-4.5-4.8 0-1.1.4-1.9 1-2.6-.1-.3-.4-1.3.1-2.6 0 0 .8-.3 2.7 1 .8-.2 1.6-.3 2.5-.3s1.7.1 2.5.3c1.9-1.3 2.7-1 2.7-1 .5 1.3.2 2.3.1 2.6.6.7 1 1.5 1 2.6 0 3.8-2.3 4.6-4.5 4.8.4.3.7.9.7 1.8V21c0 .3.2.6.7.5 3.9-1.3 6.7-5 6.7-9.3 0-5.4-4.4-9.8-9.8-9.8z"/></svg>',
+  bilibili: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 4.1 10.5 6h3l2.3-1.9 1.1 1.3L15.1 6h2.4A3.5 3.5 0 0 1 21 9.5v6A3.5 3.5 0 0 1 17.5 19h-11A3.5 3.5 0 0 1 3 15.5v-6A3.5 3.5 0 0 1 6.5 6h2.4L7.1 5.4l1.1-1.3zM6.5 8A1.5 1.5 0 0 0 5 9.5v6A1.5 1.5 0 0 0 6.5 17h11a1.5 1.5 0 0 0 1.5-1.5v-6A1.5 1.5 0 0 0 17.5 8h-11zm2 3.2h2v1.9h-2v-1.9zm5.5 0h2v1.9h-2v-1.9z"/></svg>',
+  pixiv: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h6.2c3.4 0 5.6 2 5.6 5.1 0 3.3-2.3 5.3-5.8 5.3h-3v5.6H7V4zm3 2.8v4.9h2.8c1.9 0 3-1 3-2.5s-1.1-2.4-3-2.4H10z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6h15A2.5 2.5 0 0 1 22 8.5v7A2.5 2.5 0 0 1 19.5 18h-15A2.5 2.5 0 0 1 2 15.5v-7A2.5 2.5 0 0 1 4.5 6zm.3 2 7.2 5 7.2-5H4.8zm-.8 2v5.5c0 .3.2.5.5.5h15c.3 0 .5-.2.5-.5V10l-7.4 5.1a1 1 0 0 1-1.2 0L4 10z"/></svg>'
+};
+const groupedGallery = gallery.reduce((groups, item) => {
+  const year = item.date === 'Undated' ? 'Other' : item.date.slice(0, 4);
+  if (!groups[year]) groups[year] = [];
+  groups[year].push(item);
+  return groups;
+}, {});
+const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Number(a));
 %>
 
 <section class="hero section-reveal">
   <div class="hero-media">
-    <img src="<%- url_for(profile.hero || '/assets/images/hero/main.jpg') %>" alt="Avalon hero artwork">
+    <img src="<%- url_for(profile.hero || '/assets/images/hero/main.jpg') %>" alt="Hero artwork">
   </div>
-  <div class="hero-card">
-    <p class="eyebrow">portfolio / notes / gallery</p>
-    <h1><%= profile.name || config.title %></h1>
-    <p class="tagline"><%= profile.tagline || config.subtitle %></p>
-    <p class="role"><%= profile.role %></p>
-    <div class="hero-actions">
+  <div class="hero-card hero-card-minimal">
+    <p class="eyebrow">Portfolio / Notes / Gallery</p>
+    <p class="tagline jp-tagline"><%= profile.tagline || config.subtitle %></p>
+    <div class="hero-actions icon-actions">
       <% links.forEach((link) => { %>
-        <a href="<%- link.url %>" target="<%= link.url.startsWith('mailto:') ? '_self' : '_blank' %>" rel="noopener"><%= link.label %></a>
+        <a class="platform-link" href="<%- link.url %>" target="<%= link.url.startsWith('mailto:') ? '_self' : '_blank' %>" rel="noopener" aria-label="<%= link.label %>" title="<%= link.label %>">
+          <%- iconSvg[link.icon] || iconSvg.mail %>
+        </a>
       <% }) %>
     </div>
   </div>
@@ -27,31 +39,21 @@ const posts = site.posts.sort('date', -1).limit(6).toArray();
   </div>
 </section>
 
-<section id="profile" class="profile-band section-reveal">
+<section id="profile" class="profile-band profile-simple section-reveal">
   <div class="profile-card">
-    <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="Avalon avatar">
+    <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="Arin avatar">
     <div>
       <p class="eyebrow">Profile</p>
-      <h2>Avalon</h2>
-      <p>相信的心，与爱的魔法~</p>
-      <p>这里会收纳技术学习、项目记录、视觉设计和自己画的二次元插画。网站希望像一本清爽的个人杂志，轻一点，但有自己的秩序。</p>
-    </div>
-  </div>
-  <div class="resume-card">
-    <p class="eyebrow">Focus</p>
-    <div class="skill-list">
-      <% skills.forEach((item) => { %>
-        <span><%= item %></span>
-      <% }) %>
+      <h2>Arin</h2>
+      <p class="alias">Arin = 灰</p>
     </div>
   </div>
 </section>
 
 <section id="notes" class="content-section section-reveal">
   <div class="section-heading">
-    <p class="eyebrow">Tech notes</p>
-    <h2>技术文档</h2>
-    <p>先把实践过程种下来，之后再慢慢长成体系。</p>
+    <p class="eyebrow">Technical Archive</p>
+    <h2 class="script-title">Notes</h2>
   </div>
   <div class="post-grid">
     <% if (posts.length) { %>
@@ -74,23 +76,27 @@ const posts = site.posts.sort('date', -1).limit(6).toArray();
 </section>
 
 <section id="gallery" class="content-section gallery-section section-reveal">
-  <div class="section-heading">
-    <p class="eyebrow">Gallery timeline</p>
-    <h2>画廊</h2>
-    <p>按作品文件名日期倒序排列，最近的画放在最上面。</p>
+  <div class="section-heading gallery-heading">
+    <p class="eyebrow">Original illustrations</p>
+    <h2 class="script-title">Gallery</h2>
   </div>
-  <div class="timeline-gallery">
-    <% gallery.forEach((item) => { %>
-      <article class="art-item">
-        <div class="art-date"><%= item.date %></div>
-        <button class="art-frame" type="button" data-lightbox="<%- item.url %>" aria-label="Open <%= item.title %>">
-          <img src="<%- item.url %>" alt="<%= item.title %>" loading="lazy">
-        </button>
-        <div class="art-meta">
-          <h3><%= item.title %></h3>
-          <p>Original illustration by Avalon</p>
+  <div class="yearly-gallery">
+    <% galleryYears.forEach((year) => { %>
+      <section class="gallery-year-block">
+        <aside class="gallery-year"><%= year %></aside>
+        <div class="masonry-gallery">
+          <% groupedGallery[year].forEach((item) => { %>
+            <article class="art-item">
+              <button class="art-frame" type="button" data-lightbox="<%- item.url %>" aria-label="Open <%= item.title %>">
+                <img src="<%- item.url %>" alt="<%= item.title %>" loading="lazy">
+              </button>
+              <div class="art-caption">
+                <time><%= item.date.replace(/-/g, '.') %></time>
+              </div>
+            </article>
+          <% }) %>
         </div>
-      </article>
+      </section>
     <% }) %>
   </div>
 </section>

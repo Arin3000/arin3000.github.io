@@ -11,8 +11,6 @@ categories:
 cover: /assets/images/covers/DZfVa7WiCAbfYqJtszJ0nXrR.jpeg
 ---
 
-这篇文章由原 Word 笔记整理而来，记录在 Windows 中使用 Linux/WSL、配置开发环境、VS Code 远程开发以及 CUDA/PyTorch 环境处理的一些步骤。
-
 ## 重装前提醒
 题外话，重装系统前请务必备份浏览器书签，在设置里面选导出html
 
@@ -20,7 +18,7 @@ cover: /assets/images/covers/DZfVa7WiCAbfYqJtszJ0nXrR.jpeg
 
 （别的可能还有目前没遇到的回来遇到了再补充）
 
-![WSL 配图 1](/assets/images/posts/wsl-ubuntu-dev-environment/image1.png)
+<img class="post-image-small" src="/assets/images/posts/wsl-ubuntu-dev-environment/image1.png" alt="WSL 配图 1">
 
 
 勾选上，然后以管理员身份运行powershell，输入
@@ -469,8 +467,11 @@ yt-dlp --cookies-from-browser firefox  -f bestvideo+bestaudio --merge-output-for
 }
 ```
 
-<p class="note-small">接下来可以愉快地在vscode里面远程连接你的ubuntu主机写代码了~</p>
+## 接下来可以愉快地在 VS Code 里面远程连接你的 Ubuntu 主机写代码了~
 
+
+<details class="failure-notes">
+<summary>失败经验：CUDA 版本与 nvcc 相关记录</summary>
 
 ```bash
 //此处接上文nvcc -V，可以解决报错但是会为后续固定特定的cuda版本埋下隐患，看看得了，后面会再讲cuda    调整linux的cuda版本，涉及抄东西需要对应的环境，这个之前研究很久没整明白，csdn上面那个做库的软链接的方法不能有效地解决在这个问题，但是后来通过询问gpt解决了
@@ -621,3 +622,5 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 ```bash
 python -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.version.cuda)"
 ```
+
+</details>

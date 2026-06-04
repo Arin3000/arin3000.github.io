@@ -513,7 +513,11 @@ button {
 
 .article-hero.has-cover {
   padding: 0;
-  background: white;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  border: 0;
 }
 
 .article-hero.has-cover::after {
@@ -522,13 +526,30 @@ button {
   inset: auto 0 0;
   height: 48%;
   pointer-events: none;
+  border-radius: var(--radius);
   background: linear-gradient(0deg, rgba(255, 253, 248, 0.96) 0%, rgba(255, 253, 248, 0.78) 42%, rgba(255, 253, 248, 0) 100%);
 }
 
 .article-hero.has-cover img {
   width: 100%;
   margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.82);
   border-radius: var(--radius);
+  box-shadow: 0 18px 48px rgba(137, 111, 105, 0.13);
+}
+
+.article-meta-outside {
+  margin: 0 0 14px;
+  padding-left: 2px;
+}
+
+.article-meta-outside .eyebrow {
+  margin-bottom: 6px;
+}
+
+.article-meta-outside time {
+  color: var(--muted);
+  font-size: 14px;
 }
 
 .article-hero-copy {
@@ -577,6 +598,40 @@ button {
   margin: 22px auto;
   border-radius: var(--radius);
   box-shadow: 0 18px 48px rgba(137, 111, 105, 0.14);
+}
+
+.article-content .post-image-small {
+  width: min(520px, 86%);
+  margin: 20px auto;
+  border-radius: var(--radius);
+  box-shadow: 0 14px 36px rgba(137, 111, 105, 0.14);
+}
+
+.failure-notes {
+  margin: 24px 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(201, 79, 115, 0.16);
+  border-radius: var(--radius);
+  background: rgba(255, 245, 248, 0.48);
+  color: rgba(102, 119, 130, 0.86);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.failure-notes summary {
+  cursor: pointer;
+  color: #c94f73;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.failure-notes h2 {
+  margin-top: 22px;
+  font-size: 18px;
+}
+
+.failure-notes .copy-code-block {
+  font-size: 12px;
 }
 
 .copy-code-block {

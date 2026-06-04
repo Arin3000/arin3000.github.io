@@ -1,5 +1,5 @@
 ﻿---
-title: 借重装系统之机写一下我在windows里面使用linux的方法
+title: helloworld
 date: 2025-02-20 11:54:00
 tags:
   - WSL
@@ -8,6 +8,7 @@ tags:
   - CUDA
 categories:
   - 技术文档
+cover: /assets/images/covers/DZfVa7WiCAbfYqJtszJ0nXrR.jpeg
 ---
 
 这篇文章由原 Word 笔记整理而来，记录在 Windows 中使用 Linux/WSL、配置开发环境、VS Code 远程开发以及 CUDA/PyTorch 环境处理的一些步骤。
@@ -18,6 +19,9 @@ categories:
 请务必在sai2里面截图色板，截图自制的笔刷参数
 
 （别的可能还有目前没遇到的回来遇到了再补充）
+
+![WSL 配图 1](/assets/images/posts/wsl-ubuntu-dev-environment/image1.png)
+
 
 勾选上，然后以管理员身份运行powershell，输入
 
@@ -32,9 +36,9 @@ wsl –install
 
 输入用户名和root的密码，此时你就可以使用sudo了
 
-## 补充说明，这样虽说可以直接添加一个用户并正常使用，但是实际上root的密码是还没有设置的，只是相当于使用sudo给单个用户设置了密码
+<p class="note-small">补充说明，这样虽说可以直接添加一个用户并正常使用，但是实际上root的密码是还没有设置的，只是相当于使用sudo给单个用户设置了密码</p>
 
-## 此处补：装指定版本Ubuntu:（演示版本为2204，并非前面所写的2004，实际上大差不差都行，这个方法简单，来自飞神的codex老师指导，但是不记得要不要翻墙了，如果要翻的话还是参照上面的）Windows PowerShell：
+<p class="note-small">此处补：装指定版本Ubuntu:（演示版本为2204，并非前面所写的2004，实际上大差不差都行，这个方法简单，来自飞神的codex老师指导，但是不记得要不要翻墙了，如果要翻的话还是参照上面的）Windows PowerShell：</p>
 
 
 ```bash
@@ -45,6 +49,9 @@ wsl --set-default-version 2
 ```
 
 重启，打开ubuntu，检查：nvidia-smi
+
+![WSL 配图 2](/assets/images/posts/wsl-ubuntu-dev-environment/image2.png)
+
 
 再检查一下系统版本：
 
@@ -78,9 +85,9 @@ su (你的用户名)
 
 这样就切换到你的用户了（如果再换回root就使用su，换回用户就su+用户名）
 
-## 下载visualstudiocode（https://code.visualstudio.com）然后下载wsl的扩展，ctrl+shift+P选择connecttowsl，默认进入home/(用户名)的目录，然后把下面的那块拉起来，选择Terminal，这样就可以愉快地在vsc里面使用命令行复制粘贴啦~
+<p class="note-small">下载visualstudiocode（https://code.visualstudio.com）然后下载wsl的扩展，ctrl+shift+P选择connecttowsl，默认进入home/(用户名)的目录，然后把下面的那块拉起来，选择Terminal，这样就可以愉快地在vsc里面使用命令行复制粘贴啦~</p>
 
-## 如果这时尝试下载东西，会发现直连的源特别特别的慢（挂梯能用但是慢），所以我们需要换成国内源（网上常见的手动安装方法待复制粘贴补充，这里说一种不太常见但是很方便的）
+<p class="note-small">如果这时尝试下载东西，会发现直连的源特别特别的慢（挂梯能用但是慢），所以我们需要换成国内源（网上常见的手动安装方法待复制粘贴补充，这里说一种不太常见但是很方便的）</p>
 
 （如果后续需要给wsl翻墙，请直接忽视这一条，换源后ipv6下载偶尔不稳，翻的话不用考虑这个）
 
@@ -105,6 +112,9 @@ sudo sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
 应该是可以看到下载的源变成了中科大的镜像源（此次只是拿这个举例，具体原理上来说可以挑选离自己地理位置近的源，个人感觉国内的都大差不差，看喜好）
 
+![WSL 配图 3](/assets/images/posts/wsl-ubuntu-dev-environment/image3.png)
+
+
 
 ```bash
 sudo apt install build-essential
@@ -118,9 +128,9 @@ apt install nvidia-cuda-toolkit
 nvidia-smi（这三行是显卡相关的）
 ```
 
-## 以下这段是windows里面方便下载网页小工具的配置环境，也可以拿来干别的，但是个人更习惯一个地方解决所以后面在wsl里面装anaconda了（或者miniconda也可以）
+<p class="note-small">以下这段是windows里面方便下载网页小工具的配置环境，也可以拿来干别的，但是个人更习惯一个地方解决所以后面在wsl里面装anaconda了（或者miniconda也可以）</p>
 
-## 下载并安装anaconda，https://www.anaconda.com 去官网复制镜像站最新的下载命令，不要抄别的地方的旧的了，.sh结尾的，没有wget就用curl，要是给虚拟机的盘空间小的话就下miniconda，一样的步骤用起来大差不差，对于写代码来说，复现的话建议所有环境都跟说明的一模一样不要搞创新
+<p class="note-small">下载并安装anaconda，https://www.anaconda.com 去官网复制镜像站最新的下载命令，不要抄别的地方的旧的了，.sh结尾的，没有wget就用curl，要是给虚拟机的盘空间小的话就下miniconda，一样的步骤用起来大差不差，对于写代码来说，复现的话建议所有环境都跟说明的一模一样不要搞创新</p>
 
 下载的时候卡在最后cache那一步应该是属于普遍现象，多等一等（windows里面的同理）
 
@@ -144,7 +154,7 @@ pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 下载的时候尽量用pip，不要conda和pip混用，否则可能导致删不干净或者版本冲突（当然不介意的话也可以开新环境）
 
-## 以下为网页下片小工具，在windows里面的anaconda使用可以直接下载的windows本地而不用重新映射目录或者拖文件
+<p class="note-small">以下为网页下片小工具，在windows里面的anaconda使用可以直接下载的windows本地而不用重新映射目录或者拖文件</p>
 
 
 ```bash
@@ -459,14 +469,14 @@ yt-dlp --cookies-from-browser firefox  -f bestvideo+bestaudio --merge-output-for
 }
 ```
 
-## 接下来可以愉快地在vscode里面远程连接你的ubuntu主机写代码了~
+<p class="note-small">接下来可以愉快地在vscode里面远程连接你的ubuntu主机写代码了~</p>
 
 
 ```bash
 //此处接上文nvcc -V，可以解决报错但是会为后续固定特定的cuda版本埋下隐患，看看得了，后面会再讲cuda    调整linux的cuda版本，涉及抄东西需要对应的环境，这个之前研究很久没整明白，csdn上面那个做库的软链接的方法不能有效地解决在这个问题，但是后来通过询问gpt解决了
 ```
 
-## 要将 CUDA 12.8 降级到 CUDA 12.1，需要按照以下步骤操作。确保你已经卸载旧版本并正确安装目标版本，避免兼容性问题。以下指南适用于 Ubuntu/Linux 系统。
+<p class="note-small">要将 CUDA 12.8 降级到 CUDA 12.1，需要按照以下步骤操作。确保你已经卸载旧版本并正确安装目标版本，避免兼容性问题。以下指南适用于 Ubuntu/Linux 系统。</p>
 
 ## ✅ 一、确认当前 CUDA 版本
 

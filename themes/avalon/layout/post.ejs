@@ -1,10 +1,16 @@
 <article class="article-page section-reveal">
-  <header class="article-hero">
-    <p class="eyebrow"><%= page.categories && page.categories.length ? page.categories.first().name : 'Note' %></p>
-    <h1><%= page.title %></h1>
-    <time><%= date(page.date, 'YYYY.MM.DD') %></time>
+  <header class="article-hero <%= page.cover ? 'has-cover' : '' %>">
     <% if (page.cover) { %>
       <img src="<%- url_for(page.cover) %>" alt="">
+      <div class="article-hero-copy">
+        <p class="eyebrow"><%= page.categories && page.categories.length ? page.categories.first().name : 'Note' %></p>
+        <h1><%= page.title %></h1>
+        <time><%= date(page.date, 'YYYY.MM.DD') %></time>
+      </div>
+    <% } else { %>
+      <p class="eyebrow"><%= page.categories && page.categories.length ? page.categories.first().name : 'Note' %></p>
+      <h1><%= page.title %></h1>
+      <time><%= date(page.date, 'YYYY.MM.DD') %></time>
     <% } %>
   </header>
   <div class="article-content">

@@ -623,4 +623,18 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 python -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.version.cuda)"
 ```
 
+
+## 再次续写：关于 CUDA
+
+在 WSL2 中，CUDA 的架构被分为两层：
+
+- 宿主机层（Windows Driver）：你的显卡驱动安装在 Windows 上。WSL2 会映射这个驱动。这个驱动决定了你最高能支持的 CUDA 版本，也就是 `nvidia-smi` 显示的版本。
+- 用户层（WSL/Conda Toolkit）：这是你在 WSL 或 Conda 环境中安装的 CUDA 开发套件，包括编译器、库文件等。这一层可以有多个版本。
+
+如果你要用 GPU，在 WSL 里还要有 CUDA Toolkit，因为 detectron2 会编译 CUDA 扩展。这里有一个关键点：NVIDIA 官方文档明确说，在 WSL 里不要装 Linux 显卡驱动，只装 Windows 端 NVIDIA 驱动；WSL 里只装 CUDA Toolkit。
+
+- 没有全局 CUDA 路径干扰：输入 `nvcc -V` 报错。
+- 没有仓库锁定：现在运行 `sudo apt install` 不会再被强行拉回 12.1。
+- 显卡通道畅通：输入 `nvidia-smi` 依然能看到显卡信息，因为这是 Windows 驱动给的。
+
 </details>

@@ -7,6 +7,7 @@ tags:
   - 虚拟机
 categories:
   - 技术文档
+cover: /assets/images/covers/NVnPOUaRypewH0zukR4KrfhP.jpeg
 ---
 
 ## Import .tar

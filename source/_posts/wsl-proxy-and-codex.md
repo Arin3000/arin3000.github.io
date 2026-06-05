@@ -7,6 +7,7 @@ tags:
   - Codex
 categories:
   - 技术文档
+cover: /assets/images/covers/tZSMqzWloD3rQamhYv9n1RjZ.jpeg
 ---
 
 ## 给 WSL 快捷翻墙

@@ -593,6 +593,63 @@ button {
   line-height: 1.85;
 }
 
+.article-content .note-plain,
+.article-content .note-plain-list {
+  margin: 12px 0 18px;
+  padding: 10px 14px;
+  border-left: 2px solid rgba(201, 79, 115, 0.28);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: rgba(255, 247, 250, 0.58);
+  color: rgba(78, 88, 96, 0.82);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.article-content .note-plain-list {
+  list-style: none;
+}
+
+.article-content .note-plain-list li {
+  margin: 2px 0;
+}
+
+.result-showcase {
+  margin: 8px 0 30px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 79, 115, 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 252, 0.78);
+  box-shadow: 0 18px 48px rgba(137, 111, 105, 0.12);
+}
+
+.result-showcase__text {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px 12px;
+  font-size: 13px;
+}
+
+.result-showcase__text span {
+  color: #c94f73;
+  font-weight: 800;
+}
+
+.result-showcase__text a {
+  color: rgba(54, 63, 70, 0.84);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.result-showcase img {
+  display: block;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .article-content p img {
   width: 100%;
   margin: 22px auto;

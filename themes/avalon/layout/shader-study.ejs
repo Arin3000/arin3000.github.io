@@ -1,12 +1,41 @@
 <a class="skip" href="#lesson">跳到步骤讲解</a>
 <header class="masthead">
   <a class="brand" href="/" aria-label="返回 Avalon 个人站"><b>A<span>✳</span></b><span>AVALON<small>渲染手记 / 001</small></span></a>
-  <div class="heading"><h1>像画画一样，理解角色 Shader</h1><p>HSKI · 从底色到最后一笔高光</p></div>
+  <div class="heading"><h1>从绘画到shader</h1><p>个人手绘理解 → 角色渲染实践</p></div>
   <div class="head-actions"><button id="share" title="复制当前步骤链接">分享此步 ↗</button><button id="present" class="dark-button">展示模式 ⛶</button></div>
 </header>
 <nav class="step-strip" aria-label="绘画步骤" id="steps"></nav>
-<div class="mobile-switch" role="group" aria-label="阅读视图"><button data-view="doc" aria-pressed="true">讲解与效果</button><button data-view="code" aria-pressed="false">注释代码</button></div>
-<main class="workspace" data-view="doc">
+<section class="painting-intro" id="painting-intro" aria-labelledby="intro-title">
+  <div class="intro-inner">
+    <section class="personal-note" aria-labelledby="personal-title"><span class="eyebrow">A LITTLE NOTE · 写在前面</span><h2 id="personal-title">个人碎碎念</h2><div class="personal-prose">
+      <p>一开始知道 <a href="https://x.com/hechima10040" target="_blank" rel="noopener noreferrer">hechima（へちま）老师 ↗</a> 参与了学的角色原案。我一直很喜欢她的画风，从开服就开始关注学，也被万代的 3D 还原程度和精美的卡渲震撼到了。</p>
+      <p>去年的这时候，我开始学习 Unity、写 Shader。在那之前我只会画画，但是在学习的过程中，我好像、似乎找到了绘画和 Shader 之间的关联。</p>
+      <p>后面因为各种各样的事情耽搁了太久，直到今天又回想起来，借助 GPT 神力，把之前攒的小笔记和工程整合到一起，一口气蹬完了这篇（）</p>
+    </div><div class="personal-signature">Arin / 2026.09.10</div></section>
+    <section class="source-notes" aria-labelledby="sources-title">
+      <div class="source-heading"><span class="eyebrow">SOURCES & ACKNOWLEDGEMENTS</span><h2 id="sources-title">制作说明与参考致谢</h2></div>
+      <p class="source-lead">从官方制作分享与前人的技术记录出发，再整理成自己的绘画观察和 Shader 学习过程。感谢以下作者的分享。</p>
+      <ol class="source-list">
+        <li><span class="source-index">[1]</span><div><span class="source-kind">官方制作说明 · CEDEC 2024</span><a href="https://cedil.cesa.or.jp/cedil_sessions/view/3000" target="_blank" rel="noopener noreferrer">神は細部に宿る！「学園アイドルマスター」のこだわり抜いた3Dキャラクター・背景制作 ↗</a><p>QualiArts 开发团队的角色与背景制作分享。链接前往 CEDiL 官方讲演资料页，资料下载可能需要登录。</p></div></li>
+        <li><span class="source-index">[2]</span><div><span class="source-kind">文章参考 · yuki016</span><a href="https://zhuanlan.zhihu.com/p/1901300706872394096" target="_blank" rel="noopener noreferrer">yuki016 的文章（知乎） ↗</a><p>感谢 yuki016 的文章，为本次 Shader 学习与复现提供参考。</p></div></li>
+        <li><span class="source-index">[3]</span><div><span class="source-kind">脚本参考 · CroakFang</span><a href="https://croakfang.fun/2024/05/27/学院偶像大师资源提取记录/" target="_blank" rel="noopener noreferrer">学院偶像大师资源提取记录 ↗</a><p>感谢 CroakFang 的记录与脚本分享，参考了其中的模型加载、面部蒙皮与 BlendShape 处理思路。</p></div></li>
+      </ol>
+      <div class="usage-note"><strong>学习交流与版权说明</strong><p>本文仅供个人学习与技术交流，不用于商业用途。内容为个人学习复现，不代表官方实现、官方立场或官方授权。角色、游戏美术与官图的版权归原权利方所有；参考文章、第三方代码和脚本的权利归各自作者，使用、修改及再分发须遵守其许可。个人手绘属于基于相关角色的二次创作。</p><p>“仅供学习交流”不构成版权授权。如有署名、引用范围或版权方面的问题，请<a href="mailto:avalon2967@gmail.com">联系我</a>，核实后及时补正或下架相关内容。</p><p class="gpt-credit">本文博客文档借助 GPT6 完成。</p></div>
+    </section>
+    <header class="intro-heading"><div><span class="eyebrow">BEFORE THE CODE · 从画面开始</span><h2 id="intro-title">个人纯手工绘画理解</h2></div><p>先看画面，再读代码。<br>从色块、明暗和亮点，找到每一笔在 Shader 里的表达。</p></header>
+    <div class="painting-pair">
+      <figure><button class="painting-open" data-painting="2602234.jpg" data-caption="个人纯手工绘画理解 · 01" aria-label="放大手绘作品一"><img src="/assets/hski-study/paintings/2602234.jpg" width="2235" height="3989" alt="个人纯手工绘画：粉色长发少女抱着玩偶，暖色衣装与发丝边缘的亮色"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">01 / HAND PAINTED</span><h3>色块、明暗与边缘光</h3><p>看头发怎样用成组的亮色与暗色交代转折，再留意发丝外缘的暖色提亮。</p><a href="#step=3" class="painting-jump" data-painting-step="3">对应头发高光 →</a><a href="#step=8" class="painting-jump" data-painting-step="8">对应轮廓光 →</a></figcaption></figure>
+      <figure><button class="painting-open" data-painting="2602221saki.jpg" data-caption="个人纯手工绘画理解 · 02" aria-label="放大手绘作品二"><img src="/assets/hski-study/paintings/2602221saki.jpg" width="2835" height="3189" alt="个人纯手工绘画：粉色长发少女穿蓝白衣装，眨眼并托着玩偶，虹膜中有独立亮点"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">02 / HAND PAINTED</span><h3>冷暖关系与局部亮点</h3><p>看蓝白衣装的明暗色块，以及眼睛里独立的小亮点。不同位置的亮，承担着不同的表达。</p><a href="#step=2" class="painting-jump" data-painting-step="2">对应阴影与肤色 →</a><a href="#step=6" class="painting-jump" data-painting-step="6">对应眼睛亮点 →</a></figcaption></figure>
+    </div>
+    <section class="official-references" aria-labelledby="official-title"><div class="reference-heading"><div><span class="eyebrow">CHARACTER REFERENCES</span><h2 id="official-title">官方角色参考</h2></div><p>对照人物的设计、配色与材质分区。</p></div><div class="reference-pair">
+      <figure><button class="painting-open" data-painting="official-school.png" data-caption="官方角色参考 · 01" aria-label="放大官方参考图一"><img src="/assets/hski-study/paintings/official-school.png" width="472" height="649" loading="lazy" alt="官方角色参考图一：粉色校服、蓝色领结与金色扣子"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">OFFICIAL REFERENCE / 01</span><h3>校服的配色与材质</h3><p>粉色衣料、蓝色领结与金色扣子，对应不同的颜色和反光表现。</p></figcaption></figure>
+      <figure><button class="painting-open" data-painting="official-costume.png" data-caption="官方角色参考 · 02" aria-label="放大官方参考图二"><img src="/assets/hski-study/paintings/official-costume.png" width="384" height="362" loading="lazy" alt="官方角色参考图二：粉黑服装、粉色头发与人物图形设计"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">OFFICIAL REFERENCE / 02</span><h3>另一套服装的色块关系</h3><p>观察粉色与深色的组合，以及头发、衣料和装饰的区分。</p></figcaption></figure>
+    </div><p class="reference-credit">以上为官方角色参考图，版权归原权利方所有；前两张为个人纯手工绘画理解。点击可查看所提供的原图。</p></section>
+    <div class="intro-bridge"><div><span class="eyebrow">从绘画观察，到代码拆解</span><h3>接下来，把这些笔触一层层拆开。</h3><p>下面用同一个角色、同一个镜头，逐步恢复底色、阴影、高光和描边。手绘与官图作为观察入口；后面的图像来自 Unity 相机渲染。</p></div><div class="intro-actions"><button id="begin-study" class="dark-button">开始 Shader 十步 →</button><button id="resume-study" hidden>继续上次阅读 →</button></div></div>
+  </div>
+</section>
+<div class="mobile-switch" role="group" aria-label="阅读视图" hidden><button data-view="doc" aria-pressed="true">讲解与效果</button><button data-view="code" aria-pressed="false">注释代码</button></div>
+<main class="workspace" data-view="doc" hidden>
   <section class="editor" aria-label="带注释的源代码">
     <div class="editor-heading"><span class="file-icon">{ }</span><label class="sr-only" for="file">源文件</label><select id="file"></select><a id="download" download title="下载当前完整源文件">↓ 下载</a></div>
     <div class="editor-tools"><label class="search"><span>⌕</span><input id="search" placeholder="查找代码…" aria-label="查找代码"><small id="matches"></small></label><button id="find-next" title="下一个匹配">↓</button><button id="copy-code">复制选段</button><button id="wrap" aria-pressed="false" title="自动折行">折行</button></div>

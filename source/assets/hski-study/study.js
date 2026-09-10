@@ -4,7 +4,7 @@
   const $ = id => document.getElementById(id);
   const base = '/assets/hski-study/';
   const escape = text => text.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  let data, stage = 1, file = '', selected = 0, hits = [], hitIndex = -1, compare = false, toastTimer;
+  let data, stage = 1, file = '', selected = 0, hits = [], hitIndex = -1, compare = false, toastTimer, intro = true;
   const shortTitles = ['铺底色','阴影肤色','头发高光','局部补色','材质反光','眼睛亮点','环境补光','轮廓光','描边','原版完整态'];
   const footnotes = [
     '先看轮廓和固有色。底图已经包含美术画好的细节，所以“铺色”并不意味着一张没有细节的纯色图。',
@@ -39,6 +39,15 @@
     const hash=`#step=${stage}&file=${encodeURIComponent(file)}&line=${file===snippet.file?snippet.start:1}`;
     if(location.hash!==hash)history[push?'pushState':'replaceState'](null,'',hash);
     try{localStorage.setItem('avalon-hski-step',String(stage));}catch{}
+  }
+  function showIntro(push=false){
+    intro=true;$('painting-intro').hidden=false;document.querySelector('.workspace').hidden=true;document.querySelector('.mobile-switch').hidden=true;
+    document.querySelectorAll('#steps button').forEach(el=>el.setAttribute('aria-current',el.hasAttribute('data-intro')?'step':'false'));
+    $('share').textContent='分享文章 ↗';
+    if(location.hash!=='#intro')history[push?'pushState':'replaceState'](null,'','#intro');
+    $('painting-intro').scrollTop=0;
+    try{const last=Number(localStorage.getItem('avalon-hski-step'));if(last>=1&&last<=10){$('resume-study').hidden=false;$('resume-study').textContent=`继续上次 · 第 ${String(last).padStart(2,'0')} 步 →`;$('resume-study').onclick=()=>setStep(last);}}catch{}
+    document.querySelector('#steps button[data-intro]').scrollIntoView({block:'nearest',inline:'nearest'});
   }
   function mobileView(view) {
     document.querySelector('.workspace').dataset.view=view;
@@ -80,11 +89,12 @@
     $('note').textContent=footnotes[stage-1];
     $('prev').disabled=stage===1;$('next').disabled=stage===10;
     $('compare-view').disabled=stage===1;
-    document.querySelectorAll('#steps button').forEach((el,i)=>{el.setAttribute('aria-current',i+1===stage?'step':'false');el.classList.toggle('done',i+1<stage);});
+    document.querySelectorAll('#steps button').forEach(el=>{const n=Number(el.dataset.step);el.setAttribute('aria-current',n===stage?'step':'false');el.classList.toggle('done',n>0&&n<stage);});
     setCompare(compare&&stage>1);
   }
   function setStep(n,{snippet=0,push=true,scroll=true,focusCode=false}={}) {
     if(!Number.isInteger(n)||n<1||n>10)return;
+    intro=false;$('painting-intro').hidden=true;document.querySelector('.workspace').hidden=false;document.querySelector('.mobile-switch').hidden=false;$('share').textContent='分享此步 ↗';
     stage=n;selected=Math.max(0,Math.min(snippet,data.steps[n-1].snippets.length-1));file=activeSnippet().file;
     renderLesson();renderCode();updateUrl(push);
     if(scroll)$('lesson').scrollTop=0;
@@ -103,6 +113,7 @@
   async function copy(text,label) {try{await navigator.clipboard.writeText(text);notify(label);}catch{notify('浏览器未允许复制，请选中文本后手动复制');}}
   function loadLocation() {
     if(location.hash==='#lesson')return;
+    if(!location.hash||location.hash==='#intro'){showIntro(false);return;}
     const p=new URLSearchParams(location.hash.slice(1));let n=Number(p.get('step'));
     if(!Number.isInteger(n)||n<1||n>10){try{n=Number(localStorage.getItem('avalon-hski-step'))||1;}catch{n=1;}}
     n=Math.max(1,Math.min(10,n));const requested=p.get('file');const line=Number(p.get('line'));
@@ -112,16 +123,19 @@
   }
   async function init() {
     const response=await fetch(base+'study.json');if(!response.ok)throw Error('data');data=await response.json();
-    $('steps').innerHTML=shortTitles.map((t,i)=>`<button data-step="${i+1}" aria-label="第 ${i+1} 步 ${t}"><span class="num">${String(i+1).padStart(2,'0')}</span><span>${t}</span></button>`).join('');
+    $('steps').innerHTML='<button data-intro aria-label="开篇 个人绘画"><span class="num">序</span><span>个人绘画</span></button>'+shortTitles.map((t,i)=>`<button data-step="${i+1}" aria-label="第 ${i+1} 步 ${t}"><span class="num">${String(i+1).padStart(2,'0')}</span><span>${t}</span></button>`).join('');
     $('file').innerHTML=Object.entries(data.files).map(([name,f])=>`<option value="${name}">${f.original?'原版 · ':''}${name}</option>`).join('');
-    $('steps').addEventListener('click',e=>{const b=e.target.closest('[data-step]');if(b)setStep(Number(b.dataset.step));});
+    $('steps').addEventListener('click',e=>{if(e.target.closest('[data-intro]')){showIntro(true);return;}const b=e.target.closest('[data-step]');if(b)setStep(Number(b.dataset.step));});
+    $('begin-study').onclick=()=>setStep(1);
+    document.querySelectorAll('[data-painting-step]').forEach(a=>a.onclick=e=>{e.preventDefault();setStep(Number(a.dataset.paintingStep));});
+    document.querySelectorAll('[data-painting]').forEach(b=>b.onclick=()=>{$('large-image').src=base+'paintings/'+b.dataset.painting;$('large-image').alt=b.querySelector('img').alt;$('large-caption').textContent=b.dataset.caption;$('image-dialog').showModal();});
     $('explain').addEventListener('click',e=>{const b=e.target.closest('[data-snippet]');if(b)selectSnippet(Number(b.dataset.snippet));});
     $('code').addEventListener('click',e=>{if(window.getSelection().toString())return;const b=e.target.closest('[data-step]');if(b){e.preventDefault();setStep(Number(b.dataset.step),{snippet:Number(b.dataset.snippet),scroll:true});if(matchMedia('(max-width:760px)').matches)mobileView('doc');}});
     $('file').addEventListener('change',()=>{file=$('file').value;renderCode();updateUrl(true);});
     $('search').addEventListener('input',()=>find());$('search').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();nextMatch();}});$('find-next').onclick=nextMatch;
     $('locate').onclick=()=>{file=activeSnippet().file;renderCode();updateUrl(true);};
     $('copy-code').onclick=()=>{const s=activeSnippet();const text=file===s.file?data.files[file].code.split(/\r?\n/).slice(s.start-1,s.end).join('\n'):data.files[file].code;copy(text,'已复制代码（不含展示旁注）');};
-    $('share').onclick=()=>copy(location.href,'已复制当前步骤链接');
+    $('share').onclick=()=>copy(location.href,intro?'已复制文章开篇链接':'已复制当前步骤链接');
     $('wrap').onclick=()=>{const on=$('code').classList.toggle('wrap-code');$('wrap').setAttribute('aria-pressed',String(on));};
     $('prev').onclick=()=>setStep(stage-1);$('next').onclick=()=>setStep(stage+1);
     $('current-view').onclick=()=>setCompare(false);$('compare-view').onclick=()=>setCompare(stage>1);
@@ -136,7 +150,7 @@
     $('close-image').onclick=()=>$('image-dialog').close();$('image-dialog').onclick=e=>{if(e.target===$('image-dialog'))$('image-dialog').close();};
     $('present').onclick=()=>{const on=document.body.classList.toggle('present');$('present').textContent=on?'退出展示 ⛶':'展示模式 ⛶';notify(on?'展示模式 · 按 Esc 退出':'已返回阅读模式');};
     document.querySelectorAll('.mobile-switch button').forEach(b=>b.onclick=()=>mobileView(b.dataset.view));
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('present');$('present').textContent='展示模式 ⛶';}if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();setStep(stage+(e.key==='ArrowLeft'?-1:1));}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.body.classList.remove('present');$('present').textContent='展示模式 ⛶';}if(e.altKey&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();if(intro){if(e.key==='ArrowRight')setStep(1);}else if(stage===1&&e.key==='ArrowLeft'){showIntro(true);}else setStep(stage+(e.key==='ArrowLeft'?-1:1));}});
     window.addEventListener('popstate',loadLocation);window.addEventListener('hashchange',loadLocation);
     const divider=document.querySelector('.splitter');const area=document.querySelector('.workspace');
     function width(value){const w=Math.max(30,Math.min(65,value));document.documentElement.style.setProperty('--code-width',w+'%');divider.setAttribute('aria-valuenow',String(Math.round(w)));}

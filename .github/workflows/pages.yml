@@ -35,7 +35,7 @@ jobs:
         run: npm run build
 
       - name: Verify HSKI tutorial source and article
-        run: node scripts/verify-hski-study.cjs
+        run: node tools/verify-hski-study.cjs
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

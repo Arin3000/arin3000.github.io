@@ -1,3 +1,4 @@
+// Keep outside Hexo's auto-loaded scripts/ directory: run after generation.
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
@@ -28,6 +29,14 @@ assert.equal(data.validation.teaching_complete_vs_original.different_pixels, 0);
 assert.equal(data.validation.step05_to_06.button_roi_changed_pixels, 0);
 const article = fs.readFileSync(path.join(root,'public/2026/09/10/hski-shader-painting/index.html'),'utf8');
 assert.ok(article.includes('study.js') && article.includes('id="explain"'));
+assert.ok(article.includes('<h1>从绘画到shader</h1>'));
+assert.ok(article.includes('个人纯手工绘画理解') && article.includes('官方角色参考'));
+assert.ok(article.includes('本文博客文档借助 GPT6 完成。'));
+for(const url of ['https://cedil.cesa.or.jp/cedil_sessions/view/3000','https://zhuanlan.zhihu.com/p/1901300706872394096','https://croakfang.fun/2024/05/27/学院偶像大师资源提取记录/'])assert.ok(article.includes(url));
+for(const name of ['2602234.jpg','2602221saki.jpg','official-school.png','official-costume.png']){
+  assert.ok(fs.statSync(path.join(asset,'paintings',name)).size > 1000);
+  assert.ok(article.includes('/paintings/'+name));
+}
 assert.ok(!/[EC]:[\\/]/.test(JSON.stringify(data)));
 assert.ok(fs.readFileSync(path.join(root,'public/index.html'),'utf8').includes('/2026/09/10/hski-shader-painting/'));
 console.log('PASS: 10 steps, source hashes, code ranges, eye separation, image evidence, article and homepage entry.');

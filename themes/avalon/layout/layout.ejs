@@ -1,3 +1,6 @@
+<% if (page.study) { %>
+<%- partial('partial/study-shell') %>
+<% } else { %>
 <!doctype html>
 <html lang="<%= config.language || 'zh-CN' %>">
 <head>
@@ -22,3 +25,4 @@
   <%- js('js/main') %>
 </body>
 </html>
+<% } %>

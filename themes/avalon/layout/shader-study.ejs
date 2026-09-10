@@ -2,9 +2,10 @@
 <header class="masthead">
   <a class="brand" href="/" aria-label="返回 Avalon 个人站"><b>A<span>✳</span></b><span>AVALON<small>渲染手记 / 001</small></span></a>
   <div class="heading"><h1>从绘画到shader</h1><p>个人手绘理解 → 角色渲染实践</p></div>
-  <div class="head-actions"><button id="share" title="复制当前步骤链接">分享此步 ↗</button><button id="present" class="dark-button">展示模式 ⛶</button></div>
+  <div class="head-actions"><button data-open-engineering title="为什么代码顺序和绘画顺序不一样">顺序与性能</button><button id="share" title="复制当前步骤链接">分享此步 ↗</button><button id="present" class="dark-button">展示模式 ⛶</button></div>
 </header>
 <nav class="step-strip" aria-label="绘画步骤" id="steps"></nav>
+<%- partial('partial/study-engineering') %>
 <section class="painting-intro" id="painting-intro" aria-labelledby="intro-title">
   <div class="intro-inner">
     <section class="personal-note" aria-labelledby="personal-title"><span class="eyebrow">A LITTLE NOTE · 写在前面</span><h2 id="personal-title">个人碎碎念</h2><div class="personal-prose">
@@ -54,6 +55,7 @@
       <div class="figure-caption"><span id="caption">同一相机 · 同一光照 · 只改变这一层</span><span>实时工程渲染图</span></div>
       <section class="explanation"><div class="section-label"><h3>这一笔，代码怎么画？</h3><span>点击卡片 ↙ 定位代码</span></div><div id="explain"></div></section>
       <aside class="note" id="note"></aside>
+      <details class="step-reason"><summary>为什么这样写？执行顺序与性能</summary><p id="step-reason-text"></p><button data-open-engineering>展开：依赖关系、渲染队列与优化取舍 →</button></details>
       <details class="method"><summary>关于这组图片与完整源码</summary><p>图片由 Unity 相机导出，并非编辑器全窗口截图。使用大世界夜间教室人物参数与原调色 LUT；独立场景不含教室建筑及其遮挡投影。</p><p>01—09 使用教学派生文件。10 切回大世界原材质与原 Shader。左侧菜单可查看、下载教学代码和完整原版 Shader；中文旁注只用于阅读，不写入下载文件。</p><p>教学完整态与原版的 1000 × 1000 图像逐像素相同。眼睛高光步骤只改变眼睛区域的 568 个像素，扣子区域不变。此结论针对本文固定镜头与参数。</p><p class="credits">角色与原始美术资源归原权利方所有，本文用于渲染技术学习。2026.09.10 · Unity 2022.3 / URP 14</p></details>
       <nav class="lesson-nav" aria-label="上下步骤"><button id="prev">← 上一步</button><span id="nav-hint">也可以用 Alt + ← / →</span><button id="next">下一步 →</button></nav>
     </div>

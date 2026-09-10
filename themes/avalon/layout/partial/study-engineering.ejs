@@ -1,0 +1,82 @@
+<section id="engineering" class="engineering" aria-labelledby="engineering-title" hidden>
+  <div class="engineering-inner">
+    <div class="engineering-top"><span class="eyebrow">BEHIND THE BRUSHSTROKES · 顺序与性能</span><button data-return-study>返回刚才的步骤 ↙</button></div>
+    <h2 id="engineering-title">为什么代码顺序，和绘画顺序不一样？</h2>
+    <p class="engineering-lead">绘画步骤回答“这一层给画面增加了什么”；Shader 代码回答“算这个结果之前，需要哪些数据”；渲染管线回答“谁先写入颜色、深度和模板缓冲”。理解这三件事，才能判断哪些顺序能调整，哪些一换就会画错。</p>
+    <nav class="engineering-toc" aria-label="原理章节"><a href="#eng-orders" data-engineering-anchor="eng-orders">三种顺序</a><a href="#eng-dependency" data-engineering-anchor="eng-dependency">为什么先算高光</a><a href="#eng-queue" data-engineering-anchor="eng-queue">眼睛与渲染队列</a><a href="#eng-pass" data-engineering-anchor="eng-pass">Pass 与后处理</a><a href="#eng-performance" data-engineering-anchor="eng-performance">性能取舍</a><a href="#eng-profile" data-engineering-anchor="eng-profile">如何验证</a></nav>
+
+    <section id="eng-orders" class="engineering-section"><h3><span>01</span>先把三种“顺序”拆开</h3>
+      <div class="order-cards"><div><b>观察画面的顺序</b><p>铺色 → 阴影 → 头发亮块 → 材质反光 → 眼睛亮点 → 描边</p><small>教程的十步：逐次开放颜色贡献，方便看见变化。</small></div><div><b>一次着色中的数据依赖</b><p>法线 / 方向 → 贴图 / 蒙版 → 修改底色 → Ramp → BRDF → 合成</p><small>先生产数据，再使用数据。不是每一行都单独画到屏幕。</small></div><div><b>一帧里的绘制安排</b><p>渲染事件 → 筛选 Pass → 材质排序 → 深度 / 模板 / 混合 → 后处理</p><small>同一个像素可能被多个部件覆盖，顺序会影响可见结果。</small></div></div>
+      <p>例如“从第 02 步切换到第 03 步”，是重新渲染角色并让头发亮块参与计算，并不是把上一步的 PNG 当作画布再刷一笔。身体的底色、阴影、BRDF 等贡献通常合在一个片元着色器里完成；十个教学步骤不等于十次人物 Draw Call。角色仍按模型、子网格、材质和被选中的 Pass 提交绘制。</p>
+      <p>HLSL 的书写顺序表达依赖关系，不是 GPU 指令时间表。编译器可以折叠常量、消除无用计算、调整独立指令的调度；相邻像素也在并行运行。因此不能仅凭代码放在前面，就断言它更早占用 GPU 时间或一定更快。</p>
+    </section>
+
+    <section id="eng-dependency" class="engineering-section"><h3><span>02</span>为什么头发亮块在阴影前面，眼睛亮点却提前返回？</h3>
+      <h4>头发亮块：它先改变“要被打光的颜色”</h4>
+      <div class="dependency-flow"><span>BaseMap 底色</span><b>＋</b><span>HighlightMap × 蒙版</span><b>→</b><span>新的 BaseMap</span><b>→</b><span>Ramp 明暗 / BRDF</span></div>
+      <p>在本工程里，头发高光蒙版由方向、<code>SpecularIntensity</code> 和阈值共同确定，再执行 <code>BaseMap.xyz = lerp(BaseMap.xyz, HighlightMap.xyz, HairSpecular)</code>。后面的 Ramp 用这份更新后的 BaseMap 做明暗与肤色处理。所以教学上先展示阴影、后展示头发亮块，代码上仍必须先混亮块，再算依赖它的明暗。</p>
+      <div class="math-demo"><b>拖一下暗部倍率，看交换顺序后的差别</b><p>仅用简化算式说明依赖，不代表本工程真实 Ramp 公式。设底色 B = 0.4、亮色 H = 1、亮块蒙版 h = 0.5。</p><label>暗部倍率 s <input id="shade-demo" type="range" min="0" max="100" value="50"><output id="shade-value">0.50</output></label><div class="math-pair"><div><i id="mix-first" style="background:rgb(89,89,89)"></i><span>先混色，再变暗<br><code>s × lerp(B,H,h)</code><strong id="mix-first-value">0.35</strong></span></div><div><i id="shade-first" style="background:rgb(153,153,153)"></i><span>先变暗，再加亮块<br><code>lerp(s × B,H,h)</code><strong id="shade-first-value">0.60</strong></span></div></div></div>
+      <p>调换后，亮块是否一同受暗部影响就变了。重排代码首先要验证数学与视觉等价，而不是照着教程编号搬段落。</p><button class="engineering-code" data-engineering-step="3">查看第 03 步：头发混色代码 ↙</button><button class="engineering-code" data-engineering-step="2" data-engineering-snippet="1">查看第 02 步：Ramp 怎样使用底色 ↙</button>
+      <h4>眼睛亮点：独立材质提前结束自己的计算</h4>
+      <p><code>_ShaderType == 5</code> 时，程序采样 BaseMap 并乘颜色后直接返回。亮点贴花没有身体那套配套 Def / Shade 贴图；把它硬送进同一套光照公式不仅多余，还会改变效果。它的“第 06 步”是教学开放时间，不是说这个 <code>if</code> 应该写在 BRDF 后面。</p>
+      <p>提前返回可以跳过后续 ShadeMap、DefMap、Ramp 与 BRDF 路径。但目前源码在它之前仍写有法线、方向、主光阴影和可选 LayerMap 准备；最终哪些会被编译器移除，要看具体变体和编译结果。不能把这个版本说成“只执行一条纹理采样”，也不能把提前返回说成“取消了眼睛亮点的 Draw Call”。</p><button class="engineering-code" data-engineering-step="6">查看第 06 步：眼睛独立分支 ↙</button>
+    </section>
+
+    <section id="eng-queue" class="engineering-section"><h3><span>03</span>为什么眼睛必须保留原来的队列与模板规则？</h3>
+      <p>片元输出 RGB 之后，还要按照材质的深度、模板与混合规则决定怎样写入目标。可以把深度理解成“谁在前面”，模板理解成“这个位置允许哪个部件出现”，混合理解成“新颜色如何与已有颜色合成”。下表来自本文独立工程的固定材质快照。</p>
+      <div class="engineering-table"><table><thead><tr><th>材质</th><th>Queue</th><th>深度写入</th><th>RGB 混合</th><th>模板比较 / 通过操作</th></tr></thead><tbody>
+      <tr><td>身体 m_bdy / 面部 m_fce</td><td>2000</td><td>开</td><td>One / Zero</td><td>Always / Replace，Ref 64</td></tr><tr><td>眼白 m_ebs</td><td>2001</td><td>开</td><td>One / Zero</td><td>Always / Replace，Ref 68</td></tr><tr><td>虹膜 m_eye</td><td>2002</td><td>关</td><td>One / OneMinusSrcAlpha</td><td>Equal / Keep，Ref 68</td></tr><tr><td>头发 m_hir</td><td>2002</td><td>开</td><td>One / Zero</td><td>NotEqual / Replace，Ref 64</td></tr><tr><td>面部线条 m_fcp</td><td>2003</td><td>开</td><td>One / Zero</td><td>Always / Replace，Ref 72</td></tr><tr><td>眼睛亮点 m_ehl</td><td>2204</td><td>关</td><td>One / One</td><td>Equal / Keep，Ref 68</td></tr><tr><td>发饰 m_hirco</td><td>2450</td><td>开</td><td>One / Zero</td><td>Always / Replace，Ref 64</td></tr>
+      </tbody></table></div>
+      <p>这些材质的模板读写掩码为 108，比较的是被掩码选中的位，不是整个数值。眼白先把允许画眼睛的位置标记出来，虹膜和亮点再检查对应标记。头发和脸部线条也参与同一套遮挡关系，所以不能把这张表理解成“给所有眼部材质加 1 就行”。同队列对象的相对次序还受排序条件影响，完整逐笔顺序要看 Frame Debugger。<a class="engineering-source" href="https://docs.unity3d.com/2022.3/Documentation/Manual/SL-Stencil.html" target="_blank" rel="noopener noreferrer">Unity：Stencil ↗</a></p>
+      <p>一个容易误判的地方：眼睛亮点启用了加法混合，但 Queue 是 2204，仍位于通常的 opaque queue 筛选范围。<strong>混合方式、队列编号、深度写入是三组独立设置</strong>，不能看到 Blend 就擅自改成 Transparent 3000。这里的安排首先为了眼睛可见性和遮挡正确，而不是为了把所有部件按透明物体的距离排序。</p>
+      <pre class="engineering-pre"><code>// RGB 混合的概念式；深度与模板测试仍会限制有效像素
+扣子：Cout = Csrc                         // One, Zero
+虹膜：Cout = Csrc + Cdst × (1 - Asrc)    // One, OneMinusSrcAlpha
+亮点：Cout = Csrc + Cdst                  // One, One</code></pre>
+      <p>亮点分支返回 Alpha，并不代表 RGB 一定按这个 Alpha 衰减：One / One 的 RGB 因子没有乘 Alpha。改变 RGB 公式、混合因子或贴图边缘数据时必须一起核对。<a class="engineering-source" href="https://docs.unity3d.com/2022.3/Documentation/Manual/SL-Blend.html" target="_blank" rel="noopener noreferrer">Unity：Blend ↗</a></p>
+      <aside class="engineering-callout"><b>这也是之前眼睛缺失的实际原因之一。</b><p>教学材质更换 Shader 时，Unity 会重置自定义 renderQueue。构建代码必须在 <code>copy.shader = teaching</code> 后恢复 <code>copy.renderQueue = m.renderQueue</code>。否则模板写入与读取可能发生错序，即使片元公式没错，眼睛也会被测试挡掉。</p></aside>
+      <p>深度拒绝和模板拒绝有机会减少无效片元工作，但透明混合、<code>clip</code>、具体 GPU 与驱动会影响早期测试行为；不能承诺每个被遮挡的像素都完全不执行 Shader。优化 overdraw 时既要看覆盖次数，也要保留人物部件之间的遮挡规则。</p>
+    </section>
+
+    <section id="eng-pass" class="engineering-section"><h3><span>04</span>Pass 写在文件后面，就一定最后画吗？</h3>
+      <p>不一定。URP 通过 <code>LightMode</code> 等规则选中 Pass，再由 Renderer 的事件安排执行。这个 Shader 的主体 Pass 没有显式 LightMode，URP 按默认的 <code>SRPDefaultUnlit</code> 处理；另有 <code>HairCover / UniversalForward</code>、<code>OutLine / UniversalForwardOutline</code> 和引用的 ShadowCaster。Shader 名称里的 <code>Unlit</code> 也不代表片元里没有光照——本工程确实自己计算了 Ramp 和 BRDF。<a class="engineering-source" href="https://docs.unity3d.com/Packages/com.unity.render-pipelines.universal@14.0/manual/urp-shaders/urp-shaderlab-pass-tags.html" target="_blank" rel="noopener noreferrer">Unity URP 14：Pass tags ↗</a></p>
+      <div class="pass-timeline"><div><b>准备阴影与深度等数据</b><p>ShadowCaster 是否执行，取决于光源、投影与管线设置，而不是它在文件里的末尾。</p></div><div><b>角色颜色与部件遮挡</b><p>按被选中的 Pass、材质队列和深度 / 模板规则处理，不能照着文件把每个 Pass 都算成一次有效绘制。</p></div><div><b>描边事件：500</b><p>本工程 Renderer 的 RenderObjects 明确筛选 UniversalForwardOutline，安排在 AfterRenderingTransparents。</p></div><div><b>调色事件：550</b><p>CapturedToneFeature 在 BeforeRenderingPostProcessing 进行原版 LUT / 曝光处理，再交回后续管线。</p></div></div>
+      <p>因此“第 09 步描边”不仅是加一段 RGB：它用背面外扩几何产生轮廓，需要额外的几何处理与绘制。本配置的描边 Pass 在颜色绘制后执行，之后再调色。文件里存在一个 Pass，不等于每帧一定用到它；<code>VLActor</code> 的 RenderObjects 即使在配置中启用，也不会自动匹配这个 Shader 中没有的同名 LightMode。</p>
+      <p>调色是一道对合成后图像的处理。一般情况下，<code>T(A + B) ≠ T(A) + T(B)</code>，所以先给每一层套 LUT 再相加，会和整张图最后调色不同。教程全程保留同一 LUT，是为了比较各层贡献；当前 CapturedToneFeature 使用一个临时 RT 和两次 Blit，因此还包含全屏采样、写入与带宽开销。</p><button class="engineering-code" data-engineering-step="9">查看第 09 步：描边顶点与片元代码 ↙</button>
+      <small class="engineering-evidence">配置依据：New Universal Render Pipeline Asset_Renderer.asset 的 UniversalForwardOutline / Event 500；CapturedToneFeature.cs 的 BeforeRenderingPostProcessing 与两次 Blit。这里描述配置与调用关系，未把它冒充为本次实时抓帧结果。</small>
+    </section>
+
+    <section id="eng-performance" class="engineering-section"><h3><span>05</span>哪些写法与性能有关，哪些只是方便教学？</h3>
+      <div class="engineering-table"><table><thead><tr><th>代码里的做法</th><th>为什么这样组织</th><th>性能与代价</th></tr></thead><tbody>
+      <tr><td>法线、方向、蒙版先准备</td><td>Ramp、反射、高光和轮廓光要复用这些数据；跨空间计算先统一坐标。</td><td>能避免人为重复计算，但提前算太多也可能延长变量存活、增加寄存器压力。源码短不代表指令少。</td></tr>
+      <tr><td>DefMap 的 RGBA 分别存参数</td><td>一次取样获得明暗偏移、光滑度、金属度、反光强度，相关参数就地拆出。</td><td>相比四张独立参数纹理，有减少采样与资源切换的机会；仍要考虑压缩误差、通道精度、色彩空间与纹理带宽。</td></tr>
+      <tr><td>Ramp / Highlight / Cubemap 查表</td><td>将美术设计的数据放进贴图，控制亮暗过渡、头发亮块与环境反射。</td><td>查表不是零成本；像素覆盖面积、采样次数、缓存命中与 mip 选择都会影响开销。负 mip bias 保细节，也可能提高带宽需求。</td></tr>
+      <tr><td>shader_feature 与 #ifdef</td><td>按材质功能选择编译变体，例如关闭 DefMap 采样或不编译某类反射路径。</td><td>可让不需要的路径不出现在选中变体中；更多关键字组合会增加变体管理与构建成本，裁剪时要保留运行时真正会用到的组合。</td></tr>
+      <tr><td>if (_ShaderType …)</td><td>一套公共代码服务脸、头发、虹膜、亮点等材质，保留各自分支。</td><td>材质级条件通常在一次 draw 内一致，和逐像素分歧不同；但分支是否跳转、展开及实际收益仍由编译器、硬件和代码决定。</td></tr>
+      <tr><td>共享材质 + MaterialPropertyBlock</td><td>SetGlobalAttributes 给每个 Renderer 提供头部矩阵等独立数据，避免直接改坏共用材质。</td><td>方便正确传参不等于自动合批。Unity 2022.3 的 SRP Batcher 路径不兼容 MPB；本 Shader 还使用 ShaderParameters cbuffer，不能因为用了 URP 就宣称已兼容。</td></tr>
+      <tr><td>单独的描边与亮点绘制</td><td>几何轮廓、模板规则与加法亮点各有职责，不能全当作同一片元公式随意合并。</td><td>增加提交、顶点处理或覆盖成本；“减少 Pass”之前必须证明轮廓、深度和遮挡仍正确。</td></tr>
+      </tbody></table></div>
+      <p class="engineering-links">概念依据：<a href="https://docs.unity3d.com/2022.3/Documentation/Manual/shader-conditionals.html" target="_blank" rel="noopener noreferrer">Unity：Shader 条件与变体</a> · <a href="https://docs.unity3d.com/2022.3/Documentation/Manual/SRPBatcher.html" target="_blank" rel="noopener noreferrer">Unity 2022.3：SRP Batcher 条件</a>。表中涉及本工程的具体结构来自当前源码，优化收益没有做数值承诺。</p>
+      <h4>最容易误会的地方：画面里不见了，不代表 GPU 没算</h4>
+      <pre class="engineering-pre"><code>// 教学源文件：控制贡献，不保证跳过上游成本
+HairSpecular *= SpecularIntensity * step(3.0, _StudyStage);
+// 下一行仍然写着 HighlightMap 的采样
+
+if (_StudyStage &lt; 5) OutLighting = RampedLighting;
+else OutLighting += Specular;
+// Specular 的构造写在这段之前
+
+if (_StudyStage &lt; 2) OutLighting = BaseMap.rgb * _BaseColor.rgb;
+// 第一步在末尾覆盖颜色，不是一个独立极简 Unlit 性能版本</code></pre>
+      <p><code>_StudyStage</code> 是运行时教学参数；<code>step</code> 只是把数值贡献乘到 0 或 1。提前声明并计算的 Specular、RimLight、SH 或额外灯循环，可能仍保留在执行路径中。编译器有时能把部分工作移进条件分支或消掉，但需要查看产物和实测。<strong>不能用“第 01 步 FPS 比第 09 步高多少”直接给每一层标成本。</strong></p>
+      <p>第 07 步环境补光在当前夜间配置里为零，也只说明输出没变化。源代码仍写有 SH 计算和由关键字控制的额外灯循环。若要做性能版本，应另建实验分支，用能真正裁掉路径的变体或一致的条件测试，再核对画质和 GPU 时间。本文的教学开关优先服务逐层解释，完整态优先保持同源。</p>
+      <aside class="engineering-callout"><b>还有可以研究的地方，但不是这次已经完成的优化。</b><p>比如把眼睛贴花进一步拆成更小的专用变体；只更新发生变化的 Renderer 属性；检查大面积头发覆盖与描边成本；评估 LUT 两次 Blit 的全屏带宽；排查未使用的 Shader 变体。每项都需要独立测量，不直接改动这里用于最终对照的原版源码。</p></aside>
+    </section>
+
+    <section id="eng-profile" class="engineering-section"><h3><span>06</span>真正要优化时，我会怎样验证？</h3>
+      <ol class="profile-checks"><li><b>先定位瓶颈。</b>在目标设备的 Development Build 中固定分辨率、镜头、灯光和角色数量，区分 CPU 提交 / 脚本、GPU 片元 / 顶点、带宽等问题。不要用编辑器里偶然的一帧作结论。</li><li><b>用 Frame Debugger 确认“怎么画”。</b>逐事件看 Shader Pass、Queue、材质关键字、深度与模板设置；检查眼白标记、虹膜、头发和亮点的覆盖。它适合解释绘制序列，不能代替准确的 GPU 耗时分析。</li><li><b>用 Profiler 和适配设备的 GPU 抓帧工具确认“慢在哪”。</b>看 draw / pass、纹理取样和覆盖开销；对移动设备考虑瓦片渲染与带宽，不能直接照搬桌面显卡上的结论。</li><li><b>一次只改一个因素。</b>例如裁掉一种反射路径或减少一个全屏拷贝。保留原版对照，编译预热后比较多帧 GPU 时间分布，而不只看一个 FPS 数。</li><li><b>把画质与成本一起验收。</b>检查完整眼睛、半透明边缘、头部转动、不同距离和灯光下的效果。相同固定镜头的像素比对只能证明这个镜头，不能证明所有场景。</li></ol>
+      <p>本教程已有的证据是：固定镜头下第 09 步教学完整态与第 10 步原版完整态逐像素一致，以及眼睛亮点单独开启时的区域差异。本文尚未提供目标设备的逐 Pass GPU 耗时，因此以上性能部分是基于代码的取舍分析与验证方法，不是性能提升报告。</p>
+      <div class="engineering-end"><button data-return-study class="dark-button">带着这些问题，回到刚才的步骤 ↙</button><button data-engineering-step="10">查看原版完整态 →</button></div>
+    </section>
+  </div>
+</section>

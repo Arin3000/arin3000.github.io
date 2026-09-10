@@ -32,6 +32,8 @@ assert.ok(article.includes('study.js') && article.includes('id="explain"'));
 assert.ok(article.includes('<h1>从绘画到shader</h1>'));
 assert.ok(article.includes('个人纯手工绘画理解') && article.includes('官方角色参考'));
 assert.ok(article.includes('本文博客文档借助 GPT6 完成。'));
+assert.ok(article.includes('id="engineering"') && article.includes('id="step-reason-text"'));
+for(const id of ['eng-orders','eng-dependency','eng-queue','eng-pass','eng-performance','eng-profile'])assert.ok(article.includes('id="'+id+'"'));
 for(const url of ['https://cedil.cesa.or.jp/cedil_sessions/view/3000','https://zhuanlan.zhihu.com/p/1901300706872394096','https://croakfang.fun/2024/05/27/学院偶像大师资源提取记录/'])assert.ok(article.includes(url));
 for(const name of ['2602234.jpg','2602221saki.jpg','official-school.png','official-costume.png']){
   assert.ok(fs.statSync(path.join(asset,'paintings',name)).size > 1000);

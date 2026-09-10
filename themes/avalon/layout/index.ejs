@@ -64,7 +64,7 @@ const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Numb
       <% posts.forEach((post) => { %>
         <article class="post-card">
           <% if (post.cover) { %>
-            <img src="<%- url_for(post.cover) %>" alt="">
+            <img src="<%- url_for(post.cover) %>" alt="<%= post.cover_alt || '' %>" style="<%= post.cover_position ? 'object-position:' + post.cover_position + ';' : '' %><%= post.cover_aspect ? 'aspect-ratio:' + post.cover_aspect + ';height:auto;' : '' %>">
           <% } %>
           <div class="post-card-body">
             <time><%= date(post.date, 'YYYY.MM.DD') %></time>

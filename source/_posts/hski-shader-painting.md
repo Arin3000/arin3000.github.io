@@ -9,7 +9,10 @@ tags:
   - 技术美术
 categories:
   - 技术文档
-cover: /assets/hski-study/10.png
+cover: /assets/hski-study/paintings/2602234.jpg
+cover_position: 50% 28%
+cover_aspect: 16 / 10
+cover_alt: 个人手绘：抱着玩偶的咲季，完整脸部特写
 description: 从两张个人纯手工绘画理解出发，连接色块、阴影与高光，再用十步交互教程拆解角色 Shader。代码和讲解双向联动，附逐步效果对比。
 ---
 

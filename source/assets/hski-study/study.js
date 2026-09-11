@@ -101,6 +101,7 @@
     $('copy-code').textContent=file===snippet.file?'复制选段':'复制全文';
     find(false);
     if(scroll&&file===snippet.file)requestAnimationFrame(()=>locateLine(snippet.start));
+    document.dispatchEvent(new Event('study:render'));
   }
   function locateLine(n) { const row=$('line-'+n); if(!row)return; const top=row.offsetTop-$('code').offsetTop; $('code').scrollTo({top:Math.max(0,top-90),behavior:'auto'}); }
   function renderLesson() {

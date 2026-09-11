@@ -20,3 +20,7 @@
 `#engineering` 为“顺序与性能”补充阅读页，正文在 `themes/avalon/layout/partial/study-engineering.ejs`。六节分别介绍数据依赖、材质队列与模板、URP Pass 调度、性能取舍及验证方法。`#eng-dependency` 等章节锚点支持直达，代码按钮返回对应教学选段。十步讲解下方的折叠注释由 `study.js` 的 `stepReasons` 维护。
 
 暗部倍率滑块只演示交换混色与乘法的数学差异，不模拟原版 Ramp。性能讨论依据源码与 Unity 2022.3 / URP 14 文档，未测量或宣称 GPU 加速；教学开关不作为逐层成本基准。此补充不改动 `code/`、截图或 shader 最终效果。
+
+Map 名称的悬停预览由 `map-previews.js` / `map-previews.css` 提供；正文和源码旁注中的名称保持行内，浮窗不挤动文章。支持点击停留、键盘打开 / Esc 关闭、材质切换与通道查看，图片仅在打开时加载。`maps/index.json` 记录真实材质 GUID、文件、原始尺寸与 SHA256；`maps/*.webp` 是缩略图，RGB 预览不叠加 Alpha，参数通道以灰度展示。Ramp 窄图在浮窗中明确标注纵向放大。未绑定的 MatCap 只说明状态，不使用替代图片。
+
+重建贴图预览：用安装了 Pillow 的 Python 运行 `tools/build-hski-map-previews.py <独立 Unity 工程目录>`。脚本只读取 PaintingStudy 材质及其 GUID 指向的图片，写入博客资源目录，不修改 Unity 文件。

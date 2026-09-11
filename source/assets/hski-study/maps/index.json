@@ -1,0 +1,545 @@
+{
+  "BaseMap": {
+    "title": "底色贴图",
+    "note": "同一个变量由不同材质绑定不同图片；眼睛亮点也使用自己的 BaseMap。",
+    "variants": [
+      {
+        "id": "bdy",
+        "label": "身体 / 扣子",
+        "file": "t_chr_hski-schl-0000_bdy_col 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-schl-0000_bdy_col 1.png",
+        "guid": "f0ded111ab9f222428b7c7a8d554587c",
+        "sourceSha256": "538e3aa7ade054ba85e5493fe0cdc6b9afe5a45d47a9c15a163d40635671a368",
+        "material": "m_bdy 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-bdy-rgb.webp",
+          "A": "basemap-bdy-a.webp"
+        }
+      },
+      {
+        "id": "hir",
+        "label": "头发",
+        "file": "t_chr_hski-cstm-0070_hir_col_alp 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-cstm-0070_hir_col_alp 1.png",
+        "guid": "aab33049adaa78b4ea5b199ba91ab43b",
+        "sourceSha256": "5d074cb5221da2526fa7f2ea60b6c530e4ee1030bdd453896c8930a3af840238",
+        "material": "m_hir 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-hir-rgb.webp",
+          "A": "basemap-hir-a.webp"
+        }
+      },
+      {
+        "id": "fce",
+        "label": "面部 / 眼白 / 面部线条",
+        "file": "t_chr_hski-base-0000_fce_col 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_fce_col 1.png",
+        "guid": "a95f365402b59bb46a95d18c9021390d",
+        "sourceSha256": "3d6797299025fa86fa3345eadcf622c8d698f0e352e1c82b66446e0aaaaadf06",
+        "material": "m_fce 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-fce-rgb.webp",
+          "A": "basemap-fce-a.webp"
+        }
+      },
+      {
+        "id": "eye",
+        "label": "虹膜",
+        "file": "t_chr_hski-base-0000_eye_col_alp 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_eye_col_alp 1.png",
+        "guid": "d22614208a6674c4e807856bc7778ac3",
+        "sourceSha256": "b61b369f7e03dbfae75413b36d5fdc2db1b924f172f2389f8b46ea743dfbf841",
+        "material": "m_eye 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-eye-rgb.webp",
+          "A": "basemap-eye-a.webp"
+        }
+      },
+      {
+        "id": "ehl",
+        "label": "眼睛亮点",
+        "file": "t_chr_hski-base-0000_ehl_col 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_ehl_col 1.png",
+        "guid": "7a8a51544b2e7944294e8f2755a4d5a1",
+        "sourceSha256": "b3422b2dd20d5a38f022289e7339aa4bcf306c26350cd9d97fa916e80b961a8e",
+        "material": "m_ehl 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          512,
+          512
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-ehl-rgb.webp",
+          "A": "basemap-ehl-a.webp"
+        }
+      },
+      {
+        "id": "hirco",
+        "label": "发饰",
+        "file": "t_chr_hski-base-0000_hirco_col_alp 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_hirco_col_alp 1.png",
+        "guid": "be4138fa238a7eb4e910d15474703eea",
+        "sourceSha256": "301acdb93e74fcc285aa309923f517315ea355bbc5cd4b2a516dbc8921cff49e",
+        "material": "m_hirco 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          512,
+          512
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "basemap-hirco-rgb.webp",
+          "A": "basemap-hirco-a.webp"
+        }
+      }
+    ]
+  },
+  "ShadeMap": {
+    "title": "暗部颜色",
+    "note": "RGB 提供暗部颜色；Alpha 也参与原版明暗和肤色处理。",
+    "variants": [
+      {
+        "id": "bdy",
+        "label": "身体 / 扣子",
+        "file": "t_chr_hski-schl-0000_bdy_sdw 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-schl-0000_bdy_sdw 1.png",
+        "guid": "240fefa192918d842af0972f7f3bc0cb",
+        "sourceSha256": "71c66a234550c20e866949c8a1cac95b98ce753d33e381f84cc46cd37e6f8154",
+        "material": "m_bdy 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "shademap-bdy-rgb.webp",
+          "A": "shademap-bdy-a.webp"
+        }
+      },
+      {
+        "id": "hir",
+        "label": "头发",
+        "file": "t_chr_hski-cstm-0070_hir_sdw 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-cstm-0070_hir_sdw 1.png",
+        "guid": "b1ea57b97820ac94b884c26468e005b3",
+        "sourceSha256": "afd2881c7853c42a8f267324833f27722740f9f98f9f8f6f6191186eb7179ce3",
+        "material": "m_hir 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "shademap-hir-rgb.webp",
+          "A": "shademap-hir-a.webp"
+        }
+      },
+      {
+        "id": "fce",
+        "label": "面部 / 眼白 / 面部线条",
+        "file": "t_chr_hski-base-0000_fce_sdw 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_fce_sdw 1.png",
+        "guid": "21dceefd4ad4d18489d10119178542ce",
+        "sourceSha256": "22c1ddafd0737bb2684fcedb6c46fc27db8f63035661082440700cc058a84a88",
+        "material": "m_fce 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "shademap-fce-rgb.webp",
+          "A": "shademap-fce-a.webp"
+        }
+      },
+      {
+        "id": "eye",
+        "label": "虹膜",
+        "file": "t_chr_hski-base-0000_eye_sdw 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_eye_sdw 1.png",
+        "guid": "3009e10c68967af4ebec6431ec039624",
+        "sourceSha256": "bf1b38be2f44c99f98d7ae6d6896230d1a964b3a8502e828339cded88431aac5",
+        "material": "m_eye 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "shademap-eye-rgb.webp",
+          "A": "shademap-eye-a.webp"
+        }
+      },
+      {
+        "id": "hirco",
+        "label": "发饰",
+        "file": "t_chr_hski-base-0000_hirco_sdw 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_hirco_sdw 1.png",
+        "guid": "5fbe7a7aaa1fcc041bb57c59ef49e01b",
+        "sourceSha256": "34286be97d46a55ca938176076517533aca3788ac5320d1a102b8a3838f191e7",
+        "material": "m_hirco 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          512,
+          512
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "shademap-hirco-rgb.webp",
+          "A": "shademap-hirco-a.webp"
+        }
+      }
+    ]
+  },
+  "DefMap": {
+    "title": "材质参数",
+    "note": "R：明暗偏移；G：光滑度；B：金属度；A：反光强度。颜色是参数编码，不是要直接画出的颜色。",
+    "variants": [
+      {
+        "id": "bdy",
+        "label": "身体 / 扣子",
+        "file": "t_chr_hski-schl-0000_bdy_def 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-schl-0000_bdy_def 1.png",
+        "guid": "242793d64bead5043bfae0a6fb26d806",
+        "sourceSha256": "c40f6e9d5c4fc995e0ac63980baba9277201bc97c4882a7cb40a64907be5f850",
+        "material": "m_bdy 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "defmap-bdy-rgb.webp",
+          "A": "defmap-bdy-a.webp",
+          "R": "defmap-bdy-r.webp",
+          "G": "defmap-bdy-g.webp",
+          "B": "defmap-bdy-b.webp"
+        }
+      },
+      {
+        "id": "hir",
+        "label": "头发",
+        "file": "t_chr_hski-cstm-0070_hir_def 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-cstm-0070_hir_def 1.png",
+        "guid": "97099262172ada74ca00f7504f37a57f",
+        "sourceSha256": "67c32b93f2c9acfe1314c840b32851d999aa00e1b53b969592d900fb4f7f3524",
+        "material": "m_hir 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "defmap-hir-rgb.webp",
+          "A": "defmap-hir-a.webp",
+          "R": "defmap-hir-r.webp",
+          "G": "defmap-hir-g.webp",
+          "B": "defmap-hir-b.webp"
+        }
+      },
+      {
+        "id": "fce",
+        "label": "面部 / 眼白 / 面部线条",
+        "file": "t_chr_hski-base-0000_fce_def 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_fce_def 1.png",
+        "guid": "05c4ad1eb1f5922489d00849fcb456d2",
+        "sourceSha256": "2fb42fecbeabb3e8104d31a1e66845583bc2f12cd3fab6036c69812a35eb2a1e",
+        "material": "m_fce 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "defmap-fce-rgb.webp",
+          "A": "defmap-fce-a.webp",
+          "R": "defmap-fce-r.webp",
+          "G": "defmap-fce-g.webp",
+          "B": "defmap-fce-b.webp"
+        }
+      },
+      {
+        "id": "eye",
+        "label": "虹膜",
+        "file": "t_chr_hski-base-0000_eye_def 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_eye_def 1.png",
+        "guid": "0856a375977cf25448e8107eb1f58c60",
+        "sourceSha256": "068284505df8ef0d6e7205623aeb1734f7882e9678802c4510e144a9fcbb9930",
+        "material": "m_eye 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "defmap-eye-rgb.webp",
+          "A": "defmap-eye-a.webp",
+          "R": "defmap-eye-r.webp",
+          "G": "defmap-eye-g.webp",
+          "B": "defmap-eye-b.webp"
+        }
+      },
+      {
+        "id": "hirco",
+        "label": "发饰",
+        "file": "t_chr_hski-base-0000_hirco_def 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_hirco_def 1.png",
+        "guid": "8a403442dd7bc8640865e764b0b2c110",
+        "sourceSha256": "4df8d638336b2fc868620f9d1f28a630c96eabd4fef4d918b42558b6a96c7c4d",
+        "material": "m_hirco 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          512,
+          512
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "defmap-hirco-rgb.webp",
+          "A": "defmap-hirco-a.webp",
+          "R": "defmap-hirco-r.webp",
+          "G": "defmap-hirco-g.webp",
+          "B": "defmap-hirco-b.webp"
+        }
+      }
+    ]
+  },
+  "HighlightMap": {
+    "title": "头发亮色块",
+    "note": "头发专用亮色，与 BaseMap 混合后再参与后续明暗。",
+    "variants": [
+      {
+        "id": "hir",
+        "label": "头发",
+        "file": "t_chr_hski-cstm-0070_hir_hhl 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-cstm-0070_hir_hhl 1.png",
+        "guid": "500a08f8865f4d04f9d9216c20a44f43",
+        "sourceSha256": "9e46127c64dd1770ef6e8c935998f7c7f3fe1815a675db1b067c4569b349fc3d",
+        "material": "m_hir 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          2048,
+          2048
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "highlightmap-hir-rgb.webp",
+          "A": "highlightmap-hir-a.webp"
+        }
+      }
+    ]
+  },
+  "RampMap": {
+    "title": "明暗查表",
+    "note": "原图只有 4 行；预览纵向放大，便于看清各行。",
+    "variants": [
+      {
+        "id": "bdy",
+        "label": "身体 / 扣子",
+        "file": "t_chr_hski-base-0000_rmp 3.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_rmp 3.png",
+        "guid": "ca5432b612e66a34cb67c5aaabfc2fa5",
+        "sourceSha256": "61e038796f0c074cb88f5c76011ae33c3f16ff113317cac01a82d790bd7e3030",
+        "material": "m_bdy 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          4
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampmap-bdy-rgb.webp",
+          "A": "rampmap-bdy-a.webp"
+        }
+      },
+      {
+        "id": "hir",
+        "label": "头发",
+        "file": "t_chr_hski-base-0000_rmp 5.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_rmp 5.png",
+        "guid": "b56ece318bb5fdf46843ace89d609f9e",
+        "sourceSha256": "61e038796f0c074cb88f5c76011ae33c3f16ff113317cac01a82d790bd7e3030",
+        "material": "m_hir 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          4
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampmap-hir-rgb.webp",
+          "A": "rampmap-hir-a.webp"
+        }
+      },
+      {
+        "id": "fce",
+        "label": "面部 / 眼白 / 面部线条",
+        "file": "t_chr_hski-base-0000_rmp 4.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_rmp 4.png",
+        "guid": "eecf769c79d903b43b7354f584ad42cf",
+        "sourceSha256": "61e038796f0c074cb88f5c76011ae33c3f16ff113317cac01a82d790bd7e3030",
+        "material": "m_fce 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          4
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampmap-fce-rgb.webp",
+          "A": "rampmap-fce-a.webp"
+        }
+      },
+      {
+        "id": "eye",
+        "label": "虹膜",
+        "file": "t_chr_hski-base-0000_rmp 4.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_rmp 4.png",
+        "guid": "eecf769c79d903b43b7354f584ad42cf",
+        "sourceSha256": "61e038796f0c074cb88f5c76011ae33c3f16ff113317cac01a82d790bd7e3030",
+        "material": "m_eye 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          4
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampmap-eye-rgb.webp",
+          "A": "rampmap-eye-a.webp"
+        }
+      },
+      {
+        "id": "hirco",
+        "label": "发饰",
+        "file": "t_chr_hski-base-0000_rmp 5.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_rmp 5.png",
+        "guid": "b56ece318bb5fdf46843ace89d609f9e",
+        "sourceSha256": "61e038796f0c074cb88f5c76011ae33c3f16ff113317cac01a82d790bd7e3030",
+        "material": "m_hirco 2_fixed_study.mat",
+        "enabled": null,
+        "size": [
+          1024,
+          4
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampmap-hirco-rgb.webp",
+          "A": "rampmap-hirco-a.webp"
+        }
+      }
+    ]
+  },
+  "RampAddMap": {
+    "title": "局部补色",
+    "note": "RGB 添加颜色，Alpha 参与反光染色。窄条预览纵向放大。",
+    "variants": [
+      {
+        "id": "bdy",
+        "label": "身体 / 扣子",
+        "file": "t_chr_hski-schl-0000_bdy_rma 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-schl-0000_bdy_rma 1.png",
+        "guid": "13600731e4287de45910594ae368f9aa",
+        "sourceSha256": "f94d118b7f5db98fcf0f4ee382ab6f579ab5669f20d533e89481b574a150b075",
+        "material": "m_bdy 2_fixed_study.mat",
+        "enabled": true,
+        "size": [
+          128,
+          16
+        ],
+        "strip": true,
+        "channels": {
+          "RGB": "rampaddmap-bdy-rgb.webp",
+          "A": "rampaddmap-bdy-a.webp"
+        }
+      }
+    ]
+  },
+  "LayerMap": {
+    "title": "面部叠层",
+    "note": "这里展示材质绑定的图；是否参与当前画面还取决于关键字、权重和教学步骤。",
+    "variants": [
+      {
+        "id": "fce",
+        "label": "面部 / 眼白 / 面部线条",
+        "file": "t_chr_hski-base-0000_fce_lyr 1.png",
+        "asset": "Assets/Reverse/Texture2D/t_chr_hski-base-0000_fce_lyr 1.png",
+        "guid": "ce6e55df18e34184fadfc5ab5041977e",
+        "sourceSha256": "0c0c3255851b315f5d9e11f229855b90416afd07f3aba975a68e5e9d6402bc0a",
+        "material": "m_fce 2_fixed_study.mat",
+        "enabled": true,
+        "size": [
+          2048,
+          1024
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "layermap-fce-rgb.webp",
+          "A": "layermap-fce-a.webp"
+        }
+      }
+    ]
+  },
+  "Cubemap": {
+    "title": "环境反射",
+    "note": "展示 CharacterSpecCube 使用的 skybox.png 六面展开源图，不是人物 UV 贴图。",
+    "variants": [
+      {
+        "id": "environment",
+        "label": "人物环境反射 / 六面展开",
+        "file": "skybox.png",
+        "asset": "Assets/Reverse/Texture2D/skybox.png",
+        "guid": "4958bb127bb491d468af4337bc57e466",
+        "sourceSha256": "ede91cedb296fcc6d06fcb4717e117b3cf8df5750a85a9b86b3e698dbbd1eca9",
+        "material": null,
+        "enabled": null,
+        "size": [
+          256,
+          192
+        ],
+        "strip": false,
+        "channels": {
+          "RGB": "cubemap-environment-rgb.webp",
+          "A": "cubemap-environment-a.webp"
+        }
+      }
+    ]
+  },
+  "MatCap": {
+    "title": "可选反射球贴图",
+    "note": "本快照人物材质的 _ReflectionSphereMap 均未绑定；这条可选路径没有实际贴图可预览。",
+    "variants": []
+  }
+}

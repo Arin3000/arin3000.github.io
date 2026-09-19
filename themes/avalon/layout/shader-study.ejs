@@ -32,6 +32,31 @@
       <figure><button class="painting-open" data-painting="official-school.png" data-caption="官方初始人设图" aria-label="放大官方参考图一"><img src="/assets/hski-study/paintings/official-school.png" width="472" height="649" loading="lazy" alt="官方初始人设图"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">OFFICIAL REFERENCE / 01</span><h3>官方初始人设图</h3></figcaption></figure>
       <figure><button class="painting-open" data-painting="official-costume.png" data-caption="hechima老师绘制的1st" aria-label="放大官方参考图二"><img src="/assets/hski-study/paintings/official-costume.png" width="384" height="362" loading="lazy" alt="hechima老师绘制的1st"><span>查看原图 ↗</span></button><figcaption><span class="painting-number">OFFICIAL REFERENCE / 02</span><h3>hechima老师绘制的1st</h3></figcaption></figure>
     </div><p class="reference-credit">以上为官方角色参考图，版权归原权利方所有；前两张为个人纯手工绘画理解。点击可查看所提供的原图。</p></section>
+    <section class="softness-update" aria-labelledby="softness-title">
+      <header class="softness-heading"><div><span class="eyebrow">UPDATE · 2026.09.20</span><h2 id="softness-title">室内 HSKI 上半身：人物柔光前后</h2></div><p>同一教室、同一表情、同一机位，只切换人物柔光。</p></header>
+      <div class="softness-context">
+        <p>前面的十步是在拆角色 Shader 本身：底色、Ramp 阴影、脸部方向光、虹膜与眼睛高光、头发遮挡和描边。最新的大世界程序保留了这套分层关系，又把脸部、虹膜、眼睛高光与头发等原始像素程序按 GPU 指令逐条翻译，并补上人物专用阴影、深度和场景参数。</p>
+        <p>这里的“人物柔光”位于原始着色之后，不是原 Shader 的第十一步，也不作为原游戏逐像素复刻的证据。它只对人物遮罩内做小范围细节柔化、较宽的亮部扩散、轻微灰雾和高光压缩；默认强度为 0.65，关闭时可直接查看未叠加柔光的还原结果。</p>
+      </div>
+      <aside class="eye-correction"><strong>眼睛实现勘误</strong><p>旧版教学 Shader 的虹膜分支虽然启用了 <code>_USE_EYE_REFLECTION_TEXTURE</code>，却仍采样人物共用的 <code>_VLSpecCube</code>。后续实机工程已经把眼睛反射拆成逐材质绑定的 <code>_CapturedEyeCube</code>，避免切场景或材质后沿用错误的 Cubemap；虹膜继续使用预乘 Alpha、深度关闭与脸部模板测试。<code>m_ehl</code> 则保持独立的无光照加法贴花：先乘亮点颜色后提前返回，再以 <code>One One</code> 叠到虹膜上。本文左侧教学源码与第 5、6 步说明已按这版修正。</p></aside>
+      <div class="softness-comparisons">
+        <article class="softness-comparison">
+          <h3>正面：观察肤色、眼睛与发丝高光</h3>
+          <div class="softness-pair">
+              <figure><img src="/assets/images/posts/gkmas-face-rendering/hski-classroom-front-softness-off.png" width="512" height="512" loading="lazy" alt="室内 HSKI 正面上半身渲染，人物柔光关闭"><figcaption><b>柔光关闭</b><span>原始角色着色结果，边缘与局部高光更直接。</span></figcaption></figure>
+              <figure><img src="/assets/images/posts/gkmas-face-rendering/hski-classroom-front-softness-on.png" width="512" height="512" loading="lazy" alt="室内 HSKI 正面上半身渲染，人物柔光开启"><figcaption><b>柔光开启 · 0.65</b><span>亮部扩散更连续，皮肤与发丝过渡更柔和。</span></figcaption></figure>
+          </div>
+        </article>
+        <article class="softness-comparison">
+          <h3>侧向：观察脸部转折与头发遮挡</h3>
+          <div class="softness-pair">
+              <figure><img src="/assets/images/posts/gkmas-face-rendering/hski-classroom-angle-softness-off.png" width="512" height="512" loading="lazy" alt="室内 HSKI 侧向上半身渲染，人物柔光关闭"><figcaption><b>柔光关闭</b><span>脸颊转折、刘海阴影和轮廓高光保持原始锐度。</span></figcaption></figure>
+              <figure><img src="/assets/images/posts/gkmas-face-rendering/hski-classroom-angle-softness-on.png" width="512" height="512" loading="lazy" alt="室内 HSKI 侧向上半身渲染，人物柔光开启"><figcaption><b>柔光开启 · 0.65</b><span>压低尖锐高光，同时保留虹膜亮点和发丝结构。</span></figcaption></figure>
+          </div>
+        </article>
+      </div>
+      <aside class="softness-note"><strong>对照边界</strong><p>四张图来自当前 Unity 独立程序的室内 HSKI 上半身实机截图。柔光前后没有更换角色、表情或相机；差异刻意保持克制。它解决的是最终观感，不替代前文的 Ramp、BRDF、眼睛贴花与头发模板关系。</p></aside>
+    </section>
     <div class="intro-bridge"><div><span class="eyebrow">从绘画观察，到代码拆解</span><h3>接下来，把这些笔触一层层拆开。</h3><p>下面用同一个角色、同一个镜头，逐步恢复底色、阴影、高光和描边。手绘与官图作为观察入口；后面的图像来自 Unity 相机渲染。</p></div><div class="intro-actions"><button id="begin-study" class="dark-button">开始 Shader 十步 →</button><button id="resume-study" hidden>继续上次阅读 →</button></div></div>
   </div>
 </section>

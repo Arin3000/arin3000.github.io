@@ -3,6 +3,7 @@ Shader "HSKI Study/Campus Painting Layers"
 	Properties
 	{
 		_BaseMap ("Base (RGB)", 2D) = "white" { }
+		_CapturedEyeCube ("Captured Eye Reflection", Cube) = "black" { }
 		[HDR] _BaseColor ("Base Color", Color) = (1,1,1,1)
 		[Toggle(_ALPHAPREMULTIPLY_ON)] _AlphaPremultiply ("Alpha Premultiply", Float) = 0
 		_ShadeMap ("Shade (RGB)", 2D) = "white" { }

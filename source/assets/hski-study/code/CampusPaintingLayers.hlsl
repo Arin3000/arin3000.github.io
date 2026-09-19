@@ -165,6 +165,10 @@ Texture2D _ReflectionSphereMap;
 SAMPLER(sampler_ReflectionSphereMap);
 TextureCube _VLSpecCube;
 SAMPLER(sampler_VLSpecCube);
+// The iris uses its own captured reflection cube. Reusing the actor/scene cube here
+// can leave the eye with the wrong reflection after a scene or material switch.
+TextureCube _CapturedEyeCube;
+SAMPLER(sampler_CapturedEyeCube);
 
 struct appdata
 {
@@ -422,9 +426,9 @@ RampAddColor = RampAddMap.xyz * _RampAddColor.xyz;
 	#endif
 	#ifdef _USE_EYE_REFLECTION_TEXTURE
 		float ReflectionTextureMip = PerceptualRoughnessToMipmapLevel(G_BRDFData.perceptualRoughness);
-        float3 VLSpecCube = SAMPLE_TEXTURECUBE_LOD(_VLSpecCube, sampler_VLSpecCube, ReflectVector, ReflectionTextureMip);
-        VLSpecCube *= _VLEyeSpecColor;
-        IndirectSpecular = VLSpecCube;
+		float3 VLSpecCube = SAMPLE_TEXTURECUBE_LOD(_CapturedEyeCube, sampler_CapturedEyeCube, ReflectVector, ReflectionTextureMip);
+		VLSpecCube *= _VLEyeSpecColor;
+		IndirectSpecular = VLSpecCube;
 	#endif
 
 	float3 MatCapReflection = 0.0f;

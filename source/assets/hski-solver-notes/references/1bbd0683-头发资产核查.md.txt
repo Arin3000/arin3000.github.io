@@ -1,0 +1,61 @@
+# HSKI 头发资产核查
+
+检查日期：2026-09-13。来源是用户本地游戏 AssetBundle，未修改 Unity 工程。
+
+## 实际找到的资产
+
+目录：`E:/ArinLee/gkmas/output/asset_bundle`。
+
+| AssetBundle | ActorSwingDynamicBone | ActorSwingChain | ActorAnimationQuartzDriverHairBone |
+|---|---:|---:|---:|
+| mdl_chr_hski-base-0000_hair | 99 | 2 | 9 |
+| mdl_chr_hski-cstm-0000_hair | 103 | 2 | 9 |
+| mdl_chr_hski-cstm-0002_hair | 121 | 2 | 9 |
+| mdl_chr_hski-cstm-0029_hair | 103 | 2 | 9 |
+| mdl_chr_hski-cstm-0070_hair | 103 | 2 | 9 |
+| mdl_chr_hski-cstm-0112_hair | 99 | 2 | 9 |
+
+以上是序列化组件数，不是发丝数，也不能直接等同于运行时活跃模拟节点数。0002 发型另有 4 个 ActorSwingStaticBone。
+
+0070 包内 Geo_Hair 的蒙皮引用了 74 个骨骼；Geo_HairProp 引用了 76 个骨骼。两个 Renderer 会引用共同骨骼，数量不应相加当作独立骨骼总数。
+
+## 参数证据
+
+`ActorSwingDynamicBone` 保存 damping、stiffness、spring、pendulum、wind、rootWeight、limitInfo、dynamicCollider 等字段。
+
+例如 0070 包的 LeftBackSideRHair1_S：damping 约 0.65，stiffness 约 0.004，pendulum 约 0.003，rootWeight 0.75；限制启用，axisY 为 [-20, 0]，axisZ 为 [-5, 20]。
+
+`ActorAnimationQuartzDriverHairBone.setting` 保存 headTranslateCoefficient、headRotateCoefficient、neckRotateCoefficient 及各方向上下限。其 referenceHeadBone / referenceNeckBone 在所检查的样本中为空，接入时需绑定角色实际头颈骨骼。
+
+`ActorSwingChain` 保存 rootBones 和分层 chains.layers，其中含 active、radius、smoothing 等数据。
+
+校服身体包另有 18 个 ActorSwingStaticBone，位于 Neck、Spine、手臂、手、腿等节点；基础脸部包在 Head_Face 上还有 1 个 ActorSwingStaticBone。其中 staticCollider 保存类型编号、碰撞掩码、局部向量和尺寸参数。此处未确认原游戏枚举类型的准确含义，不能把类型编号直接硬套其他插件。
+
+原组件的命名空间是 ActorAnimation，程序集名是 ActorAnimation.Runtime。序列化配置不等于求解器代码；只有这些字段，尚不能认定已经还原原游戏物理算法或更新顺序。jobDynamicBone / syncJob 等字段含大量零值，不能当作运行时已计算的有效状态。
+
+## 当前工程缺口
+
+检查 GakumasSample2 的 Assets 脚本及程序集定义，没有找到 ActorSwingDynamicBone、ActorSwingChain、ActorAnimationQuartzDriverHairBone 的实现。当前 v6 展示角色引用 `Assets/Reverse/Model/hski9.fbx`。
+
+`Assets/PortfolioPreview/Editor/HskiShowcaseBuilder.cs` 为三个动作创建 Body_v4 动画时，只复制 Animator 类型曲线；头发 Transform 曲线不会经由此步骤进入身体动画。面部曲线另行处理。目前展示脚本没有调用头发求解器。
+
+`Assets/Scripts/ModelLoader.cs` 的头发加载主要做实例化、挂接 ConnectBone 和 rootBone；这不包含头发二级运动的求解。
+
+大世界工程 GakumasCampus 的 `LocomotionInteractivePlayer.AddWardrobeBindings` 对 Hair 类别主要同步 Head_Hair 锚点，未在所检查的运行脚本中找到上述头发求解器。
+
+这些是代码与资产的静态核查结论；本次没有新增运行时实验，也没有宣称实际画面已修好。
+
+## 接入建议
+
+建议按角色身体动画与 IK 完成 → 头颈驱动与发根同步 → 发梢动态求解 → 角度/长度/身体碰撞约束 → 渲染的顺序接入；这是拟采用的工程方案，不是已证实的原游戏顺序。
+
+1. 从原包提取发型骨骼、绑定、作者参数，检查当前 FBX 是否保留匹配的发束骨骼；不完整时回到原包恢复。
+2. 发根跟随头部，发梢增加惯性、回弹与阻尼；头颈联动和动态骨骼分开实现，避免重复叠加。
+3. 接入头部、颈部、肩背等碰撞约束。不能只添加摆动而不检查穿脸、穿肩。
+4. 避免后续 Animator.Sample/Update 或换装同步再次覆盖模拟结果。
+5. 使用受控时间步，在切场景、瞬移、换发型、动作跳转时重置模拟状态。
+6. 验证转头、走跑、急停、转身、楼梯、三个展示动作及 30/60/120 FPS。确认头发稳定后再作为作品集完成项。
+
+字段单位与求解方式需要校验；不应将原参数直接填进其他物理插件并称为原游戏一致。
+
+完整原始数据保存在相邻 `verified` 目录，每个组件以 pathId 区分，避免重名覆盖。可用 `D:/anaconda/python.exe audit_hair.py` 重现提取。

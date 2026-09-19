@@ -1,0 +1,93 @@
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+// Local garment contact, evaluated against the animated source sleeve mesh.
+// Upper hair stays authored; only the shoulder-height ends can be corrected.
+public class HskiHairSleeveContact : MonoBehaviour
+{
+    public HskiHairContactMesh contact;
+    public HskiShowcase demo;
+    public TextAsset correctiveClip;
+    [Serializable] public class Library {public Frame[] frames;}
+    [Serializable] public class Frame {public int action;public float time;public HskiHairLocalContact.Offset[] bindings;}
+    Library library;bool loaded;
+    public int[] sleeveTriangles;
+    public bool[] sleeveMask;
+    public float Before {get;private set;}
+    public float After {get;private set;}
+    public float MaxOffset {get;private set;}
+    const float Clearance=.004f,Limit=.032f;
+    readonly HskiTriangleSurface sleeve=new HskiTriangleSurface();
+    class Group {
+        public HskiHairContactMesh.Binding binding;
+        public int[] map,triangles;
+        public List<int>[] members,neighbors;
+        public Vector3[] previous;
+        public float[] freedom;
+    }
+    readonly List<Group> groups=new List<Group>();
+    public Frame Export(int action,float time){var result=new Frame{action=action,time=time,bindings=new HskiHairLocalContact.Offset[groups.Count]};for(int k=0;k<groups.Count;k++){var g=groups[k];var ids=new List<int>();var ds=new List<Vector3>();for(int i=0;i<g.members.Length;i++)if(g.previous[i].sqrMagnitude>1e-10f)foreach(int id in g.members[i]){ids.Add(id);ds.Add(g.previous[i]);}result.bindings[k]=new HskiHairLocalContact.Offset{vertices=ids.ToArray(),deltas=ds.ToArray()};}return result;}
+    void ApplyClip(){
+        float time=demo.actor.GetCurrentAnimatorStateInfo(0).normalizedTime*demo.durations[demo.action];var frames=library.frames;int a=-1,b=-1;
+        for(int i=0;i<frames.Length;i++)if(frames[i].action==demo.action){if(a<0)a=i;if(frames[i].time<=time)a=i;else{b=i;break;}}if(a<0)return;if(b<0)b=a;
+        float blend=a==b?0:Mathf.InverseLerp(frames[a].time,frames[b].time,time);
+        for(int k=0;k<contact.bindings.Length;k++){var binding=contact.bindings[k];var original=(Vector3[])binding.world.Clone();var d=new Vector3[binding.world.Length];
+            for(int pass=0;pass<2;pass++){var f=frames[pass==0?a:b].bindings[k];float weight=pass==0?1-blend:blend;for(int i=0;i<f.vertices.Length;i++)d[f.vertices[i]]+=f.deltas[i]*weight;}
+            for(int i=0;i<d.Length;i++){MaxOffset=Mathf.Max(MaxOffset,d[i].magnitude);binding.world[i]+=contact.surface.chest.TransformVector(d[i]);}UpdateMesh(binding,original,binding.mesh.triangles);
+        }
+    }
+    void Initialize(){foreach(var b in contact.bindings){
+        var keys=new Dictionary<Vector3Int,int>();var members=new List<List<int>>();var map=new int[b.world.Length];
+        for(int i=0;i<map.Length;i++){
+            var p=contact.surface.chest.InverseTransformPoint(b.world[i]);
+            if(p.y>.15f){map[i]=-1;continue;}
+            var k=new Vector3Int(Mathf.RoundToInt(p.x*10000),Mathf.RoundToInt(p.y*10000),Mathf.RoundToInt(p.z*10000));
+            if(!keys.TryGetValue(k,out int id)){id=members.Count;keys.Add(k,id);members.Add(new List<int>());}map[i]=id;members[id].Add(i);
+        }
+        var neighbors=new List<int>[members.Count];var freedom=new float[members.Count];
+        for(int i=0;i<members.Count;i++){neighbors[i]=new List<int>();float y=contact.surface.chest.InverseTransformPoint(b.world[members[i][0]]).y;freedom[i]=Mathf.SmoothStep(0,1,Mathf.InverseLerp(.15f,.075f,y));}
+        var ts=b.mesh.triangles;
+        for(int i=0;i<ts.Length;i+=3)for(int e=0;e<3;e++){int a=map[ts[i+e]],c=map[ts[i+(e+1)%3]];if(a<0||c<0||a==c)continue;if(!neighbors[a].Contains(c))neighbors[a].Add(c);if(!neighbors[c].Contains(a))neighbors[c].Add(a);}
+        var arrays=new List<int>[members.Count];for(int i=0;i<members.Count;i++)arrays[i]=members[i];
+        groups.Add(new Group{binding=b,map=map,members=arrays,neighbors=neighbors,freedom=freedom,previous=new Vector3[members.Count],triangles=ts});
+    }}
+    public void ResetContact(){foreach(var g in groups)Array.Clear(g.previous,0,g.previous.Length);}
+    float Need(Vector3 p,out Vector3 normal){
+        normal=Vector3.zero;if(p.y>.15f||p.y<-.2f||Mathf.Abs(p.x)>.34f)return 0;
+        float s=sleeve.NearestWithin(p,.05f,out var nearest,out normal);
+        if(float.IsPositiveInfinity(s)||!sleeveMask[sleeve.NearestTriangle])return 0;
+        // Open sleeve boundaries are not half-spaces: reject distant edge queries.
+        if(s<-.045f||s>=Clearance)return 0;
+        var radial=p-nearest;if(s<0&&Vector3.Dot(-radial.normalized,normal)<.65f)return 0;
+        return Clearance-s;
+    }
+    public void Apply(bool advance,float dt){
+        Before=After=MaxOffset=0;if(sleeveTriangles==null||sleeveTriangles.Length==0)return;
+        if(!loaded){loaded=true;if(correctiveClip&&Array.IndexOf(Environment.GetCommandLineArgs(),"-hairBake")<0)library=JsonUtility.FromJson<Library>(correctiveClip.text);}
+        if(library!=null){if(!demo.workbenchActive)ApplyClip();return;}
+        if(groups.Count==0)Initialize();var chest=contact.surface.chest;
+        sleeve.UpdateSkinned(contact.surface.body,chest,null);
+        foreach(var g in groups){var b=g.binding;int count=g.members.Length;var p=new Vector3[count];var d=new Vector3[count];
+            for(int i=0;i<count;i++){p[i]=chest.InverseTransformPoint(b.world[g.members[i][0]]);d[i]=g.previous[i]*(advance?Mathf.Exp(-12*dt):1);if(g.freedom[i]>0)Before=Mathf.Max(Before,Mathf.Max(0,Need(p[i],out _)-Clearance));}
+            for(int iteration=0;iteration<5;iteration++){
+                for(int i=0;i<count;i++)if(g.freedom[i]>0){float need=Need(p[i]+d[i],out var n);if(need>0)d[i]+=n*need;d[i]=Vector3.ClampMagnitude(d[i],Limit*g.freedom[i]);}
+                if(iteration==4)break;
+                var copy=(Vector3[])d.Clone();for(int i=0;i<count;i++){var sum=Vector3.zero;foreach(int j in g.neighbors[i])sum+=copy[j];if(g.neighbors[i].Count>0)d[i]=Vector3.Lerp(copy[i],sum/g.neighbors[i].Count,.28f);d[i]=Vector3.ClampMagnitude(d[i],Limit*g.freedom[i]);}
+            }
+            var original=(Vector3[])b.world.Clone();
+            for(int i=0;i<count;i++){MaxOffset=Mathf.Max(MaxOffset,d[i].magnitude);if(g.freedom[i]>0)After=Mathf.Max(After,Mathf.Max(0,Need(p[i]+d[i],out _)-Clearance));foreach(int id in g.members[i])b.world[id]+=chest.TransformVector(d[i]);if(advance)g.previous[i]=d[i];}
+            UpdateMesh(b,original,g.triangles);
+        }
+    }
+    public static void UpdateMesh(HskiHairContactMesh.Binding b,Vector3[] original,int[] ts){
+            var oldNormals=new Vector3[b.world.Length];var newNormals=new Vector3[b.world.Length];
+            for(int i=0;i<ts.Length;i+=3){int a=ts[i],c=ts[i+1],e=ts[i+2];var old=Vector3.Cross(original[c]-original[a],original[e]-original[a]);var n=Vector3.Cross(b.world[c]-b.world[a],b.world[e]-b.world[a]);oldNormals[a]+=old;oldNormals[c]+=old;oldNormals[e]+=old;newNormals[a]+=n;newNormals[c]+=n;newNormals[e]+=n;}
+            for(int i=0;i<b.world.Length;i++){b.points[i]=b.inverse.MultiplyPoint3x4(b.world[i]);if(oldNormals[i].sqrMagnitude<1e-14f||newNormals[i].sqrMagnitude<1e-14f||(oldNormals[i]-newNormals[i]).sqrMagnitude<1e-20f)continue;var q=Quaternion.FromToRotation(oldNormals[i],newNormals[i]);b.normals[i]=b.matrix.transpose.MultiplyVector(q*b.inverse.transpose.MultiplyVector(b.normals[i])).normalized;if(b.tangents.Length==b.world.Length){var t=b.tangents[i];var n=b.matrix.transpose.MultiplyVector(q*b.inverse.transpose.MultiplyVector(new Vector3(t.x,t.y,t.z))).normalized;b.tangents[i]=new Vector4(n.x,n.y,n.z,t.w);}}
+            b.mesh.vertices=b.points;b.mesh.normals=b.normals;b.mesh.tangents=b.tangents;b.mesh.RecalculateBounds();
+    }
+    void OnDestroy(){sleeve.Dispose();}
+}
+
+
+

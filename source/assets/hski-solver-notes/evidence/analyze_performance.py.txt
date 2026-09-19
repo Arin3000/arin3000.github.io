@@ -1,0 +1,88 @@
+"""Recompute retained v37 intervals; does not launch or modify any player."""
+import csv
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[2]
+CAPTURE = ROOT / 'output/HSKI_Hair_v37_hand_audit_wind0'
+os.environ.setdefault('MPLCONFIGDIR', str(HERE / '.matplotlib'))
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def stats(rows):
+    x = np.array([float(r['frameMs']) for r in rows])
+    worst = max(1, math.ceil(len(x) * .01))
+    return dict(frames=len(x), measuredIntervalSumSeconds=float(x.sum() / 1000),
+                meanMs=float(x.mean()), medianMs=float(np.percentile(x, 50)),
+                p95Ms=float(np.percentile(x, 95)), p99Ms=float(np.percentile(x, 99)),
+                maximumMs=float(x.max()), intervalEquivalentFps=float(1000 / x.mean()),
+                onePercentLowEquivalentFps=float(1000 / np.sort(x)[-worst:].mean()),
+                worstOnePercentCount=worst,
+                overBudget={str(hz): {'budgetMs': 1000 / hz,
+                            'count': int((x > 1000 / hz).sum()),
+                            'percent': float((x > 1000 / hz).mean() * 100)}
+                            for hz in [30, 60, 120, 240]})
+
+
+with (CAPTURE / 'realtime_fps.csv').open(encoding='utf-8-sig', newline='') as f:
+    rows = list(csv.DictReader(f))
+steady = rows[10:]
+summary = json.loads((CAPTURE / 'performance.json').read_text(encoding='utf-8-sig'))
+assert len(steady) == summary['frames']
+result = {
+    'analysisDate': '2026-09-16',
+    'scope': 'Existing v37 capture reanalysis; no new benchmark run; no v8/v16 measured timing supplied.',
+    'timingScope': 'Sample + Step + ApplyDetails to EndOfFrame; not isolated solver CPU or full wall-clock frame timing.',
+    'rawRows': len(rows), 'initialRowsExcluded': 10,
+    'percentileMethod': 'linear interpolation at (N-1)*p; CSV rounded to 0.0001 ms',
+    'overall': stats(steady),
+    'perAction': {a: stats([r for r in steady if r['action'] == a])
+                  for a in sorted(set(r['action'] for r in rows))},
+    'actionFirstSamples': [r for i, r in enumerate(rows)
+                           if i == 0 or r['action'] != rows[i-1]['action']],
+    'worstTenIncludedSamples': sorted(steady, key=lambda r: float(r['frameMs']), reverse=True)[:10],
+    'nonfiniteAllRows': sum(r['finite'].lower() != 'true' for r in rows),
+    'sources': [{'file': str(CAPTURE / name), 'sha256': digest(CAPTURE / name)}
+                for name in ['realtime_fps.csv', 'performance.json', 'collider_configuration.json']],
+}
+assert abs(result['overall']['medianMs'] - summary['medianFrameMs']) < .0002
+assert abs(result['overall']['p95Ms'] - summary['p95FrameMs']) < .0002
+assert abs(result['overall']['intervalEquivalentFps'] - summary['averageFps']) < .01
+(HERE / 'v37_performance_reanalysis.json').write_text(
+    json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
+fig, axes = plt.subplots(2, 1, figsize=(12, 7.6), gridspec_kw={'height_ratios': [1.1, 1]})
+colors = ['#266bc5', '#de8a21', '#159778']
+for a, color in zip(sorted(result['perAction']), colors):
+    subset = [r for r in steady if r['action'] == a]
+    axes[0].scatter([int(r['frame']) for r in subset], [float(r['frameMs']) for r in subset],
+                    s=5, color=color, label=f'Action {a}', alpha=.7)
+    x = np.sort([float(r['frameMs']) for r in subset])
+    axes[1].plot(x, np.arange(1, len(x)+1)/len(x)*100, color=color, label=f'Action {a}')
+axes[0].axhline(1000/60, color='#a13e43', ls='--', lw=1, label='60 Hz budget (16.67 ms)')
+axes[0].set(xlabel='Original frame index (first 10 excluded)', ylabel='Measured interval (ms)', ylim=(0, 23))
+axes[0].legend(loc='upper right', ncol=2)
+axes[1].set(xlabel='Measured interval (ms); log scale', ylabel='Cumulative samples (%)', xscale='log', ylim=(0, 101))
+axes[1].set_xticks([2, 2.5, 3, 4, 8, 16, 22], labels=['2', '2.5', '3', '4', '8', '16', '22'])
+for ax in axes:
+    ax.grid(alpha=.2)
+    ax.spines[['top', 'right']].set_visible(False)
+fig.suptitle('v37 retained benchmark: distribution of measured scene intervals', fontsize=15, x=.07, ha='left')
+fig.text(.07, .918, 'RTX 4060 Laptop | 1280 x 720 | Wind 0 | 4,240 samples | Existing single run', color='#555555')
+fig.text(.07, .022, 'Timing: animation sample + Step + ApplyDetails to EndOfFrame. Not isolated solver timing.\nNo comparable v8 / v16 benchmark is available; this chart shows v37 only.', fontsize=9, color='#555555')
+fig.subplots_adjust(top=.86, bottom=.14, left=.08, right=.97, hspace=.4)
+fig.savefig(HERE / 'v37_frame_intervals.png', dpi=160)
+plt.close(fig)
+print(json.dumps(result, ensure_ascii=False, indent=2))

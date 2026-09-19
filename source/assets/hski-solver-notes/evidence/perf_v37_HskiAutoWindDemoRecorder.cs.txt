@@ -1,0 +1,337 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
+
+// Runs a capture-free realtime benchmark first, then records the same three
+// actions deterministically at 30 fps. Native-data verification records with
+// the user-controlled wind strength at its required default of zero.
+[DefaultExecutionOrder(700)]
+public sealed class HskiAutoWindDemoRecorder : MonoBehaviour
+{
+    [Serializable]
+    public sealed class PerformanceSummary
+    {
+        public string gpu;
+        public string resolution;
+        public int frames;
+        public float seconds;
+        public float averageFps;
+        public float onePercentLowFps;
+        public float minimumFps;
+        public float medianFrameMs;
+        public float p95FrameMs;
+        public float recordingThroughputFps;
+        public int recordingFrames;
+        public float recordingSeconds;
+        public float minWindStrength;
+        public float averageWindStrength;
+        public float maxWindStrength;
+        public float maxStaticPenetration;
+        public float maxFrontStaticPenetration;
+        public float maxFrontMeshPenetration;
+        public bool frontMeshPenetrationMeasured;
+        public float maxRearHairDeviation;
+        public float maxFrontBraidDeviation;
+        public float maxDynamicVelocity;
+        public string maxPenetrationNode;
+        public string maxPenetrationCollider;
+        public int nonfiniteFrames;
+        public string video;
+        public string rearAuditVideo;
+    }
+
+    struct Sample
+    {
+        public int frame, action;
+        public float actionTime, delta, wind, target, linear, angular, deviation, staticPenetration, frontStaticPenetration, frontMeshPenetration;
+        public float rearDeviation, frontDeviation, dynamicVelocity;
+        public string penetrationNode, penetrationCollider;
+        public bool finite;
+    }
+
+    public HskiShowcase demo;
+    static string Out => Array.IndexOf(Environment.GetCommandLineArgs(), "-handCollisionAudit") >= 0
+        ? "E:/ArinLee/简历/output/HSKI_Hair_v37_hand_audit_wind0"
+        : Array.IndexOf(Environment.GetCommandLineArgs(), "-disableQuartzHair") >= 0
+        ? "E:/ArinLee/简历/output/HSKI_Hair_v37_native_registration_order_quartz_off_wind0"
+        : "E:/ArinLee/简历/output/HSKI_Hair_v37_native_registration_order_wind0";
+    readonly List<Sample> samples = new List<Sample>(4096);
+    bool active, recording;
+    int overlayAction;
+    float overlayFps;
+    GUIStyle overlayStyle;
+    Font overlayFont;
+
+    IEnumerator Start()
+    {
+        if (Array.IndexOf(Environment.GetCommandLineArgs(), "-autoWindDemo") < 0) yield break;
+        active = true;
+        Directory.CreateDirectory(Out);
+        if(Array.IndexOf(Environment.GetCommandLineArgs(),"-handCollisionAudit")>=0)File.WriteAllText(Out+"/hand_collision_trace.jsonl","");
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
+        if (!demo || !demo.hair) throw new InvalidOperationException("Auto-wind recorder has no showcase/hair solver");
+        File.WriteAllText(Out+"/collider_configuration.json",demo.hair.configuration.text);
+
+        demo.enabled = false;
+        demo.playing = false;
+        demo.view.showControls = false;
+        demo.hair.manualSimulation = true;
+        demo.hair.enableQuartzHair = Array.IndexOf(Environment.GetCommandLineArgs(), "-disableQuartzHair") < 0;
+        demo.hair.automaticWind = false;
+        demo.hair.manualWindStrength = 0f;
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = -1;
+
+        yield return BenchmarkRealtime();
+        var summary = SummarizeBenchmark();
+        yield return RecordVideo(summary, false);
+        yield return RecordVideo(summary, true);
+        File.WriteAllText(Out + "/performance.json", JsonUtility.ToJson(summary, true));
+        File.WriteAllText(Out + "/completed.txt", "Three-action rear-hair and mini-braid manual-wind-zero demo recorded. Realtime benchmark excludes capture and encoding.\n");
+        Debug.Log($"AUTO_WIND_DEMO_COMPLETE avg={summary.averageFps:F2} onePercentLow={summary.onePercentLowFps:F2} video={summary.video}");
+        Application.Quit(summary.nonfiniteFrames == 0 ? 0 : 2);
+    }
+
+    IEnumerator BenchmarkRealtime()
+    {
+        var clock = Stopwatch.StartNew();
+        double previous = clock.Elapsed.TotalSeconds;
+        int frame = 0;
+        for (int action = 0; action < Mathf.Min(3, demo.durations.Length); action++)
+        {
+            demo.SetAction(action);
+            demo.playing = false;
+            demo.hair.RequestReset();
+            float actionTime = 0f;
+            while (actionTime < demo.durations[action])
+            {
+                double now = clock.Elapsed.TotalSeconds;
+                float delta = Mathf.Clamp((float)(now - previous), 1f / 1000f, .1f);
+                previous = now;
+                actionTime = Mathf.Min(demo.durations[action], actionTime + delta);
+                demo.Sample(actionTime);
+                demo.hair.Step(delta);
+                demo.SendMessage("ApplyDetails");
+                yield return new WaitForEndOfFrame();
+                double end = clock.Elapsed.TotalSeconds;
+                delta = Mathf.Max(1f / 10000f, (float)(end - now));
+                samples.Add(new Sample
+                {
+                    frame = frame++, action = action, actionTime = actionTime, delta = delta,
+                    wind = demo.hair.manualWindStrength, target = demo.hair.manualWindStrength,
+                    linear = 0f, angular = 0f,
+                    deviation = demo.hair.MaxDeviation,
+                    staticPenetration = demo.hair.MaxPenetration,
+                    frontStaticPenetration = demo.hair.FrontStaticPenetration,
+                    frontMeshPenetration = demo.hair.FrontMeshPenetration,
+                    rearDeviation = demo.hair.FreeHairDeviation,
+                    frontDeviation = demo.hair.FrontHairDeviation,
+                    dynamicVelocity = demo.hair.MaxDynamicVelocity,
+                    penetrationNode = demo.hair.MaxPenetrationNode,
+                    penetrationCollider = demo.hair.MaxPenetrationCollider,
+                    finite = demo.hair.IsFinite
+                });
+            }
+        }
+        WriteRealtimeTrace();
+    }
+
+    void WriteRealtimeTrace()
+    {
+        var text = new StringBuilder("frame,action,actionTime,frameMs,fps,windStrength,windTarget,headLinearSpeed,headAngularSpeed,maxDeviation,maxStaticPenetration,maxFrontStaticPenetration,maxFrontMeshPenetration,finite\n");
+        foreach (var s in samples)
+            text.AppendLine($"{s.frame},{s.action},{s.actionTime:F6},{s.delta * 1000f:F4},{1f / s.delta:F3},{s.wind:F6},{s.target:F6},{s.linear:F6},{s.angular:F4},{s.deviation:F6},{s.staticPenetration:F6},{s.frontStaticPenetration:F6},{s.frontMeshPenetration:F6},{s.finite}");
+        File.WriteAllText(Out + "/realtime_fps.csv", text.ToString());
+    }
+
+    PerformanceSummary SummarizeBenchmark()
+    {
+        // Drop the first ten rendered frames so shader and render-target warmup
+        // does not masquerade as steady-state solver performance.
+        var steady = samples.Skip(Mathf.Min(10, samples.Count)).ToArray();
+        var times = steady.Select(s => s.delta).OrderBy(x => x).ToArray();
+        float seconds = times.Sum();
+        int worstCount = Mathf.Max(1, Mathf.CeilToInt(times.Length * .01f));
+        float worstAverage = times.Skip(Mathf.Max(0, times.Length - worstCount)).Average();
+        var worstPenetration = steady.OrderByDescending(s => s.staticPenetration).First();
+        return new PerformanceSummary
+        {
+            gpu = SystemInfo.graphicsDeviceName,
+            resolution = Screen.width + "x" + Screen.height,
+            frames = times.Length,
+            seconds = seconds,
+            averageFps = times.Length / Mathf.Max(seconds, 1e-6f),
+            onePercentLowFps = 1f / Mathf.Max(worstAverage, 1e-6f),
+            minimumFps = 1f / Mathf.Max(times.Last(), 1e-6f),
+            medianFrameMs = Percentile(times, .50f) * 1000f,
+            p95FrameMs = Percentile(times, .95f) * 1000f,
+            minWindStrength = steady.Min(s => s.wind),
+            averageWindStrength = steady.Average(s => s.wind),
+            maxWindStrength = steady.Max(s => s.wind),
+            maxStaticPenetration = steady.Max(s => s.staticPenetration),
+            maxFrontStaticPenetration = steady.Max(s => s.frontStaticPenetration),
+            maxFrontMeshPenetration = steady.Max(s => s.frontMeshPenetration),
+            frontMeshPenetrationMeasured = demo.hair.contactMesh != null,
+            maxRearHairDeviation = steady.Max(s => s.rearDeviation),
+            maxFrontBraidDeviation = steady.Max(s => s.frontDeviation),
+            maxDynamicVelocity = steady.Max(s => s.dynamicVelocity),
+            maxPenetrationNode = worstPenetration.penetrationNode,
+            maxPenetrationCollider = worstPenetration.penetrationCollider,
+            nonfiniteFrames = samples.Count(s => !s.finite),
+            video = Out + "/HSKI_Hair_3Actions_Wind0.mp4",
+            rearAuditVideo = Out + "/HSKI_RearHair_BackView_Audit.mp4"
+        };
+    }
+
+    static float Percentile(float[] sorted, float p)
+    {
+        if (sorted.Length == 0) return 0f;
+        float index = (sorted.Length - 1) * p;
+        int a = Mathf.FloorToInt(index), b = Mathf.CeilToInt(index);
+        return Mathf.Lerp(sorted[a], sorted[b], index - a);
+    }
+
+    IEnumerator RecordVideo(PerformanceSummary summary, bool rearAudit)
+    {
+        string ffmpeg = FindFfmpeg();
+        string video = rearAudit ? summary.rearAuditVideo : summary.video;
+        int totalFrames = 0;
+        for (int i = 0; i < Mathf.Min(3, demo.durations.Length); i++) totalFrames += Mathf.Max(1, Mathf.RoundToInt(demo.durations[i] * 30f));
+        var info = new ProcessStartInfo
+        {
+            FileName = ffmpeg,
+            Arguments = "-hide_banner -loglevel error -y -f image2pipe -framerate 30 -vcodec png -i pipe:0 -an -frames:v " + totalFrames + " -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -movflags +faststart \"" + video + "\"",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardInput = true,
+            RedirectStandardError = true
+        };
+        var encoder = Process.Start(info);
+        var errors = encoder.StandardError.ReadToEndAsync();
+        var input = encoder.StandardInput.BaseStream;
+        var trace = new StringBuilder("frame,action,actionTime,windStrength,windTarget,headLinearSpeed,headAngularSpeed,maxDeviation,rearDeviation,frontBraidDeviation,maxStaticPenetration,maxFrontStaticPenetration,maxDynamicVelocity,maxPenetrationNode,maxPenetrationCollider,finite\n");
+        var clock = Stopwatch.StartNew();
+        int globalFrame = 0;
+        recording = true;
+        const int captureWidth = 1280, captureHeight = 720;
+        var captureCamera = Camera.main;
+        if (!captureCamera) throw new InvalidOperationException("No main camera for deterministic capture");
+        float originalYaw = demo.view.yaw;
+        if (rearAudit)
+        {
+            demo.view.yaw = originalYaw + 180f;
+            demo.view.ApplyCamera();
+        }
+        var captureTarget = RenderTexture.GetTemporary(captureWidth, captureHeight, 24, RenderTextureFormat.ARGB32);
+        var captureTexture = new Texture2D(captureWidth, captureHeight, TextureFormat.RGB24, false);
+        try
+        {
+            for (int action = 0; action < Mathf.Min(3, demo.durations.Length); action++)
+            {
+                demo.SetAction(action);
+                // SetAction selects the showcase's split layout and also resets
+                // yaw. The deterministic recorder owns one camera, so restore a
+                // full viewport and apply the audit yaw after every action.
+                demo.SendMessage("SetSplit", false);
+                demo.view.enabled = false;
+                demo.view.yaw = originalYaw + (rearAudit ? 180f : 0f);
+                demo.view.ApplyCamera();
+                demo.playing = false;
+                demo.hair.RequestReset();
+                int frames = Mathf.Max(1, Mathf.RoundToInt(demo.durations[action] * 30f));
+                for (int frame = 0; frame < frames; frame++)
+                {
+                    overlayAction = action;
+                    overlayFps = globalFrame > 0 ? globalFrame / Mathf.Max((float)clock.Elapsed.TotalSeconds, 1e-6f) : 0f;
+                    float time = frame / 30f;
+                    demo.Sample(time);
+                    bool handAudit=Array.IndexOf(Environment.GetCommandLineArgs(),"-handCollisionAudit")>=0;
+                    if(handAudit)demo.hair.BeginHandAudit(rearAudit?"back":"front",action,frame,time);
+                    demo.hair.Step(1f / 30f);
+                    if(handAudit)demo.hair.EndHandAudit(Out);
+                    demo.SendMessage("ApplyDetails");
+                    trace.AppendLine($"{globalFrame},{action},{time:F6},{demo.hair.manualWindStrength:F6},{demo.hair.manualWindStrength:F6},0,0,{demo.hair.MaxDeviation:F6},{demo.hair.FreeHairDeviation:F6},{demo.hair.FrontHairDeviation:F6},{demo.hair.MaxPenetration:F6},{demo.hair.FrontStaticPenetration:F6},{demo.hair.MaxDynamicVelocity:F6},{demo.hair.MaxPenetrationNode},{demo.hair.MaxPenetrationCollider},{demo.hair.IsFinite}");
+                    yield return new WaitForEndOfFrame();
+                    var previousTarget = captureCamera.targetTexture;
+                    var previousActive = RenderTexture.active;
+                    captureCamera.targetTexture = captureTarget;
+                    captureCamera.Render();
+                    RenderTexture.active = captureTarget;
+                    captureTexture.ReadPixels(new Rect(0, 0, captureWidth, captureHeight), 0, 0, false);
+                    captureTexture.Apply(false, false);
+                    captureCamera.targetTexture = previousTarget;
+                    RenderTexture.active = previousActive;
+                    var png = captureTexture.EncodeToPNG();
+                    input.Write(png, 0, png.Length);
+                    globalFrame++;
+                    if (globalFrame % 60 == 0) Debug.Log($"NATIVE_DATA_RECORD_FRAME {globalFrame}/{totalFrames} wind={demo.hair.manualWindStrength:F3}");
+                }
+            }
+        }
+        finally
+        {
+            input.Close();
+            recording = false;
+            if (rearAudit)
+            {
+                demo.view.yaw = originalYaw;
+                demo.view.ApplyCamera();
+            }
+            Destroy(captureTexture);
+            RenderTexture.ReleaseTemporary(captureTarget);
+        }
+        while (!encoder.HasExited) yield return null;
+        string stderr = errors.Result;
+        File.WriteAllText(Out + "/encoder.txt", stderr);
+        if (encoder.ExitCode != 0) throw new InvalidOperationException("FFmpeg failed: " + stderr);
+        encoder.Dispose();
+        if (!rearAudit)
+        {
+            summary.recordingFrames = globalFrame;
+            summary.recordingSeconds = (float)clock.Elapsed.TotalSeconds;
+            summary.recordingThroughputFps = globalFrame / Mathf.Max(summary.recordingSeconds, 1e-6f);
+        }
+        File.WriteAllText(Out + (rearAudit ? "/recording_back_audit.csv" : "/recording_wind.csv"), trace.ToString());
+    }
+
+    static string FindFfmpeg()
+    {
+        string[] candidates =
+        {
+            "D:/ffmpeg/bin/ffmpeg.exe",
+            "E:/ArinLee/hasu/LianAiHuoDong/ffmpeg.exe",
+            "E:/ArinLee/tools/so-vits-svc/ffmpeg/bin/ffmpeg.exe"
+        };
+        foreach (var candidate in candidates) if (File.Exists(candidate)) return candidate;
+        throw new FileNotFoundException("FFmpeg executable not found");
+    }
+
+    void OnGUI()
+    {
+        if (!active || !recording || !demo || !demo.hair) return;
+        if (overlayStyle == null)
+        {
+            overlayFont = Font.CreateDynamicFontFromOSFont(new[] { "Microsoft YaHei", "Arial" }, 20);
+            overlayStyle = new GUIStyle(GUI.skin.box)
+            {
+                font = overlayFont, fontSize = 18, alignment = TextAnchor.UpperLeft,
+                normal = { textColor = Color.white }, padding = new RectOffset(14, 14, 10, 10)
+            };
+        }
+        string actionName = demo.actionNames != null && overlayAction < demo.actionNames.Length ? demo.actionNames[overlayAction] : (overlayAction + 1).ToString();
+        GUI.Box(new Rect(18, 18, 410, 116),
+            $"MANUAL WIND  {demo.hair.manualWindStrength:F3}\n" +
+            $"ACTION {overlayAction + 1}/3  {actionName}\n" +
+            $"CAPTURE {overlayFps:F1} fps · REALTIME {samples.Count / Mathf.Max(samples.Sum(s => s.delta), 1e-6f):F1} fps",
+            overlayStyle);
+    }
+}
+
+

@@ -1,0 +1,2638 @@
+{
+  "pid": 39500,
+  "arrays": 3,
+  "naming": "Capsules match type, mask, radii and local endpoints; Lines initially match type, mask and radii. Equal driven handles resolve hand Lines. Other ambiguities retained. No live name calls.",
+  "results": [
+    {
+      "pid": 39500,
+      "scan": 11,
+      "ticks": 37259625,
+      "header": "2046c975cc0",
+      "buffer": "2046c975d40",
+      "count": 19,
+      "capacity": 32,
+      "jobCandidates": [
+        "58b3ba530",
+        "2046c56a748",
+        "2064f8600e0"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "active": 1,
+          "type": 1,
+          "mask": 1,
+          "localA": [
+            0.0560000055,
+            -0.0400000028,
+            0
+          ],
+          "localB": [
+            -0.0560000055,
+            -0.0400000028,
+            0
+          ],
+          "radiusA": 0.0610000044,
+          "radiusB": 0.0610000044,
+          "position": [
+            0.076601848,
+            0.846648395,
+            -0.0185145531
+          ],
+          "subPosition": [
+            -0.0340992622,
+            0.836153686,
+            -0.00513070961
+          ],
+          "scale": 1,
+          "rawHex": "0101000001000000000000003217ae3c0f66573fb6b341bcf0c9033e4360653d0bd723bd00000000436065bd0bd723bd0000000024db793d24db793d6ee19c3df3bd583fd5ab97bcabab0bbd2b0e563f831fa8bb0000803f110000004a0000000f00000000000000000000000100000011000000470000000d000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 13,
+              "anchor": "Hips"
+            }
+          ],
+          "drivenHandleHex": "110000004a0000000f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 13,
+              "anchor": "Hips"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 1,
+          "active": 1,
+          "type": 1,
+          "mask": 1,
+          "localA": [
+            0.0500000045,
+            -0.0400000028,
+            -0.0400000028
+          ],
+          "localB": [
+            -0.0500000045,
+            -0.0400000028,
+            -0.0400000028
+          ],
+          "radiusA": 0.0550000034,
+          "radiusB": 0.0550000034,
+          "position": [
+            0.0655895323,
+            0.849254668,
+            -0.0573467091
+          ],
+          "subPosition": [
+            -0.0332507417,
+            0.8398844,
+            -0.0453968495
+          ],
+          "scale": 1,
+          "rawHex": "010100000100000000000000ae75843cb635583f376b52bd458bec3dcecc4c3d0bd723bd0bd723bdcecc4cbd0bd723bd0bd723bdaf47613daf47613dce53863dc168593f62e46abdee3108bdaa02573f0cf239bd0000803f110000004a0000000f00000000000000000000000100000011000000470000000d000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 8,
+              "anchor": "Hips"
+            }
+          ],
+          "drivenHandleHex": "110000004a0000000f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 8,
+              "anchor": "Hips"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 2,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0,
+            0.0795000046,
+            0
+          ],
+          "localB": [
+            0,
+            -0.0795000046,
+            0
+          ],
+          "radiusA": 0.0800000057,
+          "radiusB": 0.0800000057,
+          "position": [
+            0.0032217293,
+            1.10840416,
+            0.00387233682
+          ],
+          "subPosition": [
+            0.0133385863,
+            0.949744642,
+            0.00146394782
+          ],
+          "scale": 1,
+          "rawHex": "01010000080000000000000080a9073cb6b8833f00dc2e3b2ba9333e00000000e6d0a23d0000000000000000e6d0a2bd000000000bd7a33d0bd7a33da623533b30e08d3f08c77d3b168a5a3c7722733ff0e1bf3a0000803f110000008d02000056000000000000000000000001000000110000008a02000055000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 9,
+              "anchor": "Spine1"
+            }
+          ],
+          "drivenHandleHex": "110000008d02000056000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 9,
+              "anchor": "Spine1"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 3,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0.0494999997,
+            0.0700000003,
+            -0.0350000001
+          ],
+          "localB": [
+            -0.0494999997,
+            0.0700000003,
+            -0.0350000001
+          ],
+          "radiusA": 0.0500000007,
+          "radiusB": 0.0500000007,
+          "position": [
+            0.0485069603,
+            1.10239339,
+            -0.037098594
+          ],
+          "subPosition": [
+            -0.0495279767,
+            1.09595704,
+            -0.0249032956
+          ],
+          "scale": 1,
+          "rawHex": "010100000800000000000000c0d305bac6b18c3fb2f5fdbc5327e03d83c04a3d295c8f3d295c0fbd83c04abd295c8f3d295c0fbdcdcc4c3dcdcc4c3d3caf463d3a1b8d3fb2f417bdd9dd4abd52488c3fff01ccbc0000803f110000008d02000056000000000000000000000001000000110000008a02000055000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 18,
+              "anchor": "Spine1"
+            }
+          ],
+          "drivenHandleHex": "110000008d02000056000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 18,
+              "anchor": "Spine1"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 4,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0800000057,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0570000038,
+          "position": [
+            -0.079390645,
+            0.476733029,
+            0.0338284969
+          ],
+          "subPosition": [
+            -0.0542743988,
+            0.742340267,
+            -0.00506244414
+          ],
+          "scale": 1,
+          "rawHex": "0102000001000000000000007ddf88bd980a1c3fcaa66b3c82b1663e000000000bd7a33d00000000000000000000000000000000295c8f3dd678693d9097a2bd5a16f43ec08f0a3dd54e5ebd030a3e3fdce2a5bb0000803f110000003500000012000000000000000000000001000000110000003200000011000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "drivenHandleHex": "110000003500000012000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 5,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0800000057,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0570000038,
+          "position": [
+            0.0790096521,
+            0.486079127,
+            -0.000190258026
+          ],
+          "subPosition": [
+            0.0865645558,
+            0.754394114,
+            -0.0254921
+          ],
+          "scale": 1,
+          "rawHex": "010200000100000000000000498ca93dd4c71e3fcf6352bc6cb1663e000000000bd7a33d00000000000000000000000000000000295c8f3dd678693dd0cfa13d5ddff83e008047b9c248b13df91f413fcfd4d0bc0000803f110000003e0000001f000000000000000000000001000000110000003b0000001e000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "drivenHandleHex": "110000003e0000001f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 6,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0.0545000024,
+            0.0500000007,
+            -0.0350000001
+          ],
+          "localB": [
+            -0.0545000024,
+            0.0500000007,
+            -0.0350000001
+          ],
+          "radiusA": 0.0550000034,
+          "radiusB": 0.0550000034,
+          "position": [
+            0.0452995449,
+            1.15996075,
+            -0.0389955752
+          ],
+          "subPosition": [
+            -0.0616737604,
+            1.14424169,
+            -0.0251889471
+          ],
+          "scale": 1,
+          "rawHex": "010100000800000000000000382306bc0e78933f2d7303bd7faef63d653b5f3dcdcc4c3d295c0fbd653b5fbdcdcc4c3d295c0fbdaf47613daf47613d048c393d9879943fd3b91fbda09d7cbd8376923f0d59cebc0000803f110000009002000057000000000000000000000001000000110000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=8",
+              "oldIndex": 10,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "110000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=8",
+              "oldIndex": 10,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 7,
+          "active": 1,
+          "type": 1,
+          "mask": 64,
+          "localA": [
+            0.0595000014,
+            0.0150000006,
+            0
+          ],
+          "localB": [
+            -0.0595000014,
+            0.0150000006,
+            0
+          ],
+          "radiusA": 0.0600000024,
+          "radiusB": 0.0600000024,
+          "position": [
+            0.0596615896,
+            1.12755561,
+            -0.0040866239
+          ],
+          "subPosition": [
+            -0.057125777,
+            1.11039436,
+            0.010986669
+          ],
+          "scale": 1,
+          "rawHex": "010100004000000000000000e02fa63a923a8f3fc619623bd59a063e46b6733d90c2753c0000000046b673bd90c2753c0000000090c2753d90c2753db65f743dbe53903f16e985bbb8fc69bd67218e3f6e01343c0000803f110000009002000057000000000000000000000001000000110000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=64",
+              "oldIndex": 5,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "110000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=64",
+              "oldIndex": 5,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 8,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0625,
+            -0.123000003,
+            -0.181000009
+          ],
+          "localB": [
+            0.0625,
+            -0.123000003,
+            -0.181000009
+          ],
+          "radiusA": 0.300000012,
+          "radiusB": 0.300000012,
+          "position": [
+            -0.0616415739,
+            0.965893328,
+            -0.16483441
+          ],
+          "subPosition": [
+            0.0610342324,
+            0.983919799,
+            -0.180667698
+          ],
+          "scale": 1,
+          "rawHex": "01010000100000000000000000369fb97a93793fa7e530bef628cc3e000080bd6de7fbbd115839be0000803d6de7fbbd115839be9a99993e9a99993ee07b7cbdc944773f5aca28be08ff793d2be27b3ff40039be0000803f110000009002000057000000000000000000000001000000110000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=16",
+              "oldIndex": 16,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "110000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=16",
+              "oldIndex": 16,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 9,
+          "active": 1,
+          "type": 1,
+          "mask": 88,
+          "localA": [
+            0,
+            0.0544999987,
+            0.0100000007
+          ],
+          "localB": [
+            0,
+            -0.0144999977,
+            0.0100000007
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0350000001,
+          "position": [
+            -0.0147601049,
+            1.29507995,
+            -0.0207789168
+          ],
+          "subPosition": [
+            -0.020412067,
+            1.22637558,
+            -0.0178177282
+          ],
+          "scale": 1,
+          "rawHex": "010100005800000000000000b21090bc875fa13f84179ebcd4919c3d00000000643b5f3d0bd7233c0000000066916dbc0bd7233c295c0f3d295c0f3d5ed471bc2ec5a53f8c38aabc3537a7bce0f99c3f7cf691bc0000803f110000007d0000007f000000000000000000000001000000110000009002000057000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Neck:1:mask=88",
+              "oldIndex": 4,
+              "anchor": "Neck"
+            }
+          ],
+          "drivenHandleHex": "110000007d0000007f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Neck:1:mask=88",
+              "oldIndex": 4,
+              "anchor": "Neck"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 10,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0500000007,
+          "position": [
+            -0.120411158,
+            1.19045448,
+            -0.0273332596
+          ],
+          "subPosition": [
+            -0.0286655426,
+            1.1875025,
+            -0.0312080383
+          ],
+          "scale": 1,
+          "rawHex": "01020000580000000000000090a798bd7230983f00c9efbcb920d83d000000000000000000000000000000000000000000000000ec51383dcdcc4c3d209af6bdd060983f00eadfbc00d4eabc1500983f00a8ffbc0000803f110000002000000065000000000000000000000001000000110000009302000064000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "drivenHandleHex": "110000002000000065000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 11,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            -0.00500000035
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0500000007,
+          "position": [
+            0.0878292322,
+            1.21450853,
+            -0.0546650887
+          ],
+          "subPosition": [
+            0.000981330872,
+            1.19185901,
+            -0.0350346565
+          ],
+          "scale": 1,
+          "rawHex": "01020000580000000000000050e2353ded019a3f80b437bd9c20d83d00000000000000000bd7a3bb000000000000000000000000ec51383dcdcc4c3dd0dfb33d04759b3f80e85fbd00a0803ad68e983f80800fbd0000803f11000000290000001a010000000000000000000001000000110000009602000019010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "drivenHandleHex": "11000000290000001a010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 12,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0300000012,
+          "position": [
+            -0.278590202,
+            1.07463598,
+            -0.0695075989
+          ],
+          "subPosition": [
+            -0.120411158,
+            1.19045448,
+            -0.0273332596
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000e8494cbe3ef7903f805446bd225d183e000000000000000000000000000000000000000000000000295c0f3d90c2f53c60a38ebeac8d893f005a8ebd209af6bdd060983f00eadfbc0000803f110000002300000068000000000000000000000001000000110000002000000065000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "drivenHandleHex": "110000002300000068000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 13,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0300000012,
+          "position": [
+            0.271794796,
+            1.13980329,
+            -0.0827550888
+          ],
+          "subPosition": [
+            0.0878292322,
+            1.21450853,
+            -0.0546650887
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000a420383e0cad963fe0b78cbd255d183e000000000000000000000000000000000000000000000000295c0f3d90c2f53cb0288b3e13e5913f807ba9bdd0dfb33d04759b3f80e85fbd0000803f110000002c0000001d01000000000000000000000100000011000000290000001a010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "drivenHandleHex": "110000002c0000001d010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 14,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0.0600000024,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0250000004,
+          "position": [
+            -0.194073811,
+            0.98240912,
+            -0.0150969047
+          ],
+          "subPosition": [
+            -0.278590202,
+            1.07463598,
+            -0.0695075989
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000040172bea0a6833f20452dbd64c5f33d90c2753d00000000000000000000000000000000000000000bd7233dcdcccc3c49bb46be2a7f7b3f025977bc60a38ebeac8d893f005a8ebd0000803f11000000260000006b000000000000000000000001000000110000002300000068000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            },
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "11000000260000006b000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "resolutionEvidence": "same driven handle as uniquely matched collider"
+        },
+        {
+          "index": 15,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0995000005,
+            0,
+            0
+          ],
+          "localB": [
+            -0.012500003,
+            0,
+            0
+          ],
+          "radiusA": 0.0300000012,
+          "radiusB": 0.0329999998,
+          "position": [
+            -0.064237386,
+            0.908240914,
+            -0.00464354455
+          ],
+          "subPosition": [
+            -0.145250455,
+            0.937660515,
+            0.00720411399
+          ],
+          "scale": 1,
+          "rawHex": "010100001000000000000000fb83d6bd80466c3f3ccfa73ad556ac3da8c6cbbd0000000000000000d0cc4cbc000000000000000090c2f53c022b073de48e83bd7a82683fe02898bb89bc14be850a703f7d10ec3b0000803f11000000260000006b000000000000000000000001000000110000002300000068000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftHand:1:mask=16",
+              "oldIndex": 2,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "11000000260000006b000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftHand:1:mask=16",
+              "oldIndex": 2,
+              "anchor": "LeftHand"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 16,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0.0600000024,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0250000004,
+          "position": [
+            0.203656405,
+            1.03184116,
+            -0.0347303748
+          ],
+          "subPosition": [
+            0.271798849,
+            1.13976085,
+            -0.0828886032
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000df6e733e87fb8a3f38e270bd50c5f33d90c2753d00000000000000000000000000000000000000000bd7233dcdcccc3c4e8b503e5f13843f70410ebd38298b3eafe3913f80c1a9bd0000803f110000002f00000020010000000000000000000001000000110000002c0000001d010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            },
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "110000002f00000020010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            }
+          ],
+          "resolutionEvidence": "same driven handle as uniquely matched collider"
+        },
+        {
+          "index": 17,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            0.0124999955,
+            0,
+            0
+          ],
+          "localB": [
+            0.0995000079,
+            0,
+            0
+          ],
+          "radiusA": 0.0329999998,
+          "radiusB": 0.0300000012,
+          "position": [
+            0.163282737,
+            0.977540731,
+            -0.0147046475
+          ],
+          "subPosition": [
+            0.0908815935,
+            0.929976463,
+            -0.0227489956
+          ],
+          "scale": 1,
+          "rawHex": "010100001000000000000000d421023e8629743ffe6899bcd556ac3dc8cc4c3c0000000000000000a9c6cb3d0000000000000000022b073d90c2f53c9733273e1c407a3fc3eb70bc2120ba3df0126e3f1a5cbabc0000803f110000002f00000020010000000000000000000001000000110000002c0000001d010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:1:mask=16",
+              "oldIndex": 14,
+              "anchor": "RightHand"
+            }
+          ],
+          "drivenHandleHex": "110000002f00000020010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightHand:1:mask=16",
+              "oldIndex": 14,
+              "anchor": "RightHand"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 18,
+          "active": 1,
+          "type": 1,
+          "mask": 65336,
+          "localA": [
+            0,
+            0.0599999987,
+            0.0350000001
+          ],
+          "localB": [
+            0,
+            0.0100000016,
+            0.0350000001
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0500000007,
+          "position": [
+            -0.00571523421,
+            1.3508141,
+            0.00236258656
+          ],
+          "subPosition": [
+            -0.0128035648,
+            1.30134797,
+            0.00405330583
+          ],
+          "scale": 1,
+          "rawHex": "0101000038ff000000000000bcb417bc06bda93f683c523b1a04d63d000000008fc2753d295c0f3d000000000cd7233c295c0f3d295c8f3dcdcc4c3ddc46bbbb7ae7ac3fa0d51a3b0bc651bc9292a63f98d1843b0000803f110000009902000081000000000000000000000001000000110000004d00000080000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "base-face:Head_Face:1:mask=65336",
+              "oldIndex": 0,
+              "anchor": "Head_Face"
+            }
+          ],
+          "drivenHandleHex": "110000009902000081000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "base-face:Head_Face:1:mask=65336",
+              "oldIndex": 0,
+              "anchor": "Head_Face"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        }
+      ],
+      "rightHandCapsuleIndices": [
+        17
+      ],
+      "chestHairCapsuleIndices": [
+        8
+      ]
+    },
+    {
+      "pid": 39500,
+      "scan": 11,
+      "ticks": 37260500,
+      "header": "2046d1e8640",
+      "buffer": "2046d1e86c0",
+      "count": 20,
+      "capacity": 32,
+      "jobCandidates": [
+        "58ddfd470",
+        "58defd1f0",
+        "58dffd430",
+        "2046d2053b8",
+        "206ef1b70e0"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "active": 1,
+          "type": 0,
+          "mask": 1,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.00100000005,
+          "radiusB": 0,
+          "position": [
+            -0.0765583515,
+            0.494968981,
+            -0.00111824274
+          ],
+          "subPosition": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1,
+          "rawHex": "010000000100000000000000a0ca9cbd936cfd3e009292bae12d903a0000000000000000000000000000000000000000000000006f12833a00000000a0ca9cbd936cfd3e009292ba0000000000000000000000000000803f09000000320000001100000000000000000000000100000009000000c602000010000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000003200000011000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 1,
+          "active": 1,
+          "type": 0,
+          "mask": 1,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.00100000005,
+          "radiusB": 0,
+          "position": [
+            0.0557110012,
+            0.500621676,
+            -0.00170588493
+          ],
+          "subPosition": [
+            0,
+            0,
+            0
+          ],
+          "scale": 1,
+          "rawHex": "0100000001000000000000003831643dbe28003f0098dfbae12d903a0000000000000000000000000000000000000000000000006f12833a000000003831643dbe28003f0098dfba0000000000000000000000000000803f090000003b0000001d00000000000000000000000100000009000000c602000010000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000003b0000001d000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 2,
+          "active": 1,
+          "type": 1,
+          "mask": 24,
+          "localA": [
+            0,
+            0.0820000023,
+            0.00300000003
+          ],
+          "localB": [
+            0,
+            -0.0840000063,
+            0.00300000003
+          ],
+          "radiusA": 0.0850000009,
+          "radiusB": 0.0850000009,
+          "position": [
+            -0.0152244261,
+            0.775756598,
+            -0.0144620389
+          ],
+          "subPosition": [
+            -0.0191027783,
+            0.609825432,
+            -0.0172584318
+          ],
+          "scale": 1,
+          "rawHex": "010100001800000000000000af9a8cbcc05a313f53ed81bc373c3d3e000000009eefa73da69b443b000000003208acbda69b443b7b14ae3d7b14ae3ddf6f79bcfc97463f30f26cbc6e7d9cbc851d1c3f8e618dbc0000803f09000000cc0200007400000000000000000000000100000009000000c902000073000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000cc02000074000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 3,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0840000063,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0500000007,
+          "position": [
+            -0.0569847822,
+            0.470484436,
+            0.33473289
+          ],
+          "subPosition": [
+            -0.0716839731,
+            0.488871634,
+            0.0825182498
+          ],
+          "scale": 1,
+          "rawHex": "010200000100000000000000bec183bd5c98f53ef1a1553e13fc463e000000003208ac3d00000000000000000000000000000000295c0f3dcdcc4c3de06869bd56e3f03e1c62ab3e0ccf92bd624dfa3e54ffa83d0000803f090000003500000012000000000000000000000001000000090000003200000011000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000003500000012000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 4,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0840000063,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0500000007,
+          "position": [
+            0.0300412774,
+            0.473651767,
+            0.333542883
+          ],
+          "subPosition": [
+            0.0493184924,
+            0.493905395,
+            0.0817808136
+          ],
+          "scale": 1,
+          "rawHex": "0102000001000000000000006087223dd4b1f73e4ea5543ef4fb463e000000003208ac3d00000000000000000000000000000000295c0f3dcdcc4c3d2019f63c7c82f23e22c6aa3e30024a3d2be1fc3eb37ca73d0000803f090000003e0000001e000000000000000000000001000000090000003b0000001d000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000003e0000001e000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 5,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            -0.0745000094,
+            0.110000007,
+            0.0260000005
+          ],
+          "localB": [
+            0.0745000094,
+            0.110000007,
+            0.0260000005
+          ],
+          "radiusA": 0.0900000036,
+          "radiusB": 0.0900000036,
+          "position": [
+            -0.0818241239,
+            0.876208782,
+            0.0255828016
+          ],
+          "subPosition": [
+            0.0668046921,
+            0.866440773,
+            0.0217013247
+          ],
+          "scale": 1,
+          "rawHex": "0101000008000000000000001014f6bb240f5f3f00adc13cf64a393e769398bdaf47e13df4fdd43c7693983daf47e13df4fdd43cec51b83dec51b83d6893a7bd384f603f0693d13ce6d0883d10cf5d3ffac6b13c0000803f09000000cf0200007500000000000000000000000100000009000000cc02000074000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000cf02000075000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 6,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.13499999,
+            0.00300000003,
+            -0.0100000007
+          ],
+          "localB": [
+            0.13499999,
+            0.00300000003,
+            -0.0100000007
+          ],
+          "radiusA": 0.0800000057,
+          "radiusB": 0.0800000057,
+          "position": [
+            -0.150105864,
+            0.779636145,
+            -0.023575943
+          ],
+          "subPosition": [
+            0.119221479,
+            0.761935711,
+            -0.0306094922
+          ],
+          "scale": 1,
+          "rawHex": "01010000100000000000000040017dbc3a52453f8cf1ddbc0f2d723e703d0abea69b443b0bd723bc703d0a3ea69b443b0bd723bc0bd7a33d0bd7a33d5ab519be3c96473f5622c1bc642af43d380e433fc2c0fabc0000803f09000000cf0200007500000000000000000000000100000009000000cc02000074000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000cf02000075000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 7,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.100000001,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0700000003,
+          "position": [
+            -0.0918341279,
+            0.0927672684,
+            0.27420181
+          ],
+          "subPosition": [
+            -0.0660572797,
+            0.372151494,
+            0.318974555
+          ],
+          "scale": 1,
+          "rawHex": "01020000010000000000000049aea1bdd5096e3e68da973e63dd6e3e00000000cdcccc3d00000000000000000000000000000000295c8f3d295c8f3d8813bcbdc4fcbd3d2e648c3e0a4987bda48abe3ea250a33e0000803f090000003800000013000000000000000000000001000000090000003500000012000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000003800000013000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 8,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.100000001,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0700000003,
+          "position": [
+            0.053710103,
+            0.0926585197,
+            0.290733993
+          ],
+          "subPosition": [
+            0.0362030976,
+            0.374465942,
+            0.322398245
+          ],
+          "scale": 1,
+          "rawHex": "0102000001000000000000006a24383df02a6f3e3cf69c3e61dd6e3e00000000cdcccc3d00000000000000000000000000000000295c8f3d295c8f3d20ff5b3dc0c3bd3d16db943eb349143d00babf3e6211a53e0000803f09000000410000001f000000000000000000000001000000090000003e0000001e000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000410000001f000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 9,
+          "active": 1,
+          "type": 1,
+          "mask": 24,
+          "localA": [
+            0.0199999996,
+            0.0200000014,
+            0.0100000007
+          ],
+          "localB": [
+            -0.0199999996,
+            0.0200000014,
+            0.0100000007
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0350000001,
+          "position": [
+            0.0153740905,
+            0.918726146,
+            -0.0138448942
+          ],
+          "subPosition": [
+            -0.024251651,
+            0.92415756,
+            -0.0143928109
+          ],
+          "scale": 1,
+          "rawHex": "010100001800000000000000307391bb9de36b3fc25267bcd9ce773d0ad7a33c0bd7a33c0bd7233c0ad7a3bc0bd7a33c0bd7233c295c0f3d295c0f3d9ce37b3ca3316b3fb2d562bc66abc6bc97956c3fd3cf6bbc0000803f090000008c0000009900000000000000000000000100000009000000cf02000075000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000008c00000099000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 10,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.171499997,
+            -0.0250000004,
+            -0.0430000015
+          ],
+          "localB": [
+            0.171499997,
+            -0.0250000004,
+            -0.0430000015
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0700000003,
+          "position": [
+            -0.178705782,
+            0.906962752,
+            -0.0746797174
+          ],
+          "subPosition": [
+            0.161084965,
+            0.860388398,
+            -0.0699813366
+          ],
+          "scale": 1,
+          "rawHex": "010100001000000000000000905910bc9038623f072294bd4703883eb29d2fbecdccccbcc52030bdb29d2f3ecdccccbcc52030bd295c8f3d295c8f3da6fe36beb62e683faef198bd75f3243e6a425c3f60528fbd0000803f090000008c0000009900000000000000000000000100000009000000cf02000075000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000008c00000099000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 11,
+          "active": 1,
+          "type": 2,
+          "mask": 24,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0480000004,
+          "position": [
+            -0.111637011,
+            0.861490488,
+            -0.0219555795
+          ],
+          "subPosition": [
+            -0.0248008072,
+            0.856039703,
+            -0.0389020443
+          ],
+          "scale": 1,
+          "rawHex": "0102000018000000000000005bb68bbd08d85b3fd845f9bc19fbcf3d000000000000000000000000000000000000000000000000ec51383da69b443df2a1e4bda48a5c3f30dcb3bc102bcbbc6b255b3fc0571fbd0000803f09000000200000007900000000000000000000000100000009000000d202000078000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002000000079000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 12,
+          "active": 1,
+          "type": 2,
+          "mask": 24,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0480000004,
+          "position": [
+            0.0922644436,
+            0.843520284,
+            -0.0411496758
+          ],
+          "subPosition": [
+            0.00427290797,
+            0.854133844,
+            -0.0396515131
+          ],
+          "scale": 1,
+          "rawHex": "01020000180000000000000060b5453dbb4c593f187b25bd12fbcf3d000000000000000000000000000000000000000000000000ec51383da69b443d24f5bc3df2f0573f908c28bdc0038c3b84a85a3fa06922bd0000803f09000000290000002d01000000000000000000000100000009000000d50200002c010000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000290000002d010000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 13,
+          "active": 1,
+          "type": 2,
+          "mask": 24,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0400000028,
+          "position": [
+            -0.154171675,
+            0.692225814,
+            0.0615519285
+          ],
+          "subPosition": [
+            -0.111637011,
+            0.861490488,
+            -0.0219555795
+          ],
+          "scale": 1,
+          "rawHex": "010200001800000000000000141808be2de0463fc82fa23ca7051a3e0000000000000000000000000000000000000000000000000bd7233d0bd7233d2edf1dbeb635313fe01d7c3df2a1e4bda48a5c3f30dcb3bc0000803f090000002300000082000000000000000000000001000000090000002000000079000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002300000082000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 14,
+          "active": 1,
+          "type": 2,
+          "mask": 24,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0400000028,
+          "position": [
+            0.124485552,
+            0.683669686,
+            0.0629793406
+          ],
+          "subPosition": [
+            0.0922644436,
+            0.843520284,
+            -0.0411496758
+          ],
+          "scale": 1,
+          "rawHex": "010200001800000000000000b6f3dd3df67a433f20d4323caa051a3e0000000000000000000000000000000000000000000000000bd7233d0bd7233d48f2fe3dfa042f3f50fb803d24f5bc3df2f0573f908c28bd0000803f090000002c0000003601000000000000000000000100000009000000290000002d010000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002c00000036010000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 15,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0620000064,
+            0,
+            0
+          ],
+          "localB": [
+            0.0380000025,
+            0,
+            0
+          ],
+          "radiusA": 0.0250000004,
+          "radiusB": 0.0300000012,
+          "position": [
+            -0.0216767117,
+            0.840757847,
+            0.212248504
+          ],
+          "subPosition": [
+            -0.0914554,
+            0.790760696,
+            0.160953045
+          ],
+          "scale": 1,
+          "rawHex": "010100001000000000000000cfb167bd9ad5503f46143f3e5a39b43db8f37dbd0000000000000000e4a51b3d0000000000000000cdcccc3c90c2f53c5c93b1bce83b573fac57593ef84cbbbd4b6f4a3fe0d0243e0000803f090000002600000085000000000000000000000001000000090000002300000082000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002600000085000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 16,
+          "active": 1,
+          "type": 2,
+          "mask": 16,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0300000012,
+          "radiusB": 0.0350000001,
+          "position": [
+            -0.0649394989,
+            0.809759617,
+            0.180445313
+          ],
+          "subPosition": [
+            -0.154171675,
+            0.692225814,
+            0.0615519285
+          ],
+          "scale": 1,
+          "rawHex": "010200001000000000000000ae5ee0bd0f41403f20cef73d4027123e00000000000000000000000000000000000000000000000090c2f53c295c0f3d00ff84bd684c4f3fa8c6383e2edf1dbeb635313fe01d7c3d0000803f090000002600000085000000000000000000000001000000090000002300000082000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002600000085000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 17,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0329999998,
+            0,
+            0
+          ],
+          "localB": [
+            0.0570000038,
+            0,
+            0
+          ],
+          "radiusA": 0.0300000012,
+          "radiusB": 0.0250000004,
+          "position": [
+            0.0672515035,
+            0.820198596,
+            0.115973711
+          ],
+          "subPosition": [
+            0.0531811193,
+            0.905625403,
+            0.140555918
+          ],
+          "scale": 1,
+          "rawHex": "01010000100000000000000061a5763dcde75c3fda57033ec3f5a83d022b07bd0000000000000000d678693d000000000000000090c2f53ccdcccc3c28bb893d89f8513fa083ed3d72d4593d11d7673fe4ed0f3e0000803f090000002f00000039010000000000000000000001000000090000002c00000036010000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002f00000039010000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 18,
+          "active": 1,
+          "type": 2,
+          "mask": 16,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0300000012,
+          "radiusB": 0.0350000001,
+          "position": [
+            0.0620923638,
+            0.85152173,
+            0.124987185
+          ],
+          "subPosition": [
+            0.124485552,
+            0.683669686,
+            0.0629793406
+          ],
+          "scale": 1,
+          "rawHex": "010200001000000000000000480ebf3d2781443f4c7ac03d3e27123e00000000000000000000000000000000000000000000000090c2f53c295c0f3d90547e3d54fd593f48f9ff3d48f2fe3dfa042f3f50fb803d0000803f090000002f00000039010000000000000000000001000000090000002c00000036010000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "090000002f00000039010000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 19,
+          "active": 1,
+          "type": 1,
+          "mask": 65336,
+          "localA": [
+            0,
+            0.109999999,
+            0.0150000006
+          ],
+          "localB": [
+            0,
+            0.0100000016,
+            0.0150000006
+          ],
+          "radiusA": 0.0900000036,
+          "radiusB": 0.0700000003,
+          "position": [
+            0.0224008895,
+            1.05567396,
+            0.00762320869
+          ],
+          "subPosition": [
+            0.000660025282,
+            0.95880878,
+            -0.00439667888
+          ],
+          "scale": 1,
+          "rawHex": "0101000038ff0000000000003fea3c3c49ed803f3074d33a2eb21d3e00000000ae47e13d90c2753c000000000cd7233c90c2753cec51b83d295c8f3d1282b73c5320873f1cccf93b8c052d3a7e74753f041290bb0000803f09000000d80200009b000000000000000000000001000000090000004d0000009a000000000000000000000001000000",
+          "assetMatches": [],
+          "drivenHandleHex": "09000000d80200009b000000000000000000000001000000",
+          "resolvedMatches": [],
+          "resolutionEvidence": "asset parameter candidates"
+        }
+      ],
+      "rightHandCapsuleIndices": [],
+      "chestHairCapsuleIndices": []
+    },
+    {
+      "pid": 39500,
+      "scan": 11,
+      "ticks": 37297875,
+      "header": "206c8c5c568",
+      "buffer": "2046c975d40",
+      "count": 19,
+      "capacity": 32,
+      "jobCandidates": [
+        "597afa650",
+        "597afb740"
+      ],
+      "records": [
+        {
+          "index": 0,
+          "active": 1,
+          "type": 1,
+          "mask": 1,
+          "localA": [
+            0.0560000055,
+            -0.0400000028,
+            0
+          ],
+          "localB": [
+            -0.0560000055,
+            -0.0400000028,
+            0
+          ],
+          "radiusA": 0.0610000044,
+          "radiusB": 0.0610000044,
+          "position": [
+            0.0766133815,
+            0.846710443,
+            -0.0185253657
+          ],
+          "subPosition": [
+            -0.034080144,
+            0.836172044,
+            -0.00511309458
+          ],
+          "scale": 1,
+          "rawHex": "0101000001000000000000005637ae3cb268573f72a541bcf0c9033e4360653d0bd723bd00000000436065bd0bd723bd0000000024db793d24db793d7ae79c3d04c2583f82c297bc9f970bbd5f0f563fbf8ba7bb0000803f170000004a0000000f00000000000000000000000100000017000000470000000d000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 13,
+              "anchor": "Hips"
+            }
+          ],
+          "drivenHandleHex": "170000004a0000000f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 13,
+              "anchor": "Hips"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 1,
+          "active": 1,
+          "type": 1,
+          "mask": 1,
+          "localA": [
+            0.0500000045,
+            -0.0400000028,
+            -0.0400000028
+          ],
+          "localB": [
+            -0.0500000045,
+            -0.0400000028,
+            -0.0400000028
+          ],
+          "radiusA": 0.0550000034,
+          "radiusB": 0.0550000034,
+          "position": [
+            0.0655902773,
+            0.849309742,
+            -0.0573549308
+          ],
+          "subPosition": [
+            -0.0332432166,
+            0.839900494,
+            -0.0453796908
+          ],
+          "scale": 1,
+          "rawHex": "0101000001000000000000005a7e843c0a38583f886652bd458bec3dcecc4c3d0bd723bd0bd723bdcecc4cbd0bd723bd0bd723bdaf47613daf47613d3254863d5d6c593f01ed6abd0a2a08bdb803573f0ee039bd0000803f170000004a0000000f00000000000000000000000100000017000000470000000d000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 8,
+              "anchor": "Hips"
+            }
+          ],
+          "drivenHandleHex": "170000004a0000000f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Hips:1:mask=1",
+              "oldIndex": 8,
+              "anchor": "Hips"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 2,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0,
+            0.0795000046,
+            0
+          ],
+          "localB": [
+            0,
+            -0.0795000046,
+            0
+          ],
+          "radiusA": 0.0800000057,
+          "radiusB": 0.0800000057,
+          "position": [
+            0.00222254498,
+            1.10833836,
+            0.00497923512
+          ],
+          "subPosition": [
+            0.0132806227,
+            0.949761927,
+            0.00147857063
+          ],
+          "scale": 1,
+          "rawHex": "0101000008000000000000000001fe3beab7833f009c533b2da9333e00000000e6d0a23d0000000000000000e6d0a2bd000000000bd7a33d0bd7a33d1ea8113b08de8d3fda28a33bf896593c9923733f99ccc13a0000803f170000008d02000056000000000000000000000001000000170000008a02000055000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 9,
+              "anchor": "Spine1"
+            }
+          ],
+          "drivenHandleHex": "170000008d02000056000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 9,
+              "anchor": "Spine1"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 3,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0.0494999997,
+            0.0700000003,
+            -0.0350000001
+          ],
+          "localB": [
+            -0.0494999997,
+            0.0700000003,
+            -0.0350000001
+          ],
+          "radiusA": 0.0500000007,
+          "radiusB": 0.0500000007,
+          "position": [
+            0.0478391647,
+            1.10289192,
+            -0.0357019864
+          ],
+          "subPosition": [
+            -0.0502428263,
+            1.09580004,
+            -0.0242727362
+          ],
+          "scale": 1,
+          "rawHex": "010100000800000000000000c0869dba5eb78c3f0ea8f5bc5327e03d83c04a3d295c8f3d295c0fbd83c04abd295c8f3d295c0fbdcdcc4c3dcdcc4c3d00f3433d902b8d3f3f3c12bd6ccb4dbd2d438c3f9ed7c6bc0000803f170000008d02000056000000000000000000000001000000170000008a02000055000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 18,
+              "anchor": "Spine1"
+            }
+          ],
+          "drivenHandleHex": "170000008d02000056000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine1:1:mask=8",
+              "oldIndex": 18,
+              "anchor": "Spine1"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 4,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0800000057,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0570000038,
+          "position": [
+            -0.0792648792,
+            0.476949334,
+            0.0352885723
+          ],
+          "subPosition": [
+            -0.0542283356,
+            0.742399395,
+            -0.00471179839
+          ],
+          "scale": 1,
+          "rawHex": "01020000010000000000000072b288bd9e131c3f257c7a3c86b1663e000000000bd7a33d00000000000000000000000000000000295c8f3dd678693da055a2bdb432f43ec08a103d881e5ebde30d3e3f6e659abb0000803f170000003500000012000000000000000000000001000000170000003200000011000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "drivenHandleHex": "170000003500000012000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 5,
+          "active": 1,
+          "type": 2,
+          "mask": 1,
+          "localA": [
+            0,
+            0.0800000057,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0570000038,
+          "position": [
+            0.0791758299,
+            0.486275882,
+            0.0011973381
+          ],
+          "subPosition": [
+            0.0866125971,
+            0.754490077,
+            -0.0251846947
+          ],
+          "scale": 1,
+          "rawHex": "01020000010000000000000071c4a93d6bd11e3f228144bc69b1663e000000000bd7a33d00000000000000000000000000000000295c8f3dd678693df026a23d27f9f83e00f09c3af261b13d4326413f2250cebc0000803f170000003e0000001f000000000000000000000001000000170000003b0000001e000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "drivenHandleHex": "170000003e0000001f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightLeg:2:mask=1",
+              "oldIndex": 11,
+              "anchor": "RightLeg"
+            },
+            {
+              "name": "school-body:LeftLeg:2:mask=1",
+              "oldIndex": 12,
+              "anchor": "LeftLeg"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 6,
+          "active": 1,
+          "type": 1,
+          "mask": 8,
+          "localA": [
+            0.0545000024,
+            0.0500000007,
+            -0.0350000001
+          ],
+          "localB": [
+            -0.0545000024,
+            0.0500000007,
+            -0.0350000001
+          ],
+          "radiusA": 0.0550000034,
+          "radiusB": 0.0550000034,
+          "position": [
+            0.0446092896,
+            1.16068029,
+            -0.0365908742
+          ],
+          "subPosition": [
+            -0.062457554,
+            1.14414239,
+            -0.0245830193
+          ],
+          "scale": 1,
+          "rawHex": "010100000800000000000000883612bc3782933f7a91fabc7daef63d653b5f3dcdcc4c3d295c0fbd653b5fbdcdcc4c3d295c0fbdaf47613daf47613d3bb8363d2c91943f50e015bd7ed37fbd4273923f5462c9bc0000803f170000009002000057000000000000000000000001000000170000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=8",
+              "oldIndex": 10,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "170000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=8",
+              "oldIndex": 10,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 7,
+          "active": 1,
+          "type": 1,
+          "mask": 64,
+          "localA": [
+            0.0595000014,
+            0.0150000006,
+            0
+          ],
+          "localB": [
+            -0.0595000014,
+            0.0150000006,
+            0
+          ],
+          "radiusA": 0.0600000024,
+          "radiusB": 0.0600000024,
+          "position": [
+            0.0586519092,
+            1.12792838,
+            -0.00187610369
+          ],
+          "subPosition": [
+            -0.0582375824,
+            1.10987318,
+            0.0112333894
+          ],
+          "scale": 1,
+          "rawHex": "010100004000000000000000003a593924388f3f4d4f993bd59a063e46b6733d90c2753c0000000046b673bd90c2753c0000000090c2753d90c2753dfc3c703df55f903f98e7f5ba888a6ebd53108e3f400c383c0000803f170000009002000057000000000000000000000001000000170000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=64",
+              "oldIndex": 5,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "170000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=64",
+              "oldIndex": 5,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 8,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0625,
+            -0.123000003,
+            -0.181000009
+          ],
+          "localB": [
+            0.0625,
+            -0.123000003,
+            -0.181000009
+          ],
+          "radiusA": 0.300000012,
+          "radiusB": 0.300000012,
+          "position": [
+            -0.0592333414,
+            0.967558801,
+            -0.166416898
+          ],
+          "subPosition": [
+            0.0635497272,
+            0.986524343,
+            -0.180187374
+          ],
+          "scale": 1,
+          "rawHex": "01010000100000000000000080700d3b661f7a3f1e7631bef628cc3e000080bd6de7fbbd115839be0000803d6de7fbbd115839be9a99993e9a99993ea99e72bdefb1773f31692abe5c26823ddc8c7c3f0a8338be0000803f170000009002000057000000000000000000000001000000170000008d02000056000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=16",
+              "oldIndex": 16,
+              "anchor": "Spine2"
+            }
+          ],
+          "drivenHandleHex": "170000009002000057000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Spine2:1:mask=16",
+              "oldIndex": 16,
+              "anchor": "Spine2"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 9,
+          "active": 1,
+          "type": 1,
+          "mask": 88,
+          "localA": [
+            0,
+            0.0544999987,
+            0.0100000007
+          ],
+          "localB": [
+            0,
+            -0.0144999977,
+            0.0100000007
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0350000001,
+          "position": [
+            -0.0165645033,
+            1.29520023,
+            -0.0176291503
+          ],
+          "subPosition": [
+            -0.0218217727,
+            1.22643161,
+            -0.0155681511
+          ],
+          "scale": 1,
+          "rawHex": "010100005800000000000000ee3a9dbc6a62a13fe5f987bcd7919c3d00000000643b5f3d0bd7233c0000000066916dbc0bd7233c295c0f3d295c0f3d48b287bc1fc9a53f026b90bc93c3b2bcb6fb9c3f8f117fbc0000803f170000007d0000007f000000000000000000000001000000170000009002000057000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:Neck:1:mask=88",
+              "oldIndex": 4,
+              "anchor": "Neck"
+            }
+          ],
+          "drivenHandleHex": "170000007d0000007f000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:Neck:1:mask=88",
+              "oldIndex": 4,
+              "anchor": "Neck"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 10,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0500000007,
+          "position": [
+            -0.121443748,
+            1.19002187,
+            -0.0270318985
+          ],
+          "subPosition": [
+            -0.0296339989,
+            1.18767416,
+            -0.0295698643
+          ],
+          "scale": 1,
+          "rawHex": "01020000580000000000000020b49abd2c2c983f40d7e7bcb920d83d000000000000000000000000000000000000000000000000ec51383dcdcc4c3d80b7f8bda352983f0072ddbc00c3f2bcb505983f803cf2bc0000803f170000002000000065000000000000000000000001000000170000009302000064000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "drivenHandleHex": "170000002000000065000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 11,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            -0.00500000035
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0450000018,
+          "radiusB": 0.0500000007,
+          "position": [
+            0.0870264769,
+            1.21567631,
+            -0.0509440899
+          ],
+          "subPosition": [
+            3.9100647e-05,
+            1.19225752,
+            -0.0328977108
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000704f323d961b9a3f40b52bbd9c20d83d00000000000000000bd7a3bb000000000000000000000000ec51383dcdcc4c3df03ab23d489b9b3fc0aa50bd00002438e59b983fc0bf06bd0000803f17000000290000001a010000000000000000000001000000170000009602000019010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "drivenHandleHex": "17000000290000001a010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightArm:2:mask=88",
+              "oldIndex": 1,
+              "anchor": "RightArm"
+            },
+            {
+              "name": "school-body:LeftArm:2:mask=88",
+              "oldIndex": 6,
+              "anchor": "LeftArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 12,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0300000012,
+          "position": [
+            -0.278479457,
+            1.07409847,
+            -0.0730185509
+          ],
+          "subPosition": [
+            -0.121443748,
+            1.19002187,
+            -0.0270318985
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000bcc24cbe59e7903f40e74cbd235d183e000000000000000000000000000000000000000000000000295c0f3d90c2f53cdc948ebe0f7c893fc08a95bd80b7f8bda352983f0072ddbc0000803f170000002300000068000000000000000000000001000000170000002000000065000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "drivenHandleHex": "170000002300000068000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 13,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0350000001,
+          "radiusB": 0.0300000012,
+          "position": [
+            0.271740317,
+            1.14214242,
+            -0.0771510601
+          ],
+          "subPosition": [
+            0.0870264769,
+            1.21567631,
+            -0.0509440899
+          ],
+          "scale": 1,
+          "rawHex": "01020000580000000000000048b0373e80e6963f602b83bd255d183e000000000000000000000000000000000000000000000000295c0f3d90c2f53c8c218b3eb931923f60019ebdf03ab23d489b9b3fc0aa50bd0000803f170000002c0000001d01000000000000000000000100000017000000290000001a010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "drivenHandleHex": "170000002c0000001d010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftForeArm:2:mask=88",
+              "oldIndex": 7,
+              "anchor": "LeftForeArm"
+            },
+            {
+              "name": "school-body:RightForeArm:2:mask=88",
+              "oldIndex": 17,
+              "anchor": "RightForeArm"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 14,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0.0600000024,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0250000004,
+          "position": [
+            -0.194474816,
+            0.981485486,
+            -0.0183959473
+          ],
+          "subPosition": [
+            -0.278485775,
+            1.07408893,
+            -0.0729498863
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000e42772be888e833f86133bbd6dc5f33d90c2753d00000000000000000000000000000000000000000bd7233dcdcccc3c682447bea2427b3f19b396bcb0958ebebf7b893fc06695bd0000803f17000000260000006b000000000000000000000001000000170000002300000068000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            },
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "17000000260000006b000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "resolutionEvidence": "same driven handle as uniquely matched collider"
+        },
+        {
+          "index": 15,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            -0.0995000005,
+            0,
+            0
+          ],
+          "localB": [
+            -0.012500003,
+            0,
+            0
+          ],
+          "radiusA": 0.0300000012,
+          "radiusB": 0.0329999998,
+          "position": [
+            -0.0645534694,
+            0.907594144,
+            -0.00693146884
+          ],
+          "subPosition": [
+            -0.145844489,
+            0.936589658,
+            0.00402442226
+          ],
+          "scale": 1,
+          "rawHex": "0101000010000000000000009072d7bd370e6c3f2484bebad756ac3da8c6cbbd0000000000000000d0cc4cbc000000000000000090c2f53c022b073d9c3484bd1758683f6021e3bb425815be57c46f3f4ddf833b0000803f17000000260000006b000000000000000000000001000000170000002300000068000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:LeftHand:1:mask=16",
+              "oldIndex": 2,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "17000000260000006b000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:LeftHand:1:mask=16",
+              "oldIndex": 2,
+              "anchor": "LeftHand"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 16,
+          "active": 1,
+          "type": 2,
+          "mask": 88,
+          "localA": [
+            0.0600000024,
+            0,
+            0
+          ],
+          "localB": [
+            0,
+            0,
+            0
+          ],
+          "radiusA": 0.0400000028,
+          "radiusB": 0.0250000004,
+          "position": [
+            0.203312784,
+            1.0333159,
+            -0.0314919129
+          ],
+          "subPosition": [
+            0.271740317,
+            1.14208031,
+            -0.0772883892
+          ],
+          "scale": 1,
+          "rawHex": "010200005800000000000000293a733eb1398b3f35c85ebd64c5f33d90c2753d00000000000000000000000000000000000000000bd7233dcdcccc3c3a31503eb243843faafd00bd8c218b3eb02f923f60499ebd0000803f170000002f00000020010000000000000000000001000000170000002c0000001d010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            },
+            {
+              "name": "school-body:LeftHand:2:mask=88",
+              "oldIndex": 15,
+              "anchor": "LeftHand"
+            }
+          ],
+          "drivenHandleHex": "170000002f00000020010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightHand:2:mask=88",
+              "oldIndex": 3,
+              "anchor": "RightHand"
+            }
+          ],
+          "resolutionEvidence": "same driven handle as uniquely matched collider"
+        },
+        {
+          "index": 17,
+          "active": 1,
+          "type": 1,
+          "mask": 16,
+          "localA": [
+            0.0124999955,
+            0,
+            0
+          ],
+          "localB": [
+            0.0995000079,
+            0,
+            0
+          ],
+          "radiusA": 0.0329999998,
+          "radiusB": 0.0300000012,
+          "position": [
+            0.162861362,
+            0.978617251,
+            -0.0127479592
+          ],
+          "subPosition": [
+            0.0907914415,
+            0.930866301,
+            -0.0224833209
+          ],
+          "scale": 1,
+          "rawHex": "010100001000000000000000c8de013ef569743fad4e90bcd856ac3dc8cc4c3c0000000000000000a9c6cb3d0000000000000000022b073d90c2f53c21c5263ea9867a3fd1dc50bcddf0b93d414d6e3ff12eb8bc0000803f170000002f00000020010000000000000000000001000000170000002c0000001d010000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "school-body:RightHand:1:mask=16",
+              "oldIndex": 14,
+              "anchor": "RightHand"
+            }
+          ],
+          "drivenHandleHex": "170000002f00000020010000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "school-body:RightHand:1:mask=16",
+              "oldIndex": 14,
+              "anchor": "RightHand"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        },
+        {
+          "index": 18,
+          "active": 1,
+          "type": 1,
+          "mask": 65336,
+          "localA": [
+            0,
+            0.0599999987,
+            0.0350000001
+          ],
+          "localB": [
+            0,
+            0.0100000016,
+            0.0350000001
+          ],
+          "radiusA": 0.0700000003,
+          "radiusB": 0.0500000007,
+          "position": [
+            -0.00846662559,
+            1.34995461,
+            0.0075594075
+          ],
+          "subPosition": [
+            -0.0150739066,
+            1.30039322,
+            0.00745585561
+          ],
+          "scale": 1,
+          "rawHex": "0101000038ff00000000000013d840bc4c9fa93f9402f63b1704d63d000000008fc2753d295c0f3d000000000cd7233c295c0f3d295c8f3dcdcc4c3d9ab70abc50cbac3fe8b4f73b8cf876bc4973a63f4050f43b0000803f170000009902000081000000000000000000000001000000170000004d00000080000000000000000000000001000000",
+          "assetMatches": [
+            {
+              "name": "base-face:Head_Face:1:mask=65336",
+              "oldIndex": 0,
+              "anchor": "Head_Face"
+            }
+          ],
+          "drivenHandleHex": "170000009902000081000000000000000000000001000000",
+          "resolvedMatches": [
+            {
+              "name": "base-face:Head_Face:1:mask=65336",
+              "oldIndex": 0,
+              "anchor": "Head_Face"
+            }
+          ],
+          "resolutionEvidence": "asset parameter candidates"
+        }
+      ],
+      "rightHandCapsuleIndices": [
+        17
+      ],
+      "chestHairCapsuleIndices": [
+        8
+      ]
+    }
+  ]
+}

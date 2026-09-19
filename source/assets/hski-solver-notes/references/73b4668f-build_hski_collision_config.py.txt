@@ -1,0 +1,72 @@
+import json
+import sys
+from pathlib import Path
+
+
+ROOT = Path(r"E:\ArinLee\简历\work")
+CONFIG = ROOT / "actor_animation_solver" / "HskiHair0070.json"
+HAIR = ROOT / "hski_0070_hair_swing_full.json"
+FACE = ROOT / "hski_base_face_swing_full.json"
+BODY = ROOT / "hski_school_body_swing_full.json"
+sys.path.insert(0, str(ROOT / "actor_animation_solver"))
+from apply_registration_order import apply_game_order
+
+
+def read(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def swing_records(document, class_name):
+    return [item for item in document["mono_behaviours"] if item.get("class") == class_name]
+
+
+config = read(CONFIG)
+hair = read(HAIR)
+face = read(FACE)
+body = read(BODY)
+
+component_names = {item["path_id"]: item.get("game_object", "") for item in hair["mono_behaviours"]}
+chains = []
+for component_index, component in enumerate(swing_records(hair, "ActorSwingChain")):
+    for layer_index, layer in enumerate(component["tree"]["chains"]["layers"]):
+        names = [component_names.get(pointer["m_PathID"], "") for pointer in layer["bones"]]
+        names = [name for name in names if name]
+        chains.append({
+            "sourceComponent": component_index,
+            "sourceLayer": layer_index,
+            "active": bool(layer["active"]),
+            "around": bool(layer["around"]),
+            "radius": layer["radius"],
+            "smoothing": layer["smoothing"],
+            "bones": names,
+        })
+
+colliders = []
+for source, document in (("base-face", face), ("school-body", body)):
+    for component in swing_records(document, "ActorSwingStaticBone"):
+        raw = component["tree"]["staticCollider"]
+        colliders.append({
+            "source": source,
+            "anchor": component["game_object"],
+            "type": raw["type"],
+            "collisionMask": raw["collisionMask"],
+            "vector3_A": raw["vector3_A"],
+            "vector3_B": raw["vector3_B"],
+            "float_A": raw["float_A"],
+            "float_B": raw["float_B"],
+            "seatDynamicCorrectionDisableCollisionMask": raw["seatDynamicCorrectionDisableCollisionMask"],
+        })
+
+colliders, registration = apply_game_order(colliders)
+config["chains"] = chains
+config["staticColliders"] = colliders
+config["runtimeRegistration"] = registration
+config["collisionSources"] = [
+    "mdl_chr_hski-base-0000_face",
+    "mdl_chr_hski-schl-0000_body",
+]
+CONFIG.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+(CONFIG.parent / "native_evidence/game_registration_order.json").write_text(
+    json.dumps(registration, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+print(f"nodes={len(config['nodes'])} chains={len(chains)} activeChains={sum(x['active'] for x in chains)} staticColliders={len(colliders)}")

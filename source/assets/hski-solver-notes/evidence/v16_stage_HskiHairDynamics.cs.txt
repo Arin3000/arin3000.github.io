@@ -1,0 +1,258 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+// Reconstructed secondary motion. Uses the source skeleton and author limits;
+// the spring integration and safety colliders are ours, not the original solver.
+[DefaultExecutionOrder(300)]
+public class HskiHairDynamics : MonoBehaviour
+{
+    [Serializable] public class NodeSetting {
+        public string name; public float damping,stiffness,rootWeight;
+        public float spring,pendulum,pendulumRange,mass,wind,useWindGlobalForce,collisionRadius;
+        public int collisionMask; public Vector3 collisionOffset;
+        public bool limit; public Vector3 minAngles,maxAngles;
+    }
+    [Serializable] public class Settings { public string source; public NodeSetting[] nodes; }
+    [Serializable] public class BodyCollider {
+        public Transform anchor; public Vector3 start,end; public float radius;
+    }
+    [Serializable] public class SkinPoint {
+        public string owner;
+        public Transform b0,b1,b2,b3;public Vector3 p0,p1,p2,p3;public Vector4 weights;
+        public Vector3 World(){return (b0?b0.TransformPoint(p0)*weights.x:Vector3.zero)+(b1?b1.TransformPoint(p1)*weights.y:Vector3.zero)+(b2?b2.TransformPoint(p2)*weights.z:Vector3.zero)+(b3?b3.TransformPoint(p3)*weights.w:Vector3.zero);}
+    }
+    class Node {
+        public Transform bone; public NodeSetting setting; public Vector3 tail,restPosition;
+        public Quaternion restRotation,poseRotation; public Vector3 tip,velocity,previousOrigin;
+        public float length;
+        public Vector3 lagPosition,linearVelocity,angularVelocity;
+        public Quaternion lagRotation;
+        public bool frontStrand;
+        public Quaternion swingRotation; public Vector3 swingVelocity;
+        public Vector3 frontAngles,frontAngleVelocity;public float contactAngle,contactVelocity;public bool contactReady;
+        public List<SkinPoint> samples=new List<SkinPoint>();
+    }
+    public Transform head;
+    public TextAsset configuration;
+    public BodyCollider[] bodyColliders=Array.Empty<BodyCollider>();
+    public HskiHairBodySurface torso;
+    public HskiHairContactMesh contactMesh;
+    public SkinPoint[] frontSurfaceSamples=Array.Empty<SkinPoint>();
+    public bool simulate=true,manualSimulation;
+    [Range(0,1)] public float strength=1f;
+    public int MatchedNodes {get;private set;}
+    public int SimulatedNodes => nodes.Count;
+    public int ResetCount {get;private set;}
+    public float MaxDeviation {get;private set;}
+    public float MaxLengthError {get;private set;}
+    public float MaxPenetration {get;private set;}
+    public float FrontMeshPenetration {get;private set;}
+    public float MaxDynamicVelocity {get;private set;}
+    public float FreeHairDeviation {get;private set;}
+    public float FrontHairDeviation {get;private set;}
+    public float FrontRootDrift {get;private set;}
+    public bool IsFinite {get;private set;}=true;
+    readonly List<Node> nodes=new List<Node>();
+    bool initialized,needsReset=true;
+    int restoredFrame=-1;
+    Vector3 lastHeadPosition; Quaternion lastHeadRotation;
+    Vector3[] baselineTips;
+    float simulationTime;
+    Vector3 filteredHeadVelocity;
+
+    void Awake(){Initialize();}
+    void Update(){if(Input.GetKeyDown(KeyCode.B))SetSimulation(!simulate);}
+    void LateUpdate(){if(!manualSimulation)Step(Time.unscaledDeltaTime);}
+    public void Initialize()
+    {
+        if(initialized)return;
+        if(!configuration||!head)throw new InvalidOperationException("Hair configuration/head missing");
+        var settings=JsonUtility.FromJson<Settings>(configuration.text);
+        var transforms=GetComponentsInChildren<Transform>(true).GroupBy(t=>t.name).ToDictionary(g=>g.Key,g=>g.First());
+        foreach(var s in settings.nodes){
+            if(!transforms.TryGetValue(s.name,out var bone))continue;
+            MatchedNodes++;
+            // End markers carry source metadata, but have no skin segment to rotate.
+            Transform child=null;
+            for(int i=0;i<bone.childCount;i++)if(bone.GetChild(i).localPosition.sqrMagnitude>1e-8f){child=bone.GetChild(i);break;}
+            if(!child)continue;
+            var tail=bone.InverseTransformPoint(child.position);
+            nodes.Add(new Node{bone=bone,setting=s,tail=tail,restPosition=bone.localPosition,
+                restRotation=bone.localRotation,poseRotation=bone.localRotation,length=Vector3.Distance(bone.position,child.position),frontStrand=s.name.StartsWith("LeftSideHair")||s.name.StartsWith("RightSideHair")||s.name.Contains("HairSide")||s.name.Contains("FrontHair")||s.name.Contains("FrontSide")});
+        }
+        nodes.Sort((a,b)=>Depth(a.bone).CompareTo(Depth(b.bone)));
+        foreach(var n in nodes)n.samples.AddRange(frontSurfaceSamples.Where(p=>p.owner==n.bone.name));
+        baselineTips=new Vector3[nodes.Count];
+        initialized=true;RequestReset();
+        Debug.Log($"HSKI_HAIR_READY source={settings.source} matched={MatchedNodes}/{settings.nodes.Length} segments={nodes.Count} colliders={bodyColliders.Length}");
+    }
+    static int Depth(Transform t){int n=0;while(t.parent){n++;t=t.parent;}return n;}
+    public void SetSimulation(bool value){simulate=value;RestorePose();RequestReset();}
+    public void RequestReset(){needsReset=true;}
+    public void CapturePose()
+    {
+        foreach(var n in nodes){n.restRotation=n.bone.localRotation;n.restPosition=n.bone.localPosition;}
+        restoredFrame=Time.frameCount;
+    }
+    // Called immediately before Animator.Update so rotations from our previous
+    // frame cannot accumulate or be mistaken for the authored animation pose.
+    public void RestorePose()
+    {
+        if(!initialized)Initialize();
+        foreach(var n in nodes){n.bone.localRotation=n.restRotation;n.bone.localPosition=n.restPosition;}
+        restoredFrame=Time.frameCount;
+    }
+    public Vector3[] TipPositions(){return nodes.Select(n=>n.bone.TransformPoint(n.tail)).ToArray();}
+    public float AuditFrontMesh()
+    {
+        float max=0;if(torso)foreach(var p in frontSurfaceSamples)max=Mathf.Max(max,torso.Penetration(p.World(),0,out _));return max;
+    }
+    public void RefreshVisual(bool contact){if(contactMesh)contactMesh.Refresh(contact);}
+    public void Step(float delta)
+    {
+        if(!initialized)Initialize();
+        MaxDeviation=MaxLengthError=MaxPenetration=FrontMeshPenetration=MaxDynamicVelocity=FreeHairDeviation=0;IsFinite=true;
+        if(!simulate){RestorePose();RefreshVisual(false);needsReset=true;return;}
+        if(delta<=0)return;
+        if(restoredFrame!=Time.frameCount)RestorePose();
+        var hp=head.position;var hr=head.rotation;
+        if(torso)torso.Refresh();
+        if(Vector3.Distance(lastHeadPosition,hp)>.35f||Quaternion.Angle(lastHeadRotation,hr)>75||delta>.1f)needsReset=true;
+        for(int i=0;i<nodes.Count;i++){
+            var n=nodes[i];n.poseRotation=n.bone.localRotation;baselineTips[i]=n.bone.TransformPoint(n.tail);
+        }
+        if(needsReset){
+            foreach(var n in nodes){n.lagPosition=hp;n.lagRotation=hr;n.linearVelocity=n.angularVelocity=Vector3.zero;n.swingRotation=n.bone.rotation;n.swingVelocity=Vector3.zero;n.frontAngles=n.frontAngleVelocity=Vector3.zero;n.contactReady=false;}
+            filteredHeadVelocity=Vector3.zero;simulationTime=0;
+            if(contactMesh)contactMesh.ResetEnvelope();
+            lastHeadPosition=hp;lastHeadRotation=hr;needsReset=false;ResetCount++;
+        }
+        int steps=Mathf.Clamp(Mathf.CeilToInt(delta*120),1,12);float dt=delta/steps;
+        // Integrate independent inertial reference frames. A solved parent's
+        // correction must not become acceleration input to the next strand;
+        // that feedback amplified energy in the earlier endpoint solver.
+        for(int k=0;k<steps;k++){
+            float t=(k+1f)/steps;var p=Vector3.Lerp(lastHeadPosition,hp,t);var r=Quaternion.Slerp(lastHeadRotation,hr,t);
+            foreach(var n in nodes){
+                if(n.frontStrand)continue;
+                float omega=Mathf.Lerp(8,15,Mathf.Sqrt(Mathf.Clamp01(n.setting.stiffness/.05f)));
+                float damping=Mathf.Lerp(.42f,.65f,Mathf.InverseLerp(.4f,.8f,n.setting.damping));
+                n.linearVelocity+=((p-n.lagPosition)*omega*omega-2*damping*omega*n.linearVelocity)*dt;
+                n.lagPosition+=n.linearVelocity*dt;
+                var error=r*Quaternion.Inverse(n.lagRotation);error.ToAngleAxis(out float angle,out Vector3 axis);
+                if(angle>180)angle-=360;
+                var rotationError=Mathf.Abs(angle)<.00001f?Vector3.zero:axis*angle;
+                n.angularVelocity+=(rotationError*omega*omega-2*damping*omega*n.angularVelocity)*dt;
+                float speed=n.angularVelocity.magnitude;
+                if(speed>.00001f)n.lagRotation=(Quaternion.AngleAxis(speed*dt,n.angularVelocity/speed)*n.lagRotation).normalized;
+                IsFinite&=Finite(n.lagPosition)&&Finite(n.linearVelocity)&&Finite(n.angularVelocity);
+            }
+        }
+        for(int i=0;i<nodes.Count;i++){
+            var n=nodes[i];var origin=n.bone.position;var rotation=n.bone.rotation;
+            if(n.frontStrand)continue;
+            var restTip=n.bone.TransformPoint(n.tail);float length=Vector3.Distance(origin,restTip);
+            var headLocal=Quaternion.Inverse(hr)*(baselineTips[i]-hp);
+            var lagTip=n.lagPosition+n.lagRotation*headLocal;
+            float gain=Mathf.Lerp(1.35f,1.0f,n.setting.rootWeight)*strength;
+            var goal=baselineTips[i]+(lagTip-baselineTips[i])*gain;
+            var q=Quaternion.FromToRotation(n.tail.normalized,(Quaternion.Inverse(rotation)*(goal-origin)).normalized);
+            var angles=Signed(q.eulerAngles);
+            float cap=n.bone.name.Contains("Front")?14:n.frontStrand?28:30;
+            for(int axis=0;axis<3;axis++){
+                bool locked=n.setting.limit&&Mathf.Abs(n.setting.maxAngles[axis]-n.setting.minAngles[axis])<.001f;
+                float lo=locked?0:n.setting.limit?Mathf.Min(0,Mathf.Max(-cap,n.setting.minAngles[axis])):-cap;
+                float hi=locked?0:n.setting.limit?Mathf.Max(0,Mathf.Min(cap,n.setting.maxAngles[axis])):cap;
+                angles[axis]=Mathf.Clamp(angles[axis],lo,hi);
+            }
+            n.bone.rotation=rotation*Quaternion.Euler(angles);
+            var constrained=n.bone.TransformPoint(n.tail);
+            for(int pass=0;pass<3;pass++)foreach(var collider in bodyColliders){
+                if(collider==null||!collider.anchor)continue;
+                float allowed=Penetration(restTip,collider);
+                var corrected=ProjectOutside(constrained,collider,allowed);
+                if((corrected-constrained).sqrMagnitude<1e-10f)continue;
+                n.bone.rotation=Quaternion.FromToRotation(constrained-origin,corrected-origin)*n.bone.rotation;
+                constrained=n.bone.TransformPoint(n.tail);
+            }
+            MaxLengthError=Mathf.Max(MaxLengthError,Mathf.Abs(Vector3.Distance(origin,constrained)-length));
+            MaxDynamicVelocity=Mathf.Max(MaxDynamicVelocity,n.linearVelocity.magnitude);
+            if(!n.frontStrand)FreeHairDeviation=Mathf.Max(FreeHairDeviation,Vector3.Distance(constrained,baselineTips[i]));
+        }
+        StepFrontChains(delta,steps,hp,hr);
+        // Front curls stay close to their authored silhouette. Do not lift the
+        // entire strand in response to the torso's projected depth field.
+        if(contactMesh)contactMesh.BeginStep(delta);
+        RefreshVisual(true);
+        if(contactMesh)FrontMeshPenetration=contactMesh.MaxPenetration;
+        FrontHairDeviation=FrontRootDrift=0;
+        for(int i=0;i<nodes.Count;i++){
+            var n=nodes[i];float deviation=Vector3.Distance(n.bone.TransformPoint(n.tail),baselineTips[i]);MaxDeviation=Mathf.Max(MaxDeviation,deviation);
+            if(n.frontStrand){FrontHairDeviation=Mathf.Max(FrontHairDeviation,deviation);MaxLengthError=Mathf.Max(MaxLengthError,Mathf.Abs(Vector3.Distance(n.bone.position,n.bone.TransformPoint(n.tail))-n.length));if(n.setting.mass==0)FrontRootDrift=Mathf.Max(FrontRootDrift,Vector3.Distance(n.bone.localPosition,n.restPosition));}
+        }
+        lastHeadPosition=hp;lastHeadRotation=hr;
+        if(!IsFinite){RestorePose();RequestReset();Debug.LogError("HSKI_HAIR_NONFINITE");}
+    }
+    // Original front curls have no Quartz _A ancestors and no transverse Chain.
+    // Their mass-zero roots remain attached to Head_Hair. Each child's spring
+    // follows its already-solved parent, preserving the authored curved shape.
+    // Frequencies/force scale are reconstruction tuning, not original units.
+    void StepFrontChains(float delta,int steps,Vector3 hp,Quaternion hr)
+    {
+        float dt=delta/steps;
+        var headVelocity=Vector3.ClampMagnitude((hp-lastHeadPosition)/delta,1.5f);
+        var change=hr*Quaternion.Inverse(lastHeadRotation);change.ToAngleAxis(out float angle,out var axis);if(angle>180)angle-=360;
+        var angularVelocity=Mathf.Abs(angle)<.00001f?Vector3.zero:Vector3.ClampMagnitude(axis*(angle/delta),220);
+        for(int k=0;k<steps;k++){
+            simulationTime+=dt;
+            filteredHeadVelocity=Vector3.Lerp(filteredHeadVelocity,headVelocity,1-Mathf.Exp(-12*dt));
+            foreach(var n in nodes){
+                if(!n.frontStrand)continue;
+                var s=n.setting;var frame=n.bone.parent.rotation*n.poseRotation;
+                if(s.mass<=0){n.bone.localRotation=n.poseRotation;n.frontAngles=n.frontAngleVelocity=Vector3.zero;continue;}
+                float massResponse=Mathf.Lerp(.35f,1,Mathf.Clamp01(s.mass));
+                var inertial=Quaternion.Inverse(frame)*(-angularVelocity*.022f*massResponse);
+                var direction=frame*n.tail.normalized;
+                float breeze=(.003f+.002f*Mathf.Sin(simulationTime*1.8f))*s.wind*s.useWindGlobalForce;
+                var force=-filteredHeadVelocity*.018f+(head.forward+head.up*.4f)*breeze;
+                var torque=Quaternion.Inverse(frame)*Vector3.Cross(direction,force)*Mathf.Rad2Deg*massResponse;
+                var target=(inertial+torque)*.12f;
+                float cap=Mathf.Lerp(.6f,1.1f,Mathf.Clamp01(s.mass));
+                for(int a=0;a<3;a++)target[a]=Mathf.Clamp(target[a],Mathf.Max(-cap,s.minAngles[a]),Mathf.Min(cap,s.maxAngles[a]));
+                // Closed-form critically damped angle spring. No world-space
+                // quaternion projection or limit-clipping velocity feedback.
+                float omega=Mathf.Lerp(20,34,Mathf.Sqrt(Mathf.Clamp01(s.stiffness/.05f)))*(1+s.spring)/Mathf.Sqrt(1+s.mass*.35f);
+                var error=n.frontAngles-target;var j=n.frontAngleVelocity+omega*error;float decay=Mathf.Exp(-omega*dt);
+                n.frontAngles=target+(error+j*dt)*decay;n.frontAngleVelocity=(n.frontAngleVelocity-omega*j*dt)*decay;
+                n.bone.localRotation=n.poseRotation*Quaternion.Euler(n.frontAngles);
+                IsFinite&=Finite(n.frontAngles)&&Finite(n.frontAngleVelocity);
+            }
+        }
+    }
+    void SolveFrontContact(float delta)
+    {
+        if(!torso)return;
+        foreach(var root in nodes){
+            if(!root.frontStrand||root.setting.mass!=0)continue;
+            string prefix=root.bone.name.StartsWith("Left")?"LeftSideHair":"RightSideHair";
+            float penetration=0;
+            foreach(var p in frontSurfaceSamples)if(p.owner.StartsWith(prefix))penetration=Mathf.Max(penetration,torso.Penetration(p.World(),.009f,out _));
+            // One continuous lift coordinate, with a fixed forward direction.
+            // Avoid per-frame greedy sign changes around alternative minima.
+            float target=Mathf.Clamp(Mathf.Atan2(penetration,.19f)*Mathf.Rad2Deg,0,16);
+            if(!root.contactReady){root.contactAngle=target;root.contactVelocity=0;root.contactReady=true;}
+            root.contactAngle=Mathf.SmoothDamp(root.contactAngle,target,ref root.contactVelocity,.13f,45,delta);
+            root.bone.rotation=Quaternion.AngleAxis(-root.contactAngle,torso.chest.right)*root.bone.rotation;
+            var a=Signed((Quaternion.Inverse(root.poseRotation)*root.bone.localRotation).eulerAngles);
+            for(int i=0;i<3;i++)a[i]=Mathf.Clamp(a[i],root.setting.minAngles[i],root.setting.maxAngles[i]);
+            root.bone.localRotation=root.poseRotation*Quaternion.Euler(a);
+        }
+    }
+    static Vector3 Signed(Vector3 a){return new Vector3(Mathf.DeltaAngle(0,a.x),Mathf.DeltaAngle(0,a.y),Mathf.DeltaAngle(0,a.z));}
+    static bool Finite(Vector3 a){return !float.IsNaN(a.x)&&!float.IsNaN(a.y)&&!float.IsNaN(a.z)&&!float.IsInfinity(a.x)&&!float.IsInfinity(a.y)&&!float.IsInfinity(a.z);}
+    static Vector3 Nearest(Vector3 p,BodyCollider c){var a=c.anchor.TransformPoint(c.start);var b=c.anchor.TransformPoint(c.end);var ab=b-a;return a+ab*Mathf.Clamp01(Vector3.Dot(p-a,ab)/Mathf.Max(ab.sqrMagnitude,1e-10f));}
+    static float Penetration(Vector3 p,BodyCollider c){return Mathf.Max(0,c.radius-Vector3.Distance(p,Nearest(p,c)));}
+    static Vector3 ProjectOutside(Vector3 p,BodyCollider c,float allowed){var center=Nearest(p,c);var d=p-center;float r=Mathf.Max(0,c.radius-allowed);return d.sqrMagnitude<r*r?center+(d.sqrMagnitude>1e-10f?d.normalized:c.anchor.forward)*r:p;}
+}

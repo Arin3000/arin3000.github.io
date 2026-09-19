@@ -1,0 +1,133 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditor.Build.Reporting;
+
+public static class HskiHairBuilder
+{
+    const string Out="E:/ArinLee/简历/output/HSKI_EffectsPreview/hair_v16";
+    public static void Build()
+    {
+        Directory.CreateDirectory(Out);
+        var scene=EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
+        var actor=demo.actor.gameObject;
+        var states=new StringBuilder();foreach(var renderer in demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>()){foreach(var m in renderer.sharedMaterials){states.Append(renderer.name+" "+m.name+" "+m.shader.name+" queue="+m.renderQueue);foreach(var prop in new[]{"_ShaderType","_ZWrite","_StencilComp","_StencilRef","_StencilReadMask","_EnalbeHairCover"})if(m.HasProperty(prop))states.Append(" "+prop+"="+m.GetFloat(prop));states.AppendLine(" HairCover="+m.GetShaderPassEnabled("HairCover"));}}File.WriteAllText(Out+"/render_states.txt",states.ToString());
+        var hair=actor.GetComponent<HskiHairDynamics>();if(!hair)hair=actor.AddComponent<HskiHairDynamics>();
+        hair.head=demo.lighting.Head;
+        hair.configuration=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/PortfolioPreview/HskiHair0070.json");
+        hair.strength=.65f;
+        var all=actor.GetComponentsInChildren<Transform>(true);
+        Func<string,Transform> bone=n=>all.First(t=>t.name==n);
+        var surface=actor.GetComponent<HskiHairBodySurface>();if(!surface)surface=actor.AddComponent<HskiHairBodySurface>();
+        surface.chest=bone("Spine2");surface.body=actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(r=>r.name=="Geo_Body");
+        var bodyMesh=surface.body.sharedMesh;var bodyWeights=bodyMesh.boneWeights;var bodyBones=surface.body.bones;
+        var torsoWeights=new float[bodyWeights.Length];
+        for(int i=0;i<bodyWeights.Length;i++){
+            var w=bodyWeights[i];int[] indices={w.boneIndex0,w.boneIndex1,w.boneIndex2,w.boneIndex3};float[] values={w.weight0,w.weight1,w.weight2,w.weight3};
+            for(int j=0;j<4;j++){var name=bodyBones[indices[j]].name;if(name.StartsWith("Spine")||name.Contains("Bust")||name.Contains("Breast")||name.Contains("Ribbon")||name.Contains("Shoulder")||name=="Neck"||name=="Head")torsoWeights[i]+=values[j];}
+        }
+        var torsoTriangles=new List<int>();var bodyTriangles=bodyMesh.triangles;
+        for(int i=0;i<bodyTriangles.Length;i+=3){
+            int a=bodyTriangles[i],b=bodyTriangles[i+1],c=bodyTriangles[i+2];
+            if(Mathf.Min(torsoWeights[a],Mathf.Min(torsoWeights[b],torsoWeights[c]))<.45f)continue;
+            torsoTriangles.Add(a);torsoTriangles.Add(b);torsoTriangles.Add(c);
+        }
+        surface.torsoTriangles=torsoTriangles.ToArray();
+        hair.torso=surface;
+        var contact=actor.GetComponent<HskiHairContactMesh>();if(!contact)contact=actor.AddComponent<HskiHairContactMesh>();
+        contact.surface=surface;contact.head=hair.head;contact.useAuthoredReference=true;contact.referenceHeadInChest=Quaternion.Inverse(surface.chest.rotation)*hair.head.rotation;contact.leftRoot=bone("LeftSideHair1_S");contact.rightRoot=bone("RightSideHair1_S");hair.contactMesh=contact;
+        var faceSurface=actor.AddComponent<HskiFaceSkinSurface>();faceSurface.face=demo.face;faceSurface.head=hair.head;
+        var skin=new List<int>();for(int slot=0;slot<demo.face.sharedMaterials.Length;slot++){var material=demo.face.sharedMaterials[slot];if(material.HasProperty("_ShaderType")&&Mathf.RoundToInt(material.GetFloat("_ShaderType"))==9)skin.AddRange(demo.face.sharedMesh.GetTriangles(slot));}faceSurface.skinTriangles=skin.ToArray();
+        var bend=actor.AddComponent<HskiHairFaceBend>();bend.contact=contact;bend.surface=faceSurface;contact.faceBend=bend;var jaw=actor.AddComponent<HskiHairJawContact>();jaw.contact=contact;jaw.skin=faceSurface;contact.jawContact=jaw;
+        var contacts=new List<HskiHairContactMesh.Binding>();
+        var samples=new List<HskiHairDynamics.SkinPoint>();
+        foreach(var renderer in actor.GetComponentsInChildren<SkinnedMeshRenderer>().Where(r=>r.name.StartsWith("Geo_Hair"))){
+            var mesh=renderer.sharedMesh;var vertices=mesh.vertices;var weights=mesh.boneWeights;var binds=mesh.bindposes;var bones=renderer.bones;
+            var contactBinding=new HskiHairContactMesh.Binding{source=renderer,referenceChestRest=new Vector3[vertices.Length],referenceDrapeT=new float[vertices.Length],faceBendWeight=new float[vertices.Length],left=new float[vertices.Length],right=new float[vertices.Length],leftT=new float[vertices.Length],rightT=new float[vertices.Length]};contacts.Add(contactBinding);
+            var restBake=new Mesh();renderer.BakeMesh(restBake);var restVertices=restBake.vertices;
+            for(int i=0;i<vertices.Length;i++){
+                var world=renderer.transform.TransformPoint(restVertices[i]);
+                contactBinding.leftT[i]=Mathf.Clamp01(Vector3.Dot(contact.leftRoot.position-world,hair.head.up)/.06f);
+                contactBinding.rightT[i]=Mathf.Clamp01(Vector3.Dot(contact.rightRoot.position-world,hair.head.up)/.06f);
+            }
+            UnityEngine.Object.DestroyImmediate(restBake);
+            for(int i=0;i<vertices.Length;i++){
+                var w=weights[i];int[] indices={w.boneIndex0,w.boneIndex1,w.boneIndex2,w.boneIndex3};float[] values={w.weight0,w.weight1,w.weight2,w.weight3};
+                for(int j=0;j<4;j++){var name=bones[indices[j]].name;if(name.Contains("HairSide")||name.Contains("FrontHair")||name.Contains("FrontSide")||name.Contains("SideHair"))contactBinding.faceBendWeight[i]+=values[j];if(name.StartsWith("LeftSideHair"))contactBinding.left[i]+=values[j];if(name.StartsWith("RightSideHair"))contactBinding.right[i]+=values[j];}
+                var restWorld=renderer.transform.TransformPoint(restVertices[i]);var frontRoot=contactBinding.left[i]>contactBinding.right[i]?contact.leftRoot:contact.rightRoot;contactBinding.referenceChestRest[i]=surface.chest.InverseTransformPoint(restWorld);contactBinding.referenceDrapeT[i]=Mathf.Clamp01((Vector3.Dot(hair.head.up,frontRoot.position-restWorld)-.045f)/.12f);int best=0;for(int j=1;j<4;j++)if(values[j]>values[best])best=j;
+                var owner=bones[indices[best]];if(!owner.name.StartsWith("LeftSideHair")&&!owner.name.StartsWith("RightSideHair"))continue;
+                if(owner.name.EndsWith("End"))owner=owner.parent;
+                samples.Add(new HskiHairDynamics.SkinPoint{owner=owner.name,
+                    b0=bones[indices[0]],b1=bones[indices[1]],b2=bones[indices[2]],b3=bones[indices[3]],
+                    p0=binds[indices[0]].MultiplyPoint3x4(vertices[i]),p1=binds[indices[1]].MultiplyPoint3x4(vertices[i]),p2=binds[indices[2]].MultiplyPoint3x4(vertices[i]),p3=binds[indices[3]].MultiplyPoint3x4(vertices[i]),
+                    weights=new Vector4(values[0],values[1],values[2],values[3])});
+            }
+        }
+        contact.bindings=contacts.ToArray();
+        var handContact=actor.AddComponent<HskiHandHairContact>();handContact.contact=contact;handContact.demo=demo;handContact.upper=bone("RightArm");handContact.fore=bone("RightForeArm");handContact.hand=bone("RightHand");handContact.handWeight=new float[bodyWeights.Length];for(int i=0;i<bodyWeights.Length;i++){var bw=bodyWeights[i];int[] ix={bw.boneIndex0,bw.boneIndex1,bw.boneIndex2,bw.boneIndex3};float[] ws={bw.weight0,bw.weight1,bw.weight2,bw.weight3};for(int j=0;j<4;j++)if(bodyBones[ix[j]].name.StartsWith("RightHand"))handContact.handWeight[i]+=ws[j];}contact.handContact=handContact;
+        var sleeve=actor.AddComponent<HskiHairSleeveContact>();sleeve.contact=contact;sleeve.demo=demo;sleeve.correctiveClip=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/PortfolioPreview/HskiSleeveContactClip.json");contact.sleeveContact=sleeve;
+        var sleeveWeights=new float[bodyWeights.Length];
+        for(int i=0;i<bodyWeights.Length;i++){
+            var w=bodyWeights[i];int[] ix={w.boneIndex0,w.boneIndex1,w.boneIndex2,w.boneIndex3};float[] vs={w.weight0,w.weight1,w.weight2,w.weight3};
+            for(int j=0;j<4;j++){string n=bodyBones[ix[j]].name;if(n.Contains("Arm")||n.Contains("Shoulder"))sleeveWeights[i]+=vs[j];}
+        }
+        sleeve.sleeveMask=new bool[bodyTriangles.Length/3];var sleeveTs=new List<int>();for(int i=0;i<bodyTriangles.Length;i+=3){int a=bodyTriangles[i],b=bodyTriangles[i+1],c=bodyTriangles[i+2];if(Mathf.Max(sleeveWeights[a],Mathf.Max(sleeveWeights[b],sleeveWeights[c]))<.35f)continue;sleeve.sleeveMask[i/3]=true;sleeveTs.Add(a);sleeveTs.Add(b);sleeveTs.Add(c);}sleeve.sleeveTriangles=sleeveTs.ToArray();
+        File.WriteAllText(Out+"/sleeve_binding.txt","animated source sleeve triangles="+sleeveTs.Count/3);
+        // Preserve the rear-most surface point in each small XY cell, including
+        // the curls' width; endpoints alone do not represent their thickness.
+        hair.frontSurfaceSamples=samples.GroupBy(p=>{var v=surface.chest.InverseTransformPoint(p.World());return p.owner+":"+Mathf.RoundToInt(v.x/.004f)+":"+Mathf.RoundToInt(v.y/.004f);})
+            .Select(g=>g.OrderBy(p=>surface.chest.InverseTransformPoint(p.World()).z).First()).ToArray();
+        File.WriteAllText(Out+"/surface_binding.txt",$"Front hair mesh vertices={samples.Count}; spatial samples={hair.frontSurfaceSamples.Length}; body={surface.body.name}; torsoTriangles={surface.torsoTriangles.Length/3}\n"+string.Join("\n",hair.frontSurfaceSamples.GroupBy(p=>p.owner).Select(g=>g.Key+"="+g.Count())));
+        // Conservative authored-size proxies. We intentionally do not assume
+        // the game's serialized collider enum matches Unity's collider types.
+        hair.bodyColliders=new[]{
+            new HskiHairDynamics.BodyCollider{anchor=hair.head,start=new Vector3(0,.060f,.025f),end=new Vector3(0,.105f,.020f),radius=.066f},
+            new HskiHairDynamics.BodyCollider{anchor=bone("Neck"),start=Vector3.zero,end=new Vector3(0,.040f,0),radius=.030f},
+            new HskiHairDynamics.BodyCollider{anchor=bone("Spine2"),start=new Vector3(-.11f,.018f,-.005f),end=new Vector3(.11f,.018f,-.005f),radius=.050f}
+        };
+        demo.hair=hair;demo.recordingVersion="v16";demo.continuousActions=true;
+        var validation=demo.gameObject.GetComponent<HskiHairValidation>();if(!validation)validation=demo.gameObject.AddComponent<HskiHairValidation>();
+        validation.demo=demo;validation.hair=hair; var geometry=demo.gameObject.AddComponent<HskiHairGeometryAudit>();geometry.demo=demo;geometry.hair=hair;var live=demo.gameObject.AddComponent<HskiHairLiveAudit>();live.demo=demo;
+        EditorSceneManager.SaveScene(scene,"Assets/PortfolioPreview/HSKI_Showcase_v16.unity");AssetDatabase.SaveAssets();
+        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_v16.unity"},locationPathName="E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_v16/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
+        if(result.summary.result!=BuildResult.Succeeded)throw new Exception("Hair player build failed");
+        Debug.Log("HSKI_HAIR_V16_BUILT");
+    }
+    public static void Probe()
+    {
+        Directory.CreateDirectory(Out);
+        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
+        var s=new StringBuilder();
+        s.AppendLine("Actor="+demo.actor.name+" head="+demo.lighting.Head.name+" scale="+demo.actor.transform.lossyScale.ToString("F5"));
+        foreach(var t in demo.actor.GetComponentsInChildren<Transform>(true))
+            s.AppendLine("BONE\t"+t.name+"\t"+(t.parent?t.parent.name:"")+"\t"+t.position.ToString("F6")+"\t"+t.localPosition.ToString("F6"));
+        foreach(var r in demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            s.AppendLine("MESH\t"+r.name+"\t"+string.Join(",",r.bones.Select(b=>b?b.name:"NULL")));
+        foreach(var c in demo.actor.GetComponentsInChildren<MonoBehaviour>(true))
+            s.AppendLine("SCRIPT\t"+(c?c.GetType().FullName:"MISSING"));
+        File.WriteAllText(Out+"/rig_probe.txt",s.ToString());
+        Debug.Log("HSKI_HAIR_PROBE_COMPLETE");
+    }
+    public static void InspectBindings(){
+        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v16.unity");var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();var s=new StringBuilder();
+        var f=demo.face;for(int i=0;i<f.sharedMaterials.Length;i++){var m=f.sharedMaterials[i];s.AppendLine($"FACE slot={i} name={m.name} shader={m.shader.name} type={(m.HasProperty("_ShaderType")?m.GetFloat("_ShaderType"):-1)} triangles={f.sharedMesh.GetTriangles(i).Length/3}");}
+        var r=demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(x=>x.name=="Geo_Hair");var w=r.sharedMesh.boneWeights;
+        foreach(int i in new[]{1165,1167,1081,1178,1112,14164,2383,14247,2621,13071,2196,9054}){var b=w[i];s.AppendLine($"VERTEX {i}: {r.bones[b.boneIndex0].name}={b.weight0} {r.bones[b.boneIndex1].name}={b.weight1} {r.bones[b.boneIndex2].name}={b.weight2} {r.bones[b.boneIndex3].name}={b.weight3}");}
+        var body=demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(x=>x.name=="Geo_Body");var bodyw=body.sharedMesh.boneWeights;var handids=new List<string>();for(int i=0;i<bodyw.Length;i++){var bw=bodyw[i];int[] bi={bw.boneIndex0,bw.boneIndex1,bw.boneIndex2,bw.boneIndex3};float[] ws={bw.weight0,bw.weight1,bw.weight2,bw.weight3};float left=0,right=0;for(int j=0;j<4;j++){var n=body.bones[bi[j]].name;if(n.StartsWith("LeftHand"))left+=ws[j];if(n.StartsWith("RightHand"))right+=ws[j];}handids.Add(i+","+left+","+right);}File.WriteAllLines("E:/ArinLee/简历/work/hski_hair_audit/body_hand_weights.csv",handids);File.WriteAllText("E:/ArinLee/简历/work/hski_hair_audit/face_binding_inspection.txt",s.ToString());Debug.Log("FACE_BINDINGS_INSPECTED");
+    }
+}
+
+
+
+
+
+
+
+

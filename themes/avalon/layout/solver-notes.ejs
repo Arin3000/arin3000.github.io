@@ -1,0 +1,31 @@
+<article class="article-page solver-notes section-reveal">
+  <header class="article-hero <%= page.cover ? 'has-cover' : '' %>">
+    <% if (page.cover) { %>
+      <div class="article-meta-outside">
+        <p class="eyebrow"><%= page.categories && page.categories.length ? page.categories.first().name : 'Note' %></p>
+        <time><%= date(page.date, 'YYYY.MM.DD') %></time>
+      </div>
+      <img src="<%- url_for(page.cover) %>" alt="">
+      <div class="article-hero-copy">
+        <h1><%= page.title %></h1>
+      </div>
+    <% } else { %>
+      <p class="eyebrow"><%= page.categories && page.categories.length ? page.categories.first().name : 'Note' %></p>
+      <h1><%= page.title %></h1>
+      <time><%= date(page.date, 'YYYY.MM.DD') %></time>
+    <% } %>
+  </header>
+  <div class="article-content">
+    <%- page.content %>
+  </div>
+</article>
+
+<style>
+.solver-notes .article-content { overflow-wrap: anywhere; }
+.solver-notes .article-content > table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 24px 0; font-size: .93em; }
+.solver-notes .article-content > table th, .solver-notes .article-content > table td { padding: 12px 15px; border: 1px solid rgba(90,100,120,.22); min-width: 110px; vertical-align: top; text-align: left; }
+.solver-notes .article-content > table th { background: rgba(120,140,170,.12); }
+.solver-notes .article-content img { max-width: 100%; height: auto; }
+.solver-notes .article-content figure.highlight { max-width: 100%; overflow-x: auto; margin-left: 0; margin-right: 0; }
+.solver-notes .article-content pre { overflow-wrap: normal; }
+</style>

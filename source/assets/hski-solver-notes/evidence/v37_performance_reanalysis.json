@@ -1,0 +1,373 @@
+{
+  "analysisDate": "2026-09-16",
+  "scope": "Existing v37 capture reanalysis; no new benchmark run; no v8/v16 measured timing supplied.",
+  "timingScope": "Sample + Step + ApplyDetails to EndOfFrame; not isolated solver CPU or full wall-clock frame timing.",
+  "rawRows": 4250,
+  "initialRowsExcluded": 10,
+  "percentileMethod": "linear interpolation at (N-1)*p; CSV rounded to 0.0001 ms",
+  "overall": {
+    "frames": 4240,
+    "measuredIntervalSumSeconds": 9.993495699999999,
+    "meanMs": 2.356956533018868,
+    "medianMs": 2.2987,
+    "p95Ms": 2.607,
+    "p99Ms": 2.8099979999999993,
+    "maximumMs": 21.0949,
+    "intervalEquivalentFps": 424.27596181384257,
+    "onePercentLowEquivalentFps": 260.98124091117654,
+    "worstOnePercentCount": 43,
+    "overBudget": {
+      "30": {
+        "budgetMs": 33.333333333333336,
+        "count": 0,
+        "percent": 0.0
+      },
+      "60": {
+        "budgetMs": 16.666666666666668,
+        "count": 2,
+        "percent": 0.04716981132075472
+      },
+      "120": {
+        "budgetMs": 8.333333333333334,
+        "count": 2,
+        "percent": 0.04716981132075472
+      },
+      "240": {
+        "budgetMs": 4.166666666666667,
+        "count": 3,
+        "percent": 0.07075471698113207
+      }
+    }
+  },
+  "perAction": {
+    "0": {
+      "frames": 903,
+      "measuredIntervalSumSeconds": 2.1260756,
+      "meanMs": 2.3544580287929127,
+      "medianMs": 2.3139,
+      "p95Ms": 2.5764799999999997,
+      "p99Ms": 2.761384,
+      "maximumMs": 3.1927,
+      "intervalEquivalentFps": 424.72619506098465,
+      "onePercentLowEquivalentFps": 341.74364442257286,
+      "worstOnePercentCount": 10,
+      "overBudget": {
+        "30": {
+          "budgetMs": 33.333333333333336,
+          "count": 0,
+          "percent": 0.0
+        },
+        "60": {
+          "budgetMs": 16.666666666666668,
+          "count": 0,
+          "percent": 0.0
+        },
+        "120": {
+          "budgetMs": 8.333333333333334,
+          "count": 0,
+          "percent": 0.0
+        },
+        "240": {
+          "budgetMs": 4.166666666666667,
+          "count": 0,
+          "percent": 0.0
+        }
+      }
+    },
+    "1": {
+      "frames": 1108,
+      "measuredIntervalSumSeconds": 2.5999754,
+      "meanMs": 2.346548194945848,
+      "medianMs": 2.28535,
+      "p95Ms": 2.581255,
+      "p99Ms": 2.7308270000000006,
+      "maximumMs": 20.4745,
+      "intervalEquivalentFps": 426.15787826300203,
+      "onePercentLowEquivalentFps": 232.61043180249825,
+      "worstOnePercentCount": 12,
+      "overBudget": {
+        "30": {
+          "budgetMs": 33.333333333333336,
+          "count": 0,
+          "percent": 0.0
+        },
+        "60": {
+          "budgetMs": 16.666666666666668,
+          "count": 1,
+          "percent": 0.09025270758122744
+        },
+        "120": {
+          "budgetMs": 8.333333333333334,
+          "count": 1,
+          "percent": 0.09025270758122744
+        },
+        "240": {
+          "budgetMs": 4.166666666666667,
+          "count": 1,
+          "percent": 0.09025270758122744
+        }
+      }
+    },
+    "2": {
+      "frames": 2229,
+      "measuredIntervalSumSeconds": 5.2674447,
+      "meanMs": 2.363142530282638,
+      "medianMs": 2.2977,
+      "p95Ms": 2.63616,
+      "p99Ms": 2.838951999999999,
+      "maximumMs": 21.0949,
+      "intervalEquivalentFps": 423.16533479696517,
+      "onePercentLowEquivalentFps": 257.9718922799107,
+      "worstOnePercentCount": 23,
+      "overBudget": {
+        "30": {
+          "budgetMs": 33.333333333333336,
+          "count": 0,
+          "percent": 0.0
+        },
+        "60": {
+          "budgetMs": 16.666666666666668,
+          "count": 1,
+          "percent": 0.04486316733961417
+        },
+        "120": {
+          "budgetMs": 8.333333333333334,
+          "count": 1,
+          "percent": 0.04486316733961417
+        },
+        "240": {
+          "budgetMs": 4.166666666666667,
+          "count": 2,
+          "percent": 0.08972633467922835
+        }
+      }
+    }
+  },
+  "actionFirstSamples": [
+    {
+      "frame": "0",
+      "action": "0",
+      "actionTime": "0.001000",
+      "frameMs": "21.5440",
+      "fps": "46.417",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.223478",
+      "maxStaticPenetration": "0.000355",
+      "maxFrontStaticPenetration": "0.000355",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "913",
+      "action": "1",
+      "actionTime": "0.002618",
+      "frameMs": "20.4745",
+      "fps": "48.841",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.223478",
+      "maxStaticPenetration": "0.000355",
+      "maxFrontStaticPenetration": "0.000355",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "2021",
+      "action": "2",
+      "actionTime": "0.002447",
+      "frameMs": "21.0949",
+      "fps": "47.405",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.223483",
+      "maxStaticPenetration": "0.000354",
+      "maxFrontStaticPenetration": "0.000354",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    }
+  ],
+  "worstTenIncludedSamples": [
+    {
+      "frame": "2021",
+      "action": "2",
+      "actionTime": "0.002447",
+      "frameMs": "21.0949",
+      "fps": "47.405",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.223483",
+      "maxStaticPenetration": "0.000354",
+      "maxFrontStaticPenetration": "0.000354",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "913",
+      "action": "1",
+      "actionTime": "0.002618",
+      "frameMs": "20.4745",
+      "fps": "48.841",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.223478",
+      "maxStaticPenetration": "0.000355",
+      "maxFrontStaticPenetration": "0.000355",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "3009",
+      "action": "2",
+      "actionTime": "2.363552",
+      "frameMs": "6.6669",
+      "fps": "149.995",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.228332",
+      "maxStaticPenetration": "0.004538",
+      "maxFrontStaticPenetration": "0.004538",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "825",
+      "action": "0",
+      "actionTime": "1.962890",
+      "frameMs": "3.1927",
+      "fps": "313.215",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.240151",
+      "maxStaticPenetration": "0.002038",
+      "maxFrontStaticPenetration": "0.002038",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "546",
+      "action": "0",
+      "actionTime": "1.305924",
+      "frameMs": "3.1280",
+      "fps": "319.693",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.245634",
+      "maxStaticPenetration": "0.002833",
+      "maxFrontStaticPenetration": "0.001775",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "3923",
+      "action": "2",
+      "actionTime": "4.506753",
+      "frameMs": "3.0503",
+      "fps": "327.837",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.228430",
+      "maxStaticPenetration": "0.010360",
+      "maxFrontStaticPenetration": "0.010360",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "2094",
+      "action": "2",
+      "actionTime": "0.201228",
+      "frameMs": "3.0502",
+      "fps": "327.847",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.224699",
+      "maxStaticPenetration": "0.002871",
+      "maxFrontStaticPenetration": "0.002871",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "2144",
+      "action": "2",
+      "actionTime": "0.328686",
+      "frameMs": "3.0495",
+      "fps": "327.923",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.227133",
+      "maxStaticPenetration": "0.002727",
+      "maxFrontStaticPenetration": "0.002727",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "507",
+      "action": "0",
+      "actionTime": "1.210347",
+      "frameMs": "3.0452",
+      "fps": "328.386",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.241826",
+      "maxStaticPenetration": "0.002046",
+      "maxFrontStaticPenetration": "0.002046",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    },
+    {
+      "frame": "2100",
+      "action": "2",
+      "actionTime": "0.217513",
+      "frameMs": "3.0400",
+      "fps": "328.947",
+      "windStrength": "0.000000",
+      "windTarget": "0.000000",
+      "headLinearSpeed": "0.000000",
+      "headAngularSpeed": "0.0000",
+      "maxDeviation": "0.224751",
+      "maxStaticPenetration": "0.003037",
+      "maxFrontStaticPenetration": "0.003037",
+      "maxFrontMeshPenetration": "0.000000",
+      "finite": "True"
+    }
+  ],
+  "nonfiniteAllRows": 0,
+  "sources": [
+    {
+      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\realtime_fps.csv",
+      "sha256": "4c8c613f16d28ab4e2ed81fc2d5173c7c54c34ffe562049af370e26777d5d0b3"
+    },
+    {
+      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\performance.json",
+      "sha256": "ded0fe8382fea5a64c8257ac8cfb82eedfcdc5c6b966df55e24dcb593fbae15d"
+    },
+    {
+      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\collider_configuration.json",
+      "sha256": "b2e20903a526fd67904707ac9975d24e6fafa3beb6d1e6c7a115acedbc0267f7"
+    }
+  ]
+}

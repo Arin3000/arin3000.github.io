@@ -1,0 +1,135 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+// Shared, conservative contact envelope per front curl, including triangle
+// interiors. Release is damped; all material layers share the displacement.
+public class HskiHairContactMesh : MonoBehaviour
+{
+    [Serializable] public class Binding {
+        public SkinnedMeshRenderer source;public float[] left,right,leftT,rightT,faceBendWeight;
+        public Vector3[] referenceChestRest;public float[] referenceDrapeT;
+        [NonSerialized] public Mesh mesh;
+        [NonSerialized] public MeshRenderer output;
+        [NonSerialized] public Vector3[] points,world,normals;
+        [NonSerialized] public Vector3[] chestRest;
+        [NonSerialized] public float[] drapeWeights;
+        [NonSerialized] public float[] drapeTs;
+        [NonSerialized] public Vector4[] tangents;
+        [NonSerialized] public float[][] fade;
+        [NonSerialized] public int[][] triangles;
+        [NonSerialized] public Matrix4x4 matrix,inverse;
+    }
+    public Binding[] bindings;
+    public HskiHairBodySurface surface;
+    public Transform head,leftRoot,rightRoot;
+    public HskiHairLocalContact localContact;
+    public HskiHairSleeveContact sleeveContact;
+    public HskiHairFaceBend faceBend;
+    public HskiHandHairContact handContact;
+    public HskiHairJawContact jawContact;
+    public bool useAuthoredReference;public Quaternion referenceHeadInChest=Quaternion.identity;
+    public float MaxPenetration {get;private set;}
+    public float MaxCorrection {get;private set;}
+    public float EnvelopeJump {get;private set;}
+    public Vector2 Envelope => new Vector2(envelope[0],envelope[1]);
+    readonly float[] envelope=new float[2];
+    bool ready,pending;float step;
+    MaterialPropertyBlock materialProperties;
+    Quaternion referenceChest,referenceHead;bool referenceReady;
+    public void ResetEnvelope(){ready=false;if(sleeveContact)sleeveContact.ResetContact();if(faceBend)faceBend.ResetContact();if(handContact)handContact.ResetContact();if(jawContact)jawContact.ResetContact();}
+    public void BeginStep(float delta){step=delta;pending=true;EnvelopeJump=0;}
+    void Bake(Binding b)
+    {
+        if(!b.mesh){
+            b.mesh=new Mesh{name=b.source.name+" contact surface"};b.mesh.MarkDynamic();
+            var go=new GameObject(b.source.name+"_ContactSurface");go.layer=b.source.gameObject.layer;go.transform.SetParent(b.source.transform,false);
+            go.AddComponent<MeshFilter>().sharedMesh=b.mesh;b.output=go.AddComponent<MeshRenderer>();b.output.sharedMaterials=b.source.sharedMaterials;
+            b.output.shadowCastingMode=b.source.shadowCastingMode;b.output.receiveShadows=b.source.receiveShadows;
+            b.output.lightProbeUsage=b.source.lightProbeUsage;b.output.reflectionProbeUsage=b.source.reflectionProbeUsage;b.source.enabled=false;
+            b.source.BakeMesh(b.mesh);var sourceTriangles=b.mesh.triangles;b.triangles=new int[2][];
+            for(int side=0;side<2;side++){
+                var weights=side==0?b.left:b.right;var selected=new List<int>();
+                for(int i=0;i<sourceTriangles.Length;i+=3){int a=sourceTriangles[i],c=sourceTriangles[i+1],d=sourceTriangles[i+2];
+                    if(Mathf.Min(weights[a],Mathf.Min(weights[c],weights[d]))<.1f)continue;
+                    selected.Add(a);selected.Add(c);selected.Add(d);
+                }b.triangles[side]=selected.ToArray();
+            }
+        }
+        if(materialProperties==null)materialProperties=new MaterialPropertyBlock();b.source.GetPropertyBlock(materialProperties);b.output.SetPropertyBlock(materialProperties);
+        b.source.BakeMesh(b.mesh);b.points=b.mesh.vertices;b.normals=b.mesh.normals;b.tangents=b.mesh.tangents;
+        b.matrix=b.source.transform.localToWorldMatrix;b.inverse=b.source.transform.worldToLocalMatrix;
+        if(b.world==null){b.world=new Vector3[b.points.Length];b.fade=new[]{new float[b.points.Length],new float[b.points.Length]};}
+        for(int i=0;i<b.points.Length;i++)b.world[i]=b.matrix.MultiplyPoint3x4(b.points[i]);
+        if(!referenceReady){referenceChest=surface.chest.rotation;referenceHead=head.rotation;referenceReady=true;}
+        if(b.chestRest==null){b.chestRest=new Vector3[b.world.Length];b.drapeWeights=new float[b.world.Length];b.drapeTs=new float[b.world.Length];for(int i=0;i<b.world.Length;i++){
+            bool authored=useAuthoredReference&&b.referenceChestRest!=null&&b.referenceChestRest.Length==b.world.Length;
+            b.chestRest[i]=authored?b.referenceChestRest[i]:surface.chest.InverseTransformPoint(b.world[i]);var root=b.left[i]>b.right[i]?leftRoot:rightRoot;float distance=Vector3.Dot(head.up,root.position-b.world[i]);float t=authored?b.referenceDrapeT[i]:Mathf.Clamp01((distance-.045f)/.12f);b.drapeTs[i]=t;b.drapeWeights[i]=t*t*(3-2*t)*Mathf.Max(b.left[i],b.right[i]);}}
+        for(int side=0;side<2;side++){
+            var root=side==0?leftRoot:rightRoot;var weights=side==0?b.left:b.right;
+            for(int i=0;i<b.points.Length;i++){
+                float t=b.drapeTs[i];b.fade[side][i]=t*t*(3-2*t)*weights[i];
+            }
+        }
+    }
+    float Need(Vector3 position,float fade){return fade>.25f?surface.Penetration(position,.003f,out _)/fade:0;}
+    float Probe(Binding b,int side,bool audit)
+    {
+        float worst=0;var fade=b.fade[side];var weights=side==0?b.left:b.right;
+        for(int i=0;i<b.world.Length;i++)if(weights[i]>.1f&&fade[i]>.25f)worst=Mathf.Max(worst,audit?surface.Penetration(b.world[i],0,out _):Need(b.world[i],fade[i]));
+        var t=b.triangles[side];
+        for(int i=0;i<t.Length;i+=3){int a=t[i],c=t[i+1],d=t[i+2];
+            var center=(b.world[a]+b.world[c]+b.world[d])/3;float f=(fade[a]+fade[c]+fade[d])/3;
+            if(f>.25f)worst=Mathf.Max(worst,audit?surface.Penetration(center,0,out _):Need(center,f));
+            for(int e=0;e<3;e++){int j=t[i+e],k=t[i+(e+1)%3];var mid=(b.world[j]+b.world[k])*.5f;float m=(fade[j]+fade[k])*.5f;
+                if(m>.25f)worst=Mathf.Max(worst,audit?surface.Penetration(mid,0,out _):Need(mid,m));}
+        }return worst;
+    }
+    static Vector3 Transport(Vector3 normal,Vector3 gradient,Vector3 push)
+    {return (normal-gradient*Vector3.Dot(push,normal)/Mathf.Max(.2f,1+Vector3.Dot(gradient,push))).normalized;}
+    public void Refresh(bool contact)
+    {
+        MaxPenetration=MaxCorrection=0;if(bindings==null)return;
+        foreach(var b in bindings)if(b.source)Bake(b);
+        if(!contact||!surface){if(handContact)handContact.PublishBody();return;}
+        foreach(var b in bindings)if(b.source){
+            var rotation=surface.chest.rotation*(useAuthoredReference?referenceHeadInChest:Quaternion.Inverse(referenceChest)*referenceHead)*Quaternion.Inverse(head.rotation);
+            for(int i=0;i<b.world.Length;i++){
+                float follow=b.drapeWeights[i];
+                float headY=head.InverseTransformPoint(b.world[i]).y;follow*=Mathf.SmoothStep(0,1,Mathf.InverseLerp(-.015f,-.075f,headY));
+                if(follow<=0)continue;var q=Quaternion.Slerp(Quaternion.identity,rotation,follow);
+                b.world[i]=Vector3.Lerp(b.world[i],surface.chest.TransformPoint(b.chestRest[i]),follow);
+                b.normals[i]=b.matrix.transpose.MultiplyVector(q*b.inverse.transpose.MultiplyVector(b.normals[i])).normalized;
+                if(b.tangents.Length==b.world.Length){var v=b.tangents[i];var n=b.matrix.transpose.MultiplyVector(q*b.inverse.transpose.MultiplyVector(new Vector3(v.x,v.y,v.z))).normalized;b.tangents[i]=new Vector4(n.x,n.y,n.z,v.w);}
+            }
+        }
+        for(int side=0;side<2;side++){
+            float required=0;foreach(var b in bindings)if(b.source)required=Mathf.Max(required,Probe(b,side,false));
+            if(pending){float old=envelope[side];required=Mathf.Min(required,.045f);envelope[side]=ready?Mathf.Max(required,Mathf.Lerp(old,required,1-Mathf.Exp(-4*step))):required;EnvelopeJump=ready?Mathf.Max(EnvelopeJump,Mathf.Abs(envelope[side]-old)):0;}
+        }
+        bool advance=pending;ready=true;pending=false;
+        foreach(var b in bindings){if(!b.source)continue;
+            var normalToWorld=b.inverse.transpose;var normalToLocal=b.matrix.transpose;
+            for(int side=0;side<2;side++){
+                var root=side==0?leftRoot:rightRoot;var weights=side==0?b.left:b.right;
+                for(int i=0;i<b.world.Length;i++)if(b.fade[side][i]>0){
+                    float movement=envelope[side]*b.fade[side][i];
+                    float t=b.drapeTs[i];
+                    var gradient=-surface.chest.up*(6*t*(1-t)/.12f*weights[i]*envelope[side]);var push=surface.chest.forward;
+                    if(b.normals.Length==b.points.Length)b.normals[i]=normalToLocal.MultiplyVector(Transport(normalToWorld.MultiplyVector(b.normals[i]).normalized,gradient,push)).normalized;
+                    // Original Tangent.xyz stores an authored outline normal.
+                    if(b.tangents.Length==b.points.Length){var v=b.tangents[i];var n=normalToLocal.MultiplyVector(Transport(normalToWorld.MultiplyVector(new Vector3(v.x,v.y,v.z)).normalized,gradient,push)).normalized;b.tangents[i]=new Vector4(n.x,n.y,n.z,v.w);}
+                    b.world[i]+=push*movement;MaxCorrection=Mathf.Max(MaxCorrection,movement);
+                }
+            }
+            for(int side=0;side<2;side++)MaxPenetration=Mathf.Max(MaxPenetration,Probe(b,side,true));
+            for(int i=0;i<b.points.Length;i++)b.points[i]=b.inverse.MultiplyPoint3x4(b.world[i]);
+            b.mesh.vertices=b.points;b.mesh.normals=b.normals;b.mesh.tangents=b.tangents;b.mesh.RecalculateBounds();
+        }
+        if(sleeveContact)sleeveContact.Apply(advance,step);
+        if(faceBend)faceBend.Apply(advance,step);
+        if(jawContact)jawContact.Apply(advance,step);
+        if(handContact)handContact.Apply(advance,step);
+    }
+    void OnDestroy(){if(bindings!=null)foreach(var b in bindings){if(b.mesh)Destroy(b.mesh);if(b.source)b.source.enabled=true;}}
+}

@@ -1,0 +1,28 @@
+{
+  "version": "v37_native_registration_order",
+  "parameterChanges": 0,
+  "resolvedRegistrationSlots": 17,
+  "totalSlots": 19,
+  "unresolvedSlots": [
+    4,
+    5
+  ],
+  "handAuditCases": 48,
+  "uniqueTimes": 24,
+  "viewMaxPositionDifference": 0.0,
+  "nonfiniteFrames": 0,
+  "sourceHashes": {
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\HskiHair0070.json": "b2e20903a526fd67904707ac9975d24e6fafa3beb6d1e6c7a115acedbc0267f7",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\HskiHairBuilder.cs": "840f5c9cb71c6875c85f840455456fdb59719e69901acf5735551ef8d25e8756",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\HskiAutoWindDemoRecorder.cs": "f2e51cb188533545a9cf0b2ef7b981ef6dfaa58103cef3c5a7f1ad7532938b71",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\ActorAnimationSwingSolver.cs": "77e63282a664ae17864c07d7467b6adb2fcef258b9d6aede9f2955afa2a456f5",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\ActorSwingHandAudit.cs": "e206430fbd52b95432599efaee15713e2cbc7afbf64234d3b4e1a35d2b3bd469",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\actor_animation_solver\\apply_registration_order.py": "50103bcd1bc1e198c4fec5e1954376ba14de2b26d258f6874d7a92b3bbd90dd4",
+    "E:\\ArinLee\\\u7b80\u5386\\work\\build_hski_collision_config.py": "2698549d7f484b018f010b60de11afd02e00d2c6cdf1792cb19bab7a43d02beb"
+  },
+  "outputHashes": {
+    "E:\\ArinLee\\\u7b80\u5386\\output\\HSKI_Hair_v37_hand_audit_wind0\\hand_collision_trace.jsonl": "a30663ee8d76a110ecf8e1de18bb4ab504ac9eb813ddd74073ba99d4435123b2",
+    "E:\\ArinLee\\\u7b80\u5386\\output\\HSKI_Hair_v37_hand_audit_wind0\\HSKI_Hair_3Actions_Wind0.mp4": "78fb394d35732ceb2842f2cb3b30c039758b22a77499db4b08c4bfccbf6ce9d1",
+    "E:\\ArinLee\\\u7b80\u5386\\output\\HSKI_Hair_v37_hand_audit_wind0\\HSKI_RearHair_BackView_Audit.mp4": "1612194f10cce27a0e9bf8d97e8de9ae795a33a98bbe912310372f504a5c9936"
+  }
+}

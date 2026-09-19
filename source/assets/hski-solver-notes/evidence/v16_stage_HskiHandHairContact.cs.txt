@@ -1,0 +1,48 @@
+﻿using System;
+using UnityEngine;
+
+// Retargeted Doya palm contact. Solve the authored arm chain against the current
+// hair surface; retain finger animation and wrist orientation. No render-order hack.
+public class HskiHandHairContact : MonoBehaviour {
+ public HskiHairContactMesh contact;public HskiShowcase demo;
+ public Transform upper,fore,hand;public float[] handWeight;
+ public float Shift{get;private set;}public float Residual{get;private set;}public float Compression{get;private set;}
+ Mesh bodyMesh,renderMesh;MeshRenderer renderBody;MaterialPropertyBlock properties;float previous;const int W=180,H=200;
+ const float X0=-.22f,X1=.22f,Y0=-.22f,Y1=.23f,Clearance=.003f,Limit=.085f;
+ readonly float[] front=new float[W*H];
+ void Raster(){Array.Fill(front,float.NegativeInfinity);var chest=contact.surface.chest;
+  foreach(var b in contact.bindings){var p=new Vector3[b.world.Length];for(int i=0;i<p.Length;i++)p[i]=chest.InverseTransformPoint(b.world[i]);var ts=b.mesh.triangles;
+   for(int i=0;i<ts.Length;i+=3){int ia=ts[i],ib=ts[i+1],ic=ts[i+2];if(Mathf.Max(b.left[ia]+b.right[ia],Mathf.Max(b.left[ib]+b.right[ib],b.left[ic]+b.right[ic]))<.3f)continue;var a=p[ia];var b1=p[ib];var c=p[ic];float den=(b1.y-c.y)*(a.x-c.x)+(c.x-b1.x)*(a.y-c.y);if(Mathf.Abs(den)<1e-12f)continue;
+    int l=Mathf.Max(0,Mathf.CeilToInt((Mathf.Min(a.x,Mathf.Min(b1.x,c.x))-X0)/(X1-X0)*(W-1))),r=Mathf.Min(W-1,Mathf.FloorToInt((Mathf.Max(a.x,Mathf.Max(b1.x,c.x))-X0)/(X1-X0)*(W-1)));
+    int lo=Mathf.Max(0,Mathf.CeilToInt((Mathf.Min(a.y,Mathf.Min(b1.y,c.y))-Y0)/(Y1-Y0)*(H-1))),hi=Mathf.Min(H-1,Mathf.FloorToInt((Mathf.Max(a.y,Mathf.Max(b1.y,c.y))-Y0)/(Y1-Y0)*(H-1)));
+    for(int y=lo;y<=hi;y++)for(int x=l;x<=r;x++){float px=Mathf.Lerp(X0,X1,x/(W-1f)),py=Mathf.Lerp(Y0,Y1,y/(H-1f));float wa=((b1.y-c.y)*(px-c.x)+(c.x-b1.x)*(py-c.y))/den,wb=((c.y-a.y)*(px-c.x)+(a.x-c.x)*(py-c.y))/den,wc=1-wa-wb;if(Mathf.Min(wa,Mathf.Min(wb,wc))<0)continue;front[y*W+x]=Mathf.Max(front[y*W+x],a.z*wa+b1.z*wb+c.z*wc);}
+   }
+  }
+ }
+ float Depth(Vector3 p){int x=Mathf.RoundToInt((p.x-X0)/(X1-X0)*(W-1)),y=Mathf.RoundToInt((p.y-Y0)/(Y1-Y0)*(H-1));if(x<0||x>=W||y<0||y>=H)return float.NegativeInfinity;return front[y*W+x];}
+ float Required(){if(!bodyMesh)bodyMesh=new Mesh();var body=contact.surface.body;body.BakeMesh(bodyMesh);var p=bodyMesh.vertices;var matrix=contact.surface.chest.worldToLocalMatrix*body.transform.localToWorldMatrix;float worst=0;
+  for(int i=0;i<p.Length;i++)if(handWeight[i]>.8f){var q=matrix.MultiplyPoint3x4(p[i]);float z=Depth(q);if(float.IsNegativeInfinity(z))continue;float d=z+Clearance-q.z;if(d>0&&d<.08f)worst=Mathf.Max(worst,d);}return worst;
+ }
+ static void Solve(Transform upper,Transform fore,Transform hand,Vector3 target){var a=upper.position;var b=fore.position;var c=hand.position;var wrist=hand.rotation;float l1=Vector3.Distance(a,b),l2=Vector3.Distance(b,c);var v=target-a;float distance=Mathf.Clamp(v.magnitude,Mathf.Abs(l1-l2)+.0001f,l1+l2-.0001f);var dir=v.normalized;var pole=Vector3.ProjectOnPlane(b-a,dir).normalized;if(pole.sqrMagnitude<.1f)pole=Vector3.Cross(dir,upper.forward).normalized;float x=(l1*l1-l2*l2+distance*distance)/(2*distance);var joint=a+dir*x+pole*Mathf.Sqrt(Mathf.Max(0,l1*l1-x*x));upper.rotation=Quaternion.FromToRotation(b-a,joint-a)*upper.rotation;fore.rotation=Quaternion.FromToRotation(hand.position-fore.position,a+dir*distance-fore.position)*fore.rotation;hand.rotation=wrist;}
+ public void ResetContact(){previous=0;}
+ public void Apply(bool advance,float dt){Shift=Residual=Compression=0;if(demo.action!=0||demo.workbenchActive){previous=0;PublishBody();return;}Raster();float required=Required();// This source gesture reaches the hair at 0.77 s. Ease into its
+  // measured contact layer beforehand, avoiding a one-frame emergency jump.
+  float seconds=demo.actor.GetCurrentAnimatorStateInfo(0).normalizedTime*demo.durations[0];
+  float anticipation=.074f*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.54f,.90f,seconds));required=Mathf.Max(required,anticipation);
+  float release=advance?previous*Mathf.Exp(-14*dt):previous;float move=Mathf.Min(Limit,Mathf.Max(required,release));if(move<.00005f){PublishBody();return;}
+  var start=hand.position;Solve(upper,fore,hand,start+contact.surface.chest.forward*move);
+  // The bent elbow changes the palm projection slightly. Recheck the skinned
+  // palm and fingers, instead of assuming wrist displacement equals clearance.
+  for(int it=0;it<2;it++){float extra=Required();if(extra<.00015f||move>=Limit)break;extra=Mathf.Min(extra,Limit-move);Solve(upper,fore,hand,hand.position+contact.surface.chest.forward*extra);move+=extra;}
+  Shift=Vector3.Distance(start,hand.position);Residual=Required();if(advance)previous=move;
+  PressHair();PublishBody();
+ }
+ void PressHair(){
+  // The contact hand stays outside the hair. A 2 mm soft indentation makes
+  // pressure visible while keeping the drape/garment envelope almost unchanged.
+  var body=contact.surface.body;body.BakeMesh(bodyMesh);var bp=bodyMesh.vertices;var chest=contact.surface.chest;var matrix=chest.worldToLocalMatrix*body.transform.localToWorldMatrix;var palm=new System.Collections.Generic.List<Vector3>();var seen=new System.Collections.Generic.HashSet<Vector3Int>();for(int i=0;i<bp.Length;i++)if(handWeight[i]>.9f){var q=matrix.MultiplyPoint3x4(bp[i]);var key=new Vector3Int(Mathf.RoundToInt(q.x/.008f),Mathf.RoundToInt(q.y/.008f),Mathf.RoundToInt(q.z/.008f));if(seen.Add(key))palm.Add(q);}
+  foreach(var b in contact.bindings){var original=(Vector3[])b.world.Clone();bool changed=false;for(int i=0;i<b.world.Length;i++){float mask=Mathf.Max(b.left[i],b.right[i]);if(mask<.3f)continue;var p=chest.InverseTransformPoint(b.world[i]);float best=.018f*.018f;foreach(var q in palm){if(q.z<p.z-.002f)continue;float d=(p-q).sqrMagnitude;if(d<best)best=d;}float press=.002f*Mathf.SmoothStep(0,1,1-Mathf.Sqrt(best)/.018f)*mask;if(press<=0)continue;b.world[i]-=chest.forward*press;Compression=Mathf.Max(Compression,press);changed=true;}if(changed)HskiHairSleeveContact.UpdateMesh(b,original,b.mesh.triangles);}
+ }
+ public void PublishBody(){var source=contact.surface.body;if(!renderMesh){renderMesh=new Mesh{name="HSKI post-contact body"};renderMesh.MarkDynamic();var go=new GameObject("Geo_Body_ContactPose");go.layer=source.gameObject.layer;go.transform.SetParent(source.transform,false);go.AddComponent<MeshFilter>().sharedMesh=renderMesh;renderBody=go.AddComponent<MeshRenderer>();renderBody.sharedMaterials=source.sharedMaterials;renderBody.shadowCastingMode=source.shadowCastingMode;renderBody.receiveShadows=source.receiveShadows;renderBody.lightProbeUsage=source.lightProbeUsage;renderBody.reflectionProbeUsage=source.reflectionProbeUsage;properties=new MaterialPropertyBlock();source.enabled=false;}source.BakeMesh(renderMesh);source.GetPropertyBlock(properties);renderBody.SetPropertyBlock(properties);renderMesh.RecalculateBounds();}
+ void OnDestroy(){if(bodyMesh)Destroy(bodyMesh);if(renderMesh)Destroy(renderMesh);if(renderBody)Destroy(renderBody.gameObject);if(contact&&contact.surface&&contact.surface.body)contact.surface.body.enabled=true;}
+}

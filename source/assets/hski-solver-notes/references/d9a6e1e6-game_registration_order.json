@@ -1,0 +1,248 @@
+{
+  "pid": 39500,
+  "captureHeader": "2046c975cc0",
+  "scan": 11,
+  "captureSha256": "a80d0077781f917c6d761b6e383893ffe0712bfafa7a6a963f95c8301d6e174a",
+  "resolvedSlots": 17,
+  "totalSlots": 19,
+  "newIndexToLegacyIndex": [
+    13,
+    8,
+    9,
+    18,
+    11,
+    12,
+    10,
+    5,
+    16,
+    4,
+    6,
+    1,
+    7,
+    17,
+    15,
+    2,
+    3,
+    14,
+    0
+  ],
+  "unresolvedSlots": [
+    4,
+    5
+  ],
+  "unresolvedPolicy": "Keep legacy RightLeg/LeftLeg relative order inside captured slots 4/5; not asserted as game side order.",
+  "parameterChanges": 0,
+  "entries": [
+    {
+      "index": 0,
+      "source": "school-body",
+      "anchor": "Hips",
+      "type": 1,
+      "mask": 1,
+      "confirmed": true,
+      "legacyCandidates": [
+        13
+      ]
+    },
+    {
+      "index": 1,
+      "source": "school-body",
+      "anchor": "Hips",
+      "type": 1,
+      "mask": 1,
+      "confirmed": true,
+      "legacyCandidates": [
+        8
+      ]
+    },
+    {
+      "index": 2,
+      "source": "school-body",
+      "anchor": "Spine1",
+      "type": 1,
+      "mask": 8,
+      "confirmed": true,
+      "legacyCandidates": [
+        9
+      ]
+    },
+    {
+      "index": 3,
+      "source": "school-body",
+      "anchor": "Spine1",
+      "type": 1,
+      "mask": 8,
+      "confirmed": true,
+      "legacyCandidates": [
+        18
+      ]
+    },
+    {
+      "index": 4,
+      "source": "school-body",
+      "anchor": "RightLeg",
+      "type": 2,
+      "mask": 1,
+      "confirmed": false,
+      "legacyCandidates": [
+        11,
+        12
+      ]
+    },
+    {
+      "index": 5,
+      "source": "school-body",
+      "anchor": "LeftLeg",
+      "type": 2,
+      "mask": 1,
+      "confirmed": false,
+      "legacyCandidates": [
+        11,
+        12
+      ]
+    },
+    {
+      "index": 6,
+      "source": "school-body",
+      "anchor": "Spine2",
+      "type": 1,
+      "mask": 8,
+      "confirmed": true,
+      "legacyCandidates": [
+        10
+      ]
+    },
+    {
+      "index": 7,
+      "source": "school-body",
+      "anchor": "Spine2",
+      "type": 1,
+      "mask": 64,
+      "confirmed": true,
+      "legacyCandidates": [
+        5
+      ]
+    },
+    {
+      "index": 8,
+      "source": "school-body",
+      "anchor": "Spine2",
+      "type": 1,
+      "mask": 16,
+      "confirmed": true,
+      "legacyCandidates": [
+        16
+      ]
+    },
+    {
+      "index": 9,
+      "source": "school-body",
+      "anchor": "Neck",
+      "type": 1,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        4
+      ]
+    },
+    {
+      "index": 10,
+      "source": "school-body",
+      "anchor": "LeftArm",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        6
+      ]
+    },
+    {
+      "index": 11,
+      "source": "school-body",
+      "anchor": "RightArm",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        1
+      ]
+    },
+    {
+      "index": 12,
+      "source": "school-body",
+      "anchor": "LeftForeArm",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        7
+      ]
+    },
+    {
+      "index": 13,
+      "source": "school-body",
+      "anchor": "RightForeArm",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        17
+      ]
+    },
+    {
+      "index": 14,
+      "source": "school-body",
+      "anchor": "LeftHand",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        15
+      ]
+    },
+    {
+      "index": 15,
+      "source": "school-body",
+      "anchor": "LeftHand",
+      "type": 1,
+      "mask": 16,
+      "confirmed": true,
+      "legacyCandidates": [
+        2
+      ]
+    },
+    {
+      "index": 16,
+      "source": "school-body",
+      "anchor": "RightHand",
+      "type": 2,
+      "mask": 88,
+      "confirmed": true,
+      "legacyCandidates": [
+        3
+      ]
+    },
+    {
+      "index": 17,
+      "source": "school-body",
+      "anchor": "RightHand",
+      "type": 1,
+      "mask": 16,
+      "confirmed": true,
+      "legacyCandidates": [
+        14
+      ]
+    },
+    {
+      "index": 18,
+      "source": "base-face",
+      "anchor": "Head_Face",
+      "type": 1,
+      "mask": 65336,
+      "confirmed": true,
+      "legacyCandidates": [
+        0
+      ]
+    }
+  ]
+}

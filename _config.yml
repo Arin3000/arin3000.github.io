@@ -26,6 +26,7 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
+  - assets/hski-solver-notes/**
 
 # Writing
 new_post_name: :title.md

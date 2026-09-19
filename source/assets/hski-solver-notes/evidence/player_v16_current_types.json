@@ -1,0 +1,14 @@
+[
+  {
+    "fieldCount": 49,
+    "methodCount": 70,
+    "base": "UnityEngine.MonoBehaviour",
+    "type": "ActorAnimationSwingSolver"
+  },
+  {
+    "fieldCount": 0,
+    "methodCount": 1,
+    "base": "ActorAnimationSwingSolver",
+    "type": "HskiHairDynamics"
+  }
+]

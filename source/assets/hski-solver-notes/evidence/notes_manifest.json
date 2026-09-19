@@ -1,0 +1,159 @@
+{
+  "baseline": "v37",
+  "date": "2026-09-15",
+  "notes": [
+    {
+      "file": "01_逆向笔记.md",
+      "characters": 5250,
+      "lines": 139,
+      "sha256": "bd62f7e2eb3f013c1a11581d0bd87948a68eef71d6b0fed1abd190baf297c06f"
+    },
+    {
+      "file": "02_解算器制作笔记.md",
+      "characters": 6098,
+      "lines": 159,
+      "sha256": "aee1a75d85b78414535ad2a5af4963c4f47e551996ea5a2866f871e147ba0c34"
+    },
+    {
+      "file": "03_v37与v16及v8差异笔记.md",
+      "characters": 6682,
+      "lines": 142,
+      "sha256": "efa396ed2d37b1244093a6219e618bb94a0e9d45202c64fd701d9a8e0588caa9"
+    },
+    {
+      "file": "04_三版方案性能分析.md",
+      "characters": 8259,
+      "lines": 166,
+      "sha256": "b834f2d1978f422f530bff2e41306861009ce63217bf603825feaced9b2487d4"
+    }
+  ],
+  "sources": [
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairDynamics.v8_first.txt",
+      "snapshot": "v8_first_HskiHairDynamics.txt",
+      "sha256": "0d5d59aba51f236d2b20f229b1d81f699a75cb1f77ac558b61b4229f9ca0eb61",
+      "scope": "historical stage source; not claimed to be a reproducible final v8/v16 binary build"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairDynamics.cs",
+      "snapshot": "v16_stage_HskiHairDynamics.cs",
+      "sha256": "06430ebf2b060e67d2ed3ec47c6ca3344ab4d369ab5b371b16b5ae99458a674d",
+      "scope": "historical stage source; not claimed to be a reproducible final v8/v16 binary build"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairBuilder.cs",
+      "snapshot": "v16_stage_HskiHairBuilder.cs",
+      "sha256": "a6ecfb5d468adec6c878125020221f8326c7bd694aee859c4e0e1bac7767b9bf",
+      "scope": "historical stage source; not claimed to be a reproducible final v8/v16 binary build"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHandHairContact.cs",
+      "snapshot": "v16_stage_HskiHandHairContact.cs",
+      "sha256": "b4f876574caa44b748ce32d42bc4d28cb3bb8ac94c8b6ce1575500bf56797e29",
+      "scope": "historical stage source; not claimed to be a reproducible final v8/v16 binary build"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\output\\HSKI_EffectsPreview\\Player_v16\\HSKI_Showcase_Data\\Managed\\Assembly-CSharp.dll",
+      "sha256": "2fd7ac3961dc9ace20ce25326e547569e65666e2238a2bf9d4b9e05eabe54bda"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\build_v16shared.log",
+      "sha256": "be1571999f4c3edbfea8e5e2315d47a38badf087169dae2aa56236e01ec43446"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\actor_animation_solver\\ActorAnimationSwingSolver.cs",
+      "sha256": "77e63282a664ae17864c07d7467b6adb2fcef258b9d6aede9f2955afa2a456f5"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\actor_animation_solver\\native_evidence\\v37_registration_order\\manifest.json",
+      "sha256": "8287ab91e7cdfb25156ac08c8445b7b692c841d6bc86820ee9e93981c435235e"
+    }
+  ],
+  "linkCheck": "all 48 local link occurrences exist across four notes",
+  "historicalLimitations": [
+    "v8 initial source snapshot only; current Player_v8 data directory missing",
+    "current Player_v16 includes shared ActorAnimationSwingSolver; original release identity cannot be inferred from directory name",
+    "some v16 finalize-script referenced outputs are missing"
+  ],
+  "performanceAnalysisDate": "2026-09-16",
+  "performanceSources": [
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairContactMesh.cs",
+      "snapshot": "perf_v16_HskiHairContactMesh.cs",
+      "sha256": "f69c5cd53e15b92ea979287c5446de3f88f0ecfa1b566d05166711ab77506958",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairSleeveContact.cs",
+      "snapshot": "perf_v16_HskiHairSleeveContact.cs",
+      "sha256": "271d065b27925ff27d4b1f32f8dadee6d6fd45efa944399f62e028fe37116c30",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairJawContact.cs",
+      "snapshot": "perf_v16_HskiHairJawContact.cs",
+      "sha256": "9cdd19d1c75913ae46bb93237efb0593d68f66bc441ad64a417be198384b79be",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairBodySurface.cs",
+      "snapshot": "perf_v16_HskiHairBodySurface.cs",
+      "sha256": "3cee88c318d7ab3c31aecca0a9ef7d1c994d4711a131ca3f06a0f85b347530b8",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiFaceSkinSurface.cs",
+      "snapshot": "perf_v16_HskiFaceSkinSurface.cs",
+      "sha256": "1a4351a80a31455d87eef5a09565efe65831f36a096ec3cc048b166169ee3b73",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairLiveAudit.cs",
+      "snapshot": "perf_v16_HskiHairLiveAudit.cs",
+      "sha256": "0958c79da1497f10f6ae0efce34321c4258240857ea594fa0397b2beaae9b8ff",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\hski_hair_audit\\HskiHairValidation.cs",
+      "snapshot": "perf_v16_HskiHairValidation.cs",
+      "sha256": "e41e1e0330425729d3848fd24f35f6ce6917fa546b77351d2bf1f0fb4e1cc7e3",
+      "scope": "Reviewed source path; historical v16 release binary identity remains unverified"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\actor_animation_solver\\ActorAnimationSwingSolver.cs",
+      "snapshot": "perf_v37_ActorAnimationSwingSolver.cs",
+      "sha256": "77e63282a664ae17864c07d7467b6adb2fcef258b9d6aede9f2955afa2a456f5",
+      "scope": "Reviewed current v37 source"
+    },
+    {
+      "source": "E:\\ArinLee\\简历\\work\\actor_animation_solver\\HskiAutoWindDemoRecorder.cs",
+      "snapshot": "perf_v37_HskiAutoWindDemoRecorder.cs",
+      "sha256": "f2e51cb188533545a9cf0b2ef7b981ef6dfaa58103cef3c5a7f1ad7532938b71",
+      "scope": "Reviewed current v37 source"
+    }
+  ],
+  "performanceArtifacts": [
+    {
+      "file": "analyze_performance.py",
+      "sha256": "05e3762e8ed19be665db114458f34b91895828e06e36da3d2bdb7f5e6fbbe6a7"
+    },
+    {
+      "file": "finalize_performance_notes.py",
+      "sha256": "8ccdd6f56b073a5ac414d7778509c15c8aeb8c88b35496860d7df82ea3e8e0ba"
+    },
+    {
+      "file": "v37_performance_reanalysis.json",
+      "sha256": "6ab3116390dd028e7c4b182c8f91d2eb5c434b41f035671b0dd43e8a79406620"
+    },
+    {
+      "file": "v37_frame_intervals.png",
+      "sha256": "1db5086014cb7fd9ce7891dc600d13419c19676003c074de910a8b02851c1fb6"
+    }
+  ],
+  "performanceLimitations": [
+    "Existing v37 short run only; no new player run and no comparable original v8/v16 timings.",
+    "v37 frameMs is sample-to-EndOfFrame timing, not isolated solver CPU or complete wall-clock frame timing.",
+    "Action-start spikes correlate with reset; no per-stage timing establishing causation.",
+    "Static source analysis does not supply measured CPU/GPU/GC/memory cost rankings."
+  ]
+}

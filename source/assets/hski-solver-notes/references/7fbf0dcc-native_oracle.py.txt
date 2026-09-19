@@ -1,0 +1,289 @@
+"""Execute captured x64 math functions offline; never attach to the game.
+
+IL2CPP initialization, standard scalar math and stream deltaTime are stubbed.
+Solver arithmetic is executed by Unicorn from the original captured bytes.
+"""
+import sys, struct, math, json, hashlib
+from pathlib import Path
+ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(ROOT.parents[1] / 'tools' / 'pydeps'))
+import unicorn as u
+from unicorn.x86_const import *
+import numpy as np
+
+class Oracle:
+    def __init__(self):
+        raw = (ROOT.parent/'gakumas_solver_reverse/capture_20260914_preserved/GameAssembly.live-memory.bin').read_bytes()
+        self.sha256 = hashlib.sha256(raw).hexdigest()
+        self.uc = u.Uc(u.UC_ARCH_X86, u.UC_MODE_64)
+        self.uc.mem_map(0, (len(raw)+4095)&~4095)
+        self.uc.mem_write(0,raw)
+        self.heap = 0x20000000
+        self.uc.mem_map(self.heap,0x200000)
+        self.stack = self.heap+0x180008
+        self.stop = self.heap+0x1f0000
+        self.uc.mem_write(0xa97cce8,struct.pack('<Q',self.heap+0x10000))
+        self.uc.mem_write(self.heap+0x100e4,struct.pack('<I',1))
+        self.uc.mem_write(0xafb0274,b'\1')
+        self.uc.mem_write(0xa95c7c0,struct.pack('<Q',self.heap+0x11000))
+        self.uc.mem_write(self.heap+0x110b8,struct.pack('<Q',self.heap+0x12000))
+        self.uc.mem_write(0xa960320,struct.pack('<Q',self.heap+0x13000))
+        self.uc.mem_write(self.heap+0x130b8,struct.pack('<Q',self.heap+0x14000))
+        self.floats(self.heap+0x14000,[0,0,0,1])
+        self.uc.mem_write(0xaa26298,struct.pack('<Q',self.heap+0x10000))
+        self.uc.mem_write(0xaa9da50,struct.pack('<Q',self.heap+0x15000))
+        self.uc.mem_write(self.heap+0x15020,struct.pack('<Q',self.heap+0x16000))
+        self.uc.mem_write(self.heap+0x16135,b'\1')
+        for ptr in (0xaa9cc28,0xaa9c2b8,0xaa9ce88):self.uc.mem_write(ptr,struct.pack('<Q',self.heap+0x15000))
+        self.uc.hook_add(u.UC_HOOK_CODE,self.hook)
+    def hook(self,uc,address,size,user):
+        if getattr(self,'capture_fromto',False):
+            if address==0x9bbc15:
+                self.force_captures.append(dict(force=list(struct.unpack('<3f',uc.mem_read(uc.reg_read(UC_X86_REG_RAX),12))),inertia=[struct.unpack('<f',struct.pack('<I',uc.reg_read(r)&0xffffffff))[0] for r in (UC_X86_REG_XMM6,UC_X86_REG_XMM7,UC_X86_REG_XMM8)]))
+            if address==0x9c4140:
+                self.current_fromto={k:list(struct.unpack('<3f',uc.mem_read(uc.reg_read(reg),12))) for k,reg in [('a',UC_X86_REG_RDX),('b',UC_X86_REG_R8)]}
+            elif address==0x9c42fb:
+                self.current_fromto['dot']=struct.unpack('<f',struct.pack('<I',uc.reg_read(UC_X86_REG_XMM10)&0xffffffff))[0]
+            elif address==0x9c4589:
+                self.current_fromto['expected']=list(struct.unpack('<4f',uc.mem_read(uc.reg_read(UC_X86_REG_RDI),16)))
+                self.current_fromto['inputBits']=[struct.unpack('<i',struct.pack('<f',v))[0] for k in ('a','b') for v in self.current_fromto[k]]
+                self.fromto_captures.append(self.current_fromto)
+        if address in (0x99eda5,0x99edf7,0x99ee44,0x99ee78):
+            key={0x99eda5:'headEuler',0x99edf7:'neckEuler',0x99ee44:'headBend',0x99ee78:'neckBend'}[address]
+            self.trace[key]=list(struct.unpack('<3f',uc.mem_read(uc.reg_read(UC_X86_REG_RAX),12)))
+        if address in (0x8c6850,0x8c6b90): self.ret()
+        elif address==0x7bb1930:self.xmm(0,.01667);self.ret() # AnimationStream.deltaTime boundary
+        elif address==0x98a830:
+            bits=uc.reg_read(UC_X86_REG_XMM0)&0xffffffff
+            x=struct.unpack('<f',struct.pack('<I',bits))[0]
+            self.xmm(0,math.sqrt(x))
+            self.ret()
+        elif address in (0x958ab8,0x9596e0,0x959de0,0x958fdc,0x958d58,0x95aee0):
+            x=struct.unpack('<d',struct.pack('<Q',uc.reg_read(UC_X86_REG_XMM0)&0xffffffffffffffff))[0]
+            if address==0x958fdc:
+                y=struct.unpack('<d',struct.pack('<Q',uc.reg_read(UC_X86_REG_XMM1)&0xffffffffffffffff))[0]
+                value=math.atan2(x,y)
+            else:value={0x958ab8:math.acos,0x9596e0:math.sin,0x959de0:math.cos,0x958d58:math.asin,0x95aee0:math.tan}[address](x)
+            uc.reg_write(UC_X86_REG_XMM0,struct.unpack('<Q',struct.pack('<d',value))[0]);self.ret()
+    def ret(self):
+        sp=self.uc.reg_read(UC_X86_REG_RSP)
+        dst=struct.unpack('<Q',self.uc.mem_read(sp,8))[0]
+        self.uc.reg_write(UC_X86_REG_RSP,sp+8)
+        self.uc.reg_write(UC_X86_REG_RIP,dst)
+    def xmm(self,index,value):
+        self.uc.reg_write(UC_X86_REG_XMM0+index,struct.unpack('<I',struct.pack('<f',value))[0])
+    def floats(self,address,values): self.uc.mem_write(address,struct.pack('<'+'f'*len(values),*values))
+    def call_capsule(self,center,axis,height,radius,scale):
+        h=self.heap; raw=h+0x200; job=h+0x400
+        self.floats(raw+0x18,center)
+        self.floats(raw+0x24,[axis,height,0,radius,radius*.8])
+        self.floats(job+0x54,[scale])
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RBP,self.stack+0x89),(UC_X86_REG_RSI,raw),(UC_X86_REG_RDI,job)]:self.uc.reg_write(reg,val)
+        self.xmm(4,scale)
+        self.uc.emu_start(0x9c19f6,0x9c1b2d,count=2000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=0x9c1b2d:raise RuntimeError('instruction limit')
+        return list(struct.unpack('<6f',self.uc.mem_read(job+0x1c,24)))
+    def call_fromto(self,a,b):
+        h=self.heap;self.floats(h+0x200,a);self.floats(h+0x300,b)
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop))
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,h),(UC_X86_REG_RDX,h+0x200),(UC_X86_REG_R8,h+0x300)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9c4140,self.stop,count=10000)
+        return list(struct.unpack('<4f',self.uc.mem_read(h,16)))
+    def call_swing(self,selfpos,rotation,axis,child,weight=1.,parentrot=None,defaultrot=None,limits=False,minimum=None,maximum=None):
+        h=self.heap;parent=h+0x2000;childptr=parent+0x3bc
+        self.uc.mem_write(parent,bytes(0x778))
+        self.uc.mem_write(parent+0x88,struct.pack('<I',1))
+        self.floats(parent+0xe4,[*selfpos,*rotation])
+        self.floats(parent+0xd4,defaultrot if defaultrot is not None else rotation)
+        self.floats(parent+0x100,[*selfpos,*(parentrot if parentrot is not None else rotation)])
+        self.uc.mem_write(parent+0x344,bytes([int(limits)]))
+        self.floats(parent+0x348,maximum if maximum is not None else [180]*3)
+        self.floats(parent+0x354,minimum if minimum is not None else [-180]*3)
+        self.floats(childptr+0xe4,[*child,0,0,0,1])
+        self.floats(childptr+0x8c,axis)
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop))
+        self.floats(self.stack+0x28,[weight])
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,h),(UC_X86_REG_RDX,h+0x4000),(UC_X86_REG_R8,parent),(UC_X86_REG_R9,parent)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9b5350,self.stop,count=20000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=self.stop:raise RuntimeError('instruction limit')
+        return list(struct.unpack('<7f',self.uc.mem_read(h,28)))
+    def call_quartz(self,head,neck,setting):
+        self.trace={}
+        h=self.heap;settings=h+0x8000
+        fields=[('headTranslateCoefficient',0x14),('headTranslateLimitMin',0x20),('headTranslateLimitMax',0x2c),('headRotateCoefficient',0x3c),('headRotateLimitMin',0x48),('headRotateLimitMax',0x54),('neckRotateCoefficient',0x64),('neckRotateLimitMin',0x70),('neckRotateLimitMax',0x7c)]
+        for key,offset in fields:self.floats(settings+offset,[setting[key][k] for k in 'xyz'])
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop));self.uc.reg_write(UC_X86_REG_RSP,self.stack);self.uc.reg_write(UC_X86_REG_RCX,settings)
+        self.uc.emu_start(0x9b1ce0,self.stop,count=10000)
+        converted={key:dict(zip('xyz',struct.unpack('<3f',self.uc.mem_read(settings+offset,12)))) for key,offset in fields}
+        self.floats(h+0x6000,head);self.floats(h+0x6100,neck)
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop))
+        args=[settings+0x14,settings+0x20,settings+0x2c,setting['rotationOrder'],settings+0x3c,settings+0x48,settings+0x54,setting['rotateConnectionAxis'],settings+0x64,settings+0x70,settings+0x7c,setting['composeType'],0]
+        for i,value in enumerate(args): self.uc.mem_write(self.stack+0x28+i*8,struct.pack('<Q',value))
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,h),(UC_X86_REG_RDX,h+0x6000),(UC_X86_REG_R8,h+0x6100),(UC_X86_REG_R9,setting['translateConnectionAxis'])]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x99ecf0,self.stop,count=50000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=self.stop:raise RuntimeError('instruction limit')
+        return list(struct.unpack('<7f',self.uc.mem_read(h,28))),converted
+    def call_collision(self,anchor,rotation,child,length,radius,offset,mask,colliders):
+        h=self.heap; dynamic=h+0x2000; array=h+0x3000; buffer=h+0x4000; selftx=h+0x6000; childtx=h+0x6100
+        self.uc.mem_write(dynamic,bytes(0x3bc))
+        self.uc.mem_write(array,struct.pack('<QI',buffer,len(colliders)))
+        self.floats(selftx,[*anchor,*rotation]);self.floats(childtx,[*child,0,0,0,1]);self.floats(dynamic+0x98,[length])
+        def collider(ptr,kind,mask,a,b,ra,rb,local=None):
+            self.uc.mem_write(ptr,bytes(0x58));self.uc.mem_write(ptr,bytes([1,kind]));self.uc.mem_write(ptr+4,struct.pack('<I',mask))
+            self.floats(ptr+0x34,[ra,rb,*a,*b,1])
+            self.floats(ptr+0xc,[*a,1000.])
+            if local is not None:self.floats(ptr+0x1c,local)
+        collider(dynamic+0xc,0,mask,child,anchor,radius,radius,offset)
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop))
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,dynamic+0xc),(UC_X86_REG_RDX,childtx),(UC_X86_REG_R8,selftx),(UC_X86_REG_R9,selftx+12)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9c2000,self.stop,count=10000)
+        for i,c in enumerate(colliders):collider(buffer+i*0x88,c['kind'],c['mask'],c['a'],c['b'],c['ra'],c['rb'])
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop));self.uc.mem_write(self.stack+0x28,struct.pack('<Q',childtx))
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,array),(UC_X86_REG_RDX,dynamic),(UC_X86_REG_R8,0),(UC_X86_REG_R9,selftx)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9a7d60,self.stop,count=50000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=self.stop:raise RuntimeError('instruction limit')
+        return list(struct.unpack('<3f',self.uc.mem_read(childtx,12))),int(self.uc.mem_read(dynamic+0x7c,1)[0])
+    def call_chain(self,anchora,anchorb,a,b,lengtha,lengthb,radius,mask,colliders):
+        # Populate the NativeArray using the same raw layout as the dynamic test.
+        self.call_collision(anchora,[0,0,0,1],a,lengtha,radius,[0,0,0],mask,colliders)
+        h=self.heap;chain=h+0x9000;dynamic=h+0x80000;selftx=h+0x6000;subtx=h+0x6100;manage=h+0x6500;hips=h+0x6600
+        self.uc.mem_write(chain,bytes(0x8c));self.uc.mem_write(chain,bytes([1,2]));self.uc.mem_write(chain+4,struct.pack('<I',mask));self.floats(chain+0x34,[radius,radius,*a,*b,1]);self.floats(chain+0xc,[*a,1000])
+        self.uc.mem_write(dynamic,bytes(4*0x3bc))
+        for i,(pos,length) in enumerate([(anchora,0),(anchorb,0),(a,lengtha),(b,lengthb)]):
+            ptr=dynamic+i*0x3bc;self.floats(ptr+0xe4,[*pos,0,0,0,1]);self.floats(ptr+0x98,[length]);self.floats(ptr+0x360,[1])
+            self.uc.mem_write(ptr+0x84,struct.pack('<i',i-2 if i>=2 else -1))
+        self.floats(selftx,[*a,0,0,0,1]);self.floats(subtx,[*b,0,0,0,1]);self.uc.mem_write(manage,bytes(256));self.floats(manage+0x14,[1]);self.floats(hips,[0,0,0,0,0,0,1])
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop))
+        for i,val in enumerate([dynamic,dynamic+2*0x3bc,dynamic+3*0x3bc,manage,hips,0,0]):self.uc.mem_write(self.stack+0x28+i*8,struct.pack('<Q',val))
+        self.floats(self.stack+0x60,[1])
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,h+0x3000),(UC_X86_REG_RDX,chain),(UC_X86_REG_R8,selftx),(UC_X86_REG_R9,subtx)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9c28a0,self.stop,count=50000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=self.stop:raise RuntimeError('instruction limit')
+        return list(struct.unpack('<3f',self.uc.mem_read(selftx,12)))+list(struct.unpack('<3f',self.uc.mem_read(subtx,12))),int(self.uc.mem_read(chain+0x70,1)[0])
+    def call_integrate(self,anchor,rotation,axis,length,child,speed,damping,stiffness,spring,pendulum,prange,mass,prewarm):
+        capture_start=len(getattr(self,'fromto_captures',[]));self.force_captures=[]
+        h=self.heap;job=h+0x100000;dynamic=h+0x110000;manage=h+0x108000;root=h+0x109000;array=h+0x105000;empty=h+0x106000;stream=h+0x107000
+        self.uc.mem_write(job,bytes(0x300));self.uc.mem_write(dynamic,bytes(0x3bc*3));self.uc.mem_write(manage,bytes(256));self.uc.mem_write(empty,struct.pack('<QI',h+0x104000,0));self.uc.mem_write(array,struct.pack('<QI',dynamic,3))
+        for off,ptr in [(0x58,array),(0x60,empty),(0xb0,empty)]:self.uc.mem_write(job+off,struct.pack('<Q',ptr))
+        self.floats(manage,[1,1,1]);self.floats(manage+0x14,[1,1,1]);self.floats(root,[0,0,0,0,0,0,1])
+        for i in range(3):
+            p=dynamic+i*0x3bc;self.uc.mem_write(p,b'\1');self.uc.mem_write(p+0x80,struct.pack('<iii',i,i-1,2 if i==1 else -1));self.floats(p+0x360,[1]);self.floats(p+0xe4,[0,0,0,0,0,0,1]);self.floats(p+0xb8,[0,0,0,0,0,0,1])
+        p=dynamic+0x3bc;c=p+0x3bc
+        self.floats(p+0xe4,[*anchor,*rotation]);self.floats(p+0xb8,[*anchor,*rotation]);self.floats(p+0x11c,speed);self.uc.mem_write(p+0x36c,struct.pack('<i',prewarm))
+        self.floats(c+0xe4,[*child,0,0,0,1]);self.floats(c+0xb8,[*(np.array(axis)*length),0,0,0,1]);self.floats(c+0x8c,[*axis,length]);self.floats(c+0x14c,[damping,stiffness,spring,pendulum,prange,mass])
+        self.uc.mem_write(c+0xd,bytes([4])) # No dynamic collider in this integration fixture.
+        self.uc.mem_write(self.stack,struct.pack('<Q',self.stop));self.uc.mem_write(self.stack+0x28,struct.pack('<Q',root));self.uc.mem_write(self.stack+0x30,struct.pack('<Q',root));self.floats(self.stack+0x38,[1])
+        for reg,val in [(UC_X86_REG_RSP,self.stack),(UC_X86_REG_RCX,job),(UC_X86_REG_RDX,stream),(UC_X86_REG_R8,manage),(UC_X86_REG_R9,root)]:self.uc.reg_write(reg,val)
+        self.uc.emu_start(0x9bae70,0x9bc7e3,count=200000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=0x9bc7e3:raise RuntimeError('instruction limit')
+        return dict(parent=list(struct.unpack('<7f',self.uc.mem_read(p+0xe4,28))),child=list(struct.unpack('<7f',self.uc.mem_read(c+0xe4,28))),speed=list(struct.unpack('<3f',self.uc.mem_read(p+0x11c,12))),fromToCalls=getattr(self,'fromto_captures',[])[capture_start:],forces=self.force_captures)
+    def call_stiffness(self,kind,axis,length,selfpos,rotation,child,target,stiffness,pendulum,prange):
+        h=self.heap
+        self.floats(h+0x100,axis)
+        self.floats(h+0x200,[*selfpos,*rotation])
+        self.floats(h+0x300,[*child,0,0,0,1])
+        self.floats(h+0x400,[*target,0,0,0,1])
+        sp=self.stack
+        self.uc.mem_write(sp,struct.pack('<Q',self.stop))
+        for reg,val in [(UC_X86_REG_RSP,sp),(UC_X86_REG_RCX,h),(UC_X86_REG_RDX,0),(UC_X86_REG_R8,kind),(UC_X86_REG_R9,h+0x100)]: self.uc.reg_write(reg,val)
+        self.floats(sp+0x28,[length])
+        for off,ptr in [(0x30,h+0x200),(0x38,h+0x300),(0x40,h+0x400)]: self.uc.mem_write(sp+off,struct.pack('<Q',ptr))
+        for off,val in [(0x48,stiffness),(0x50,pendulum),(0x58,prange)]:self.floats(sp+off,[val])
+        self.uc.emu_start(0x9b5e10,self.stop,count=10000)
+        if self.uc.reg_read(UC_X86_REG_RIP)!=self.stop: raise RuntimeError('instruction limit')
+        return list(struct.unpack('<3f',self.uc.mem_read(h,12)))
+
+def reference(c):
+    axis=np.array(c['axis']); q=np.array(c['rotation']); p=np.array(c['selfpos']); child=np.array(c['child']); target=np.array(c['target'])
+    direction=axis+2*np.cross(q[:3],np.cross(q[:3],axis)+q[3]*axis)
+    correction=0.
+    if c['kind']==0:
+        delta=direction
+        if c['pendulum']>1e-5 and c['prange']>1e-5:
+            denom=np.linalg.norm(child)*np.linalg.norm(target)
+            cosine=abs(np.dot(child,target))/denom if denom else float('nan')
+            correction=max(0.,cosine-(1-c['prange']))/c['prange']*c['pendulum']
+    else:
+        delta=p+direction*c['length']-child
+        if c['pendulum']>1e-5 and c['prange']>1e-5:
+            correction=(1-min(np.linalg.norm(target-child)*10,c['prange'])/c['prange'])*c['pendulum']
+    return delta*(c['stiffness']-correction)
+
+if __name__=='__main__':
+    o=Oracle(); rng=np.random.default_rng(20260915); cases=[]; maxerr=0.
+    for i in range(512):
+        axis=rng.normal(size=3);axis/=np.linalg.norm(axis)
+        q=rng.normal(size=4);q/=np.linalg.norm(q)
+        c=dict(kind=i%2,axis=axis.tolist(),length=float(rng.uniform(.005,.5)),selfpos=rng.normal(size=3).tolist(),rotation=q.tolist(),child=rng.normal(size=3).tolist(),target=rng.normal(size=3).tolist(),stiffness=float(rng.uniform(0,1)),pendulum=float(rng.uniform(0,.1)) if i%3 else 0.,prange=float(rng.uniform(.01,1)))
+        # Input vectors in the fixture are exactly the float32 values executed.
+        c={k: [float(np.float32(v)) for v in val] if isinstance(val,list) else (float(np.float32(val)) if isinstance(val,float) else val) for k,val in c.items()}
+        actual=o.call_stiffness(**c); expected=reference(c)
+        err=float(np.max(np.abs(np.array(actual)-expected)));maxerr=max(maxerr,err)
+        cases.append(dict(**c,expected=actual))
+    result=dict(imageSha256=o.sha256,rva='0x9B5E10',cases=len(cases),maxAbsoluteError=maxerr,passed=maxerr<2e-6,fixtures=cases)
+    (ROOT/'native_evidence/stiffness_oracle.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
+    print({k:v for k,v in result.items() if k!='fixtures'})
+    assert result['passed']
+    capsules=[]; capsule_error=0.
+    for i in range(512):
+        c=dict(center=rng.uniform(-.1,.1,3).tolist(),axis=i%3,height=float(rng.uniform(.01,.5)),radius=float(rng.uniform(.01,.15)),scale=float(rng.uniform(.1,2)))
+        actual=o.call_capsule(**c)
+        center=np.array(c['center'])*c['scale'];offset=np.zeros(3);offset[c['axis']]=(c['height']*.5-c['radius'])*c['scale']
+        expected=np.r_[center-offset,center+offset]
+        capsule_error=max(capsule_error,float(np.max(np.abs(actual-expected))))
+        capsules.append(dict(**c,expected=actual))
+    report=dict(imageSha256=o.sha256,rva='0x9C19F6..0x9C1B2D',cases=len(capsules),maxAbsoluteError=capsule_error,passed=capsule_error<1e-6,fixtures=capsules)
+    (ROOT/'native_evidence/capsule_oracle.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+    print({k:v for k,v in report.items() if k!='fixtures'});assert report['passed']
+    settings=json.loads((ROOT/'HskiHair0070.json').read_text(encoding='utf-8'))['quartzHair']
+    quartz=[]
+    for i in range(180):
+        # Cover typical head/neck rotations, including signed off-axis motion.
+        head=rng.uniform(-.3,.3,3);neck=rng.uniform(-.2,.2,3)
+        head=[*head,math.sqrt(1-float(head@head))];neck=[*neck,math.sqrt(1-float(neck@neck))]
+        s=settings[i%len(settings)]
+        expected,converted=o.call_quartz(head,neck,s)
+        quartz.append(dict(head=head,neck=neck,raw=s,converted=converted,expected=expected,**o.trace))
+    report=dict(imageSha256=o.sha256,rvas=['0x9B1CE0','0x99ECF0'],cases=len(quartz),fixtures=quartz)
+    (ROOT/'native_evidence/quartz_oracle.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
+    print('Quartz original instruction fixtures:',len(quartz))
+    swings=[]
+    for i in range(512):
+        axis=rng.normal(size=3);axis/=np.linalg.norm(axis)
+        rotation=rng.normal(size=4);rotation/=np.linalg.norm(rotation)
+        parentrot=rng.normal(size=4);parentrot/=np.linalg.norm(parentrot)
+        defaultrot=rng.normal(size=4);defaultrot/=np.linalg.norm(defaultrot)
+        c=dict(selfpos=rng.normal(size=3).tolist(),rotation=rotation.tolist(),axis=axis.tolist(),child=rng.normal(size=3).tolist(),weight=float(rng.uniform(0,1)),parentrot=parentrot.tolist(),defaultrot=defaultrot.tolist(),limits=bool(i%2),minimum=rng.uniform(-90,0,3).tolist(),maximum=rng.uniform(0,90,3).tolist())
+        swings.append(dict(**c,expected=o.call_swing(**c)))
+    (ROOT/'native_evidence/swing_oracle.json').write_text(json.dumps(dict(imageSha256=o.sha256,rva='0x9B5350',cases=len(swings),fixtures=swings),indent=2),encoding='utf-8')
+    print('Swing original instruction fixtures:',len(swings))
+    collisions=[]
+    for i in range(512):
+        anchor=rng.uniform(-.2,.2,3);direction=rng.normal(size=3);length=float(rng.uniform(.03,.2));child=anchor+direction/np.linalg.norm(direction)*length
+        q=rng.normal(size=4);q/=np.linalg.norm(q)
+        colliders=[dict(kind=j%2,mask=1<<(j%3),a=(child+rng.uniform(-.07,.07,3)).tolist(),b=(child+rng.uniform(-.07,.07,3)).tolist(),ra=float(rng.uniform(.02,.08)),rb=float(rng.uniform(.02,.08))) for j in range(3)]
+        c=dict(anchor=anchor.tolist(),rotation=q.tolist(),child=child.tolist(),length=length,radius=.01,offset=rng.uniform(-.01,.01,3).tolist() if i%2 else [0,0,0],mask=i%8,colliders=colliders)
+        expected,hits=o.call_collision(**c);collisions.append(dict(**c,expected=expected,hits=hits))
+    (ROOT/'native_evidence/collision_oracle.json').write_text(json.dumps(dict(imageSha256=o.sha256,rva='0x9A7D60',cases=len(collisions),fixtures=collisions),indent=2),encoding='utf-8')
+    print('Collision original instruction fixtures:',len(collisions))
+    chains=[]
+    for i in range(512):
+        a=rng.uniform(-.2,.2,3);b=a+rng.uniform(-.1,.1,3);aa=a+rng.uniform(-.2,.2,3);ab=b+rng.uniform(-.2,.2,3)
+        colliders=[dict(kind=j%2,mask=1<<(j%3),a=((a+b)*.5+rng.uniform(-.04,.04,3)).tolist(),b=((a+b)*.5+rng.uniform(-.1,.1,3)).tolist(),ra=float(rng.uniform(.02,.08)),rb=float(rng.uniform(.02,.08))) for j in range(3)]
+        c=dict(anchora=aa.tolist(),anchorb=ab.tolist(),a=a.tolist(),b=b.tolist(),lengtha=float(np.linalg.norm(a-aa)),lengthb=float(np.linalg.norm(b-ab)),radius=.015,mask=i%8,colliders=colliders)
+        expected,hits=o.call_chain(**c);chains.append(dict(**c,expected=expected,hits=hits))
+    (ROOT/'native_evidence/chain_oracle.json').write_text(json.dumps(dict(imageSha256=o.sha256,rva='0x9C28A0',cases=len(chains),fixtures=chains),indent=2),encoding='utf-8')
+    print('Chain original instruction fixtures:',len(chains))
+    integrations=[];o.capture_fromto=True;o.fromto_captures=[]
+    for i in range(128):
+        axis=rng.normal(size=3);axis/=np.linalg.norm(axis);q=rng.normal(size=4);q/=np.linalg.norm(q);anchor=rng.uniform(-.2,.2,3);length=float(rng.uniform(.03,.2))
+        child=anchor+axis*length
+        c=dict(anchor=anchor.tolist(),rotation=q.tolist(),axis=axis.tolist(),length=length,child=child.tolist(),speed=rng.uniform(-.02,.02,3).tolist(),damping=float(rng.uniform(.1,.9)),stiffness=float(rng.uniform(0,.04)),spring=.3,pendulum=.015,prange=.6,mass=.08,prewarm=30 if i%2 else 0)
+        c={k:[float(np.float32(v)) for v in val] if isinstance(val,list) else float(np.float32(val)) if isinstance(val,float) else val for k,val in c.items()}
+        integrations.append(dict(**c,expected=o.call_integrate(**c)))
+    (ROOT/'native_evidence/integration_oracle.json').write_text(json.dumps(dict(imageSha256=o.sha256,rva='0x9BAE70..0x9BC7E3',cases=len(integrations),fixtures=integrations),indent=2),encoding='utf-8')
+    print('Integration original instruction fixtures:',len(integrations))
+    (ROOT/'native_evidence/fromto_integration_oracle.json').write_text(json.dumps(dict(imageSha256=o.sha256,rva='0x9C4140',cases=len(o.fromto_captures),fixtures=o.fromto_captures),indent=2),encoding='utf-8')
+    print('Exact FromTo inputs from integration:',len(o.fromto_captures))
+
+

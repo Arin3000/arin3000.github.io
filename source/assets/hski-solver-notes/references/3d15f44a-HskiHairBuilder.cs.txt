@@ -1,0 +1,175 @@
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditor.Build.Reporting;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
+
+public static class HskiHairBuilder
+{
+    const string Out="E:/ArinLee/简历/output/HSKI_EffectsPreview/hair_v37";
+    static bool handAuditBuild,allMotionsBuild;
+    public static void BuildHandAudit() { handAuditBuild=true; try { Build(); } finally { handAuditBuild=false; } }
+    public static void BuildAllMotionsCurrent() { handAuditBuild=true;allMotionsBuild=true;try{Build();}finally{allMotionsBuild=false;handAuditBuild=false;} }
+    public static void Build()
+    {
+        string version=allMotionsBuild?"v37_all_motions":handAuditBuild?"v37_hand_audit":"v37_native_registration_order";
+        if(allMotionsBuild&&Environment.GetCommandLineArgs().Contains("-sitContactBuild"))version="v37_seated_contact";
+        ValidateRegistrationOrder(); ActorSwingNativeChecks.Run(); Directory.CreateDirectory(Out);
+        var scene=EditorSceneManager.OpenScene(allMotionsBuild?"Assets/PortfolioPreview/AllMotions/HSKI_AllMotions_v17.unity":"Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
+        var actor=demo.actor.gameObject;
+        ApplyCampusRendering(demo,actor);
+        var states=new StringBuilder();foreach(var renderer in demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>()){foreach(var m in renderer.sharedMaterials){states.Append(renderer.name+" "+m.name+" "+m.shader.name+" queue="+m.renderQueue);foreach(var prop in new[]{"_ShaderType","_ZWrite","_StencilComp","_StencilRef","_StencilReadMask","_EnalbeHairCover"})if(m.HasProperty(prop))states.Append(" "+prop+"="+m.GetFloat(prop));states.AppendLine(" HairCover="+m.GetShaderPassEnabled("HairCover"));}}File.WriteAllText(Out+"/render_states.txt",states.ToString());
+        var hair=actor.GetComponent<HskiHairDynamics>();if(!hair)hair=actor.AddComponent<HskiHairDynamics>();
+        hair.head=demo.lighting.Head;
+        hair.neck=actor.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Neck");
+        hair.configuration=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/PortfolioPreview/HskiHair0070.json");
+        hair.quartzHairSettings=Array.Empty<ActorAnimationSwingSolver.QuartzHairSetting>(); // Loaded from the raw asset JSON.
+        // Empty scope means every ActorSwingDynamicBone exported by the
+        // original 0070 hair asset. In particular this includes the long
+        // LeftSideHair/RightSideHair front curls that v26 accidentally omitted.
+        hair.simulatedBonePrefixes=Array.Empty<string>();
+        // Native ActorAnimation manage.weight is 1.0 in the captured runtime.
+        // The former .65 value was compensation for the hand-tuned legacy solver.
+        hair.strength=1f;
+        // Original ActorAnimationManageData constructor values, with only the
+        // live-captured scene windPower (0.7) applied. Recording strength is 0.
+        hair.manage.globalForce=Vector3.zero;
+        hair.manage.windDirection=Vector3.forward;
+        hair.manage.windPower=.7f;
+        hair.manage.windFluctuation=1f;
+        hair.manage.windWaveAmplitude=0f;
+        hair.manage.windWaveFrequency=1f;
+        hair.manage.windWavePhase=0f;
+        hair.manage.windRangeMin=-10f;
+        hair.manage.windRangeMax=10f;
+        hair.manage.windRangeFrequency=0f;
+        hair.manage.windRangePhase=0f;
+        hair.manage.randomPower=0f;
+        hair.manage.randomFluctuation=0f;
+        hair.enableWind=true;
+        hair.manualWindStrength=0f;
+        hair.automaticWind=false;
+        hair.manualSimulation=true;
+        hair.collisionIterations=1;
+        hair.frontStrandCollisionMargin=0f;
+        hair.rearHairWindMultiplier=1f;
+        hair.frontStrandWindMultiplier=1f;
+        hair.chainCollisionCorrectionLimit=0f;
+        // Remove the old mesh-space chest/face/hand correction stack. Those
+        // components were hand-authored after the asset import and pinned the
+        // long front curls to the torso instead of following ActorSwing bones.
+        hair.torso=null;hair.contactMesh=null;hair.frontSurfaceSamples=Array.Empty<HskiHairDynamics.SkinPoint>();
+        foreach(var component in actor.GetComponents<MonoBehaviour>().Where(c=>c is HskiHairContactMesh||c is HskiHairBodySurface||c is HskiFaceSkinSurface||c is HskiHairFaceBend||c is HskiHairJawContact||c is HskiHandHairContact||c is HskiHairSleeveContact))
+            UnityEngine.Object.DestroyImmediate(component);
+        hair.bodyColliders=Array.Empty<HskiHairDynamics.BodyCollider>();
+        var skirt=actor.GetComponent<HskiSkirtDynamics>();if(!skirt)skirt=actor.AddComponent<HskiSkirtDynamics>();
+        skirt.configuration=AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/PortfolioPreview/HskiSchoolSkirt.json");
+        skirt.rootMotionSource=actor.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Hips");
+        skirt.simulatedBonePrefixes=Array.Empty<string>();skirt.bodyColliders=Array.Empty<ActorAnimationSwingSolver.BodyCollider>();
+        skirt.quartzHairSettings=Array.Empty<ActorAnimationSwingSolver.QuartzHairSetting>();
+        skirt.enableQuartzHair=false;skirt.enableWind=false;skirt.automaticWind=false;skirt.manualWindStrength=0f;skirt.manualSimulation=true;skirt.strength=1f;
+        skirt.ValidateBindings();
+        demo.hair=hair;demo.skirt=skirt;demo.recordingVersion=version;demo.continuousActions=true;
+        var windRecorder=demo.gameObject.GetComponent<HskiAutoWindDemoRecorder>();if(!windRecorder)windRecorder=demo.gameObject.AddComponent<HskiAutoWindDemoRecorder>();windRecorder.demo=demo;
+        var debugOverlay=demo.gameObject.GetComponent<HskiDynamicsDebugOverlay>();if(!debugOverlay)debugOverlay=demo.gameObject.AddComponent<HskiDynamicsDebugOverlay>();debugOverlay.demo=demo;
+        var validation=demo.gameObject.GetComponent<HskiHairValidation>();if(!validation)validation=demo.gameObject.AddComponent<HskiHairValidation>();
+        validation.demo=demo;validation.hair=hair; var geometry=demo.gameObject.AddComponent<HskiHairGeometryAudit>();geometry.demo=demo;geometry.hair=hair;var live=demo.gameObject.AddComponent<HskiHairLiveAudit>();live.demo=demo;
+        EditorSceneManager.SaveScene(scene,"Assets/PortfolioPreview/HSKI_Showcase_"+version+".unity");AssetDatabase.SaveAssets();
+        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_"+version+".unity"},locationPathName="E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_"+version+"/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
+        if(result.summary.result!=BuildResult.Succeeded)throw new Exception("Hair player build failed");
+        Debug.Log("HSKI_HAIR_BUILT "+version);
+    }
+
+    static void ApplyCampusRendering(HskiShowcase demo,GameObject actor)
+    {
+        const string root="Assets/Reverse/Material/HskiRuntimeFixed/";
+        var fixedMaterials=new[]{"m_bdy","m_fcp","m_fce","m_ebs","m_eye","m_ehl","m_hir","m_hirco"}
+            .ToDictionary(name=>name,name=>AssetDatabase.LoadAssetAtPath<Material>(root+name+" 2_fixed.mat"));
+        if(fixedMaterials.Values.Any(material=>!material))throw new FileNotFoundException("Campus corrected character materials are incomplete",root);
+        var faceSlots=new[]{"m_fcp","m_fce","m_fce","m_fcp","m_ebs","m_fce","m_eye","m_ehl","m_fce"};
+        foreach(var renderer in actor.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            Material[] sources=null;
+            if(renderer.name=="Geo_Body")sources=new[]{fixedMaterials["m_bdy"]};
+            else if(renderer.name.IndexOf("base_0000_face",StringComparison.OrdinalIgnoreCase)>=0)sources=faceSlots.Select(name=>fixedMaterials[name]).ToArray();
+            else if(renderer.name.IndexOf("Geo_HairProp",StringComparison.OrdinalIgnoreCase)>=0)sources=new[]{fixedMaterials["m_hirco"],fixedMaterials["m_hir"]};
+            else if(renderer.name.IndexOf("Geo_Hair",StringComparison.OrdinalIgnoreCase)>=0)sources=new[]{fixedMaterials["m_hir"]};
+            if(sources==null)continue;
+            var targets=renderer.sharedMaterials;
+            if(targets.Length!=sources.Length)throw new InvalidOperationException("Campus material slot mismatch on "+renderer.name);
+            for(int i=0;i<targets.Length;i++)
+            {
+                targets[i].CopyPropertiesFromMaterial(sources[i]);
+                if(targets[i].HasProperty("_PreviewFaceCorrection"))targets[i].SetFloat("_PreviewFaceCorrection",1f);
+                if(targets[i].HasProperty("_PreviewEyeDetails"))targets[i].SetFloat("_PreviewEyeDetails",1f);
+                if(targets[i].HasProperty("_PreviewMask"))targets[i].SetFloat("_PreviewMask",0f);
+                EditorUtility.SetDirty(targets[i]);
+            }
+            renderer.sharedMaterials=targets;
+            renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;
+        }
+
+        var lighting=demo.lighting;
+        lighting.GlobalLightParameter=new Vector4(.25f,1f,.01f,1f);
+        lighting.MainLightDirection=new Vector4(.34f,.57f,.74f,0f);
+        lighting.MainLightColor=Color.white;
+        lighting.MatCapParam=new Vector4(.3f,1f,1f,0f);
+        lighting.MatCapRimLight=new Vector4(.4f,-.26f,.87f,24f);
+        lighting.MatCapRimColor=new Color(.85f,.42f,.22f,.45f);
+        lighting.MultiplyColor=Color.white;
+        lighting.ShadeMultiplyColor=new Color(.9622642f,.6203275f,.6203275f,1f);
+        lighting.ShadeAdditiveColor=Color.black;
+        lighting.SkinSaturation=1f;
+        lighting.EyeHightlightColor=new Color(7.395248f,7.395248f,7.395248f,1f);
+        lighting.VLSpecCube=AssetDatabase.LoadAssetAtPath<Cubemap>("Assets/Reverse/Texture2D/skybox.png");
+        lighting.VLSpecColor=Color.white;lighting.VLEyeSpecColor=Color.white;
+        lighting.OutlineParam=new Vector4(.025f,2.5f,.011f,.45f);
+        EditorUtility.SetDirty(lighting);
+
+        const string profilePath="Assets/PortfolioPreview/HSKI_CampusSoftGlow.asset";
+        var profile=AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
+        if(!profile){profile=ScriptableObject.CreateInstance<VolumeProfile>();AssetDatabase.CreateAsset(profile,profilePath);}
+        foreach(var component in profile.components.ToArray())UnityEngine.Object.DestroyImmediate(component,true);
+        profile.components.Clear();
+        var tonemapping=profile.Add<Tonemapping>(true);tonemapping.mode.Override(TonemappingMode.ACES);
+        var bloom=profile.Add<Bloom>(true);bloom.threshold.Override(.82f);bloom.intensity.Override(.34f);bloom.scatter.Override(.68f);bloom.clamp.Override(8f);bloom.highQualityFiltering.Override(true);
+        var color=profile.Add<ColorAdjustments>(true);color.postExposure.Override(.08f);color.contrast.Override(2f);color.saturation.Override(2f);
+        var balance=profile.Add<WhiteBalance>(true);balance.temperature.Override(3f);balance.tint.Override(-2f);
+        var shadows=profile.Add<ShadowsMidtonesHighlights>(true);shadows.shadows.Override(new Vector4(.96f,.99f,1.04f,0));shadows.midtones.Override(new Vector4(1f,1f,.985f,0));shadows.highlights.Override(new Vector4(1.035f,1.01f,.965f,0));shadows.shadowsEnd.Override(.32f);shadows.highlightsStart.Override(.58f);
+        var vignette=profile.Add<Vignette>(true);vignette.color.Override(new Color(.09f,.12f,.16f));vignette.intensity.Override(.14f);vignette.smoothness.Override(.58f);
+        var oldVolume=UnityEngine.Object.FindObjectsOfType<Volume>().FirstOrDefault(volume=>volume.name=="HSKI Campus Soft Glow");
+        var volumeObject=oldVolume?oldVolume.gameObject:new GameObject("HSKI Campus Soft Glow");
+        var volume=oldVolume?oldVolume:volumeObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=100f;volume.sharedProfile=profile;
+        foreach(var camera in UnityEngine.Object.FindObjectsOfType<Camera>())
+        {
+            camera.allowHDR=true;
+            var data=camera.GetUniversalAdditionalCameraData();data.renderPostProcessing=true;data.antialiasing=AntialiasingMode.SubpixelMorphologicalAntiAliasing;data.antialiasingQuality=AntialiasingQuality.High;
+        }
+        RenderSettings.fog=false;RenderSettings.ambientMode=AmbientMode.Trilight;
+        EditorUtility.SetDirty(profile);EditorUtility.SetDirty(demo);
+    }
+
+    static void ValidateRegistrationOrder()
+    {
+        var settings=JsonUtility.FromJson<ActorAnimationSwingSolver.Settings>(File.ReadAllText("Assets/PortfolioPreview/HskiHair0070.json"));
+        // Slots 4/5 retain the prior leg order; their game-side names are unresolved.
+        var expected=new[]{"Hips","Hips","Spine1","Spine1","RightLeg","LeftLeg","Spine2","Spine2","Spine2","Neck","LeftArm","RightArm","LeftForeArm","RightForeArm","LeftHand","LeftHand","RightHand","RightHand","Head_Face"};
+        var types=new[]{1,1,1,1,2,2,1,1,1,1,2,2,2,2,2,1,2,1,1};
+        var masks=new[]{1,1,8,8,1,1,8,64,16,88,88,88,88,88,88,16,88,16,65336};
+        if(settings.staticColliders.Length!=expected.Length)throw new Exception("Captured registration collider count mismatch");
+        for(int i=0;i<expected.Length;++i) {
+            var c=settings.staticColliders[i];
+            if(c.anchor!=expected[i]||(int)c.type!=types[i]||c.collisionMask!=masks[i])throw new Exception("Captured registration mismatch at "+i);
+        }
+        Debug.Log("REGISTRATION_ORDER_VALIDATED confirmed=17/19 unresolvedLegSlots=4,5 chest=8 rightHand=17 face=18");
+    }
+
+}
+

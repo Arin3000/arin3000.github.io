@@ -1,0 +1,53 @@
+"""Measure strict non-coplanar intersections between skirt and leg triangles."""
+from pathlib import Path
+import sys,json,struct
+import numpy as np
+from scipy.spatial import cKDTree
+
+def read_topology(folder):
+ data=(folder/'topology.bin').read_bytes();n,m=struct.unpack_from('<ii',data)
+ triangles=np.frombuffer(data,dtype='<i4',count=m,offset=8).reshape(-1,3)
+ labels=np.frombuffer(data,dtype='u1',count=n,offset=8+m*4)
+ tl=labels[triangles]
+ skirt=triangles[np.sum(tl==1,axis=1)>=2]
+ legs=triangles[np.sum((tl==2)|(tl==3),axis=1)>=2]
+ assert n>0 and len(skirt)>0 and len(legs)>0, 'Empty mesh or classification'
+ return n,skirt,legs,labels
+
+def hits(segment_start,segment_end,triangles):
+ edge1=triangles[:,1]-triangles[:,0];edge2=triangles[:,2]-triangles[:,0]
+ direction=segment_end-segment_start;p=np.cross(direction,edge2);det=np.sum(edge1*p,axis=1)
+ valid=np.abs(det)>1e-12;inv=np.divide(1,det,out=np.zeros_like(det),where=valid)
+ offset=segment_start-triangles[:,0];u=np.sum(offset*p,axis=1)*inv
+ q=np.cross(offset,edge1);v=np.sum(direction*q,axis=1)*inv;t=np.sum(edge2*q,axis=1)*inv
+ inside=valid&(u>1e-6)&(v>1e-6)&(u+v<1-1e-6)&(t>1e-6)&(t<1-1e-6)
+ return inside,segment_start+direction*t[:,None]
+
+def crossings(vertices,skirt,legs):
+ s=vertices[skirt];l=vertices[legs];sc=s.mean(axis=1);lc=l.mean(axis=1)
+ sr=np.linalg.norm(s-sc[:,None,:],axis=2).max(axis=1);lr=np.linalg.norm(l-lc[:,None,:],axis=2).max(axis=1)
+ lists=cKDTree(lc).query_ball_point(sc,sr+max(lr))
+ si=np.repeat(np.arange(len(s)),list(map(len,lists)));li=np.concatenate(lists).astype(int)
+ if len(si)==0:return [],[]
+ valid=np.all(s[si].max(axis=1)>=l[li].min(axis=1),axis=1)&np.all(l[li].max(axis=1)>=s[si].min(axis=1),axis=1)
+ si=si[valid];li=li[valid]
+ shared=np.any(skirt[si,:,None]==legs[li,None,:],axis=(1,2));si=si[~shared];li=li[~shared]
+ pairs=np.zeros(len(si),dtype=bool);points=[]
+ for k in range(3):
+  mask,p=hits(s[si,k],s[si,(k+1)%3],l[li]);pairs|=mask;points.extend(p[mask].tolist())
+  mask,p=hits(l[li,k],l[li,(k+1)%3],s[si]);pairs|=mask;points.extend(p[mask].tolist())
+ return np.stack([si[pairs],li[pairs]],axis=1).tolist(),points
+
+def run(folder):
+ n,s,l,labels=read_topology(folder);print(folder.name,'vertices',n,'skirt triangles',len(s),'leg triangles',len(l),flush=True)
+ rows=[]
+ for file in sorted(folder.glob('frame_*.bin')):
+  vertices=np.fromfile(file,dtype='<f4').reshape(n,3).astype('float64')
+  assert np.isfinite(vertices).all(), file
+  pairs,points=crossings(vertices,s,l)
+  rows.append(dict(frame=int(file.stem.split('_')[1]),pairs=len(pairs),points=points))
+ report=dict(method='Strict triangle edge/triangle crossings, noncoplanar, excluding shared vertex pairs; skirt/leg regions classified by majority of vertices with bone weight >0.45. Count is intersecting triangle pairs, not penetration depth.',frames=len(rows),framesWithCrossings=sum(r['pairs']>0 for r in rows),peakPairs=max(r['pairs'] for r in rows),meanPairs=float(np.mean([r['pairs'] for r in rows])),worstFrame=max(rows,key=lambda r:r['pairs'])['frame'],skirtTriangles=len(s),legTriangles=len(l),results=rows)
+ (folder/'mesh_crossings.json').write_text(json.dumps(report,indent=2),encoding='utf-8');print({k:v for k,v in report.items() if k not in ['results','method']},flush=True)
+ return report
+if __name__=='__main__':
+ for folder in sys.argv[1:]:run(Path(folder))

@@ -1,0 +1,536 @@
+{
+  "cases": 106,
+  "failed": 0,
+  "results": [
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftFrontSideOuterSkirt1_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightFrontSideOuterSkirt1_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftFrontOuterSkirt1_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightFrontOuterSkirt1_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "LeftFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "LeftBackSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "RightBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "RightFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "LeftFrontSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "LeftBackSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "RightFrontSideSkirt_A",
+      "passed": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "bone": "RightBackSideSkirt_A",
+      "passed": true
+    }
+  ]
+}

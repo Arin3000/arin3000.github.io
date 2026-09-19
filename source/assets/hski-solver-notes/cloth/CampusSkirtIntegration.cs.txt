@@ -1,0 +1,147 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+
+public sealed partial class LocomotionInteractivePlayer {
+ [Serializable] class SkirtSettings { public SkirtNativeMath.Setting[] drivers; public int expectedNodes,expectedSegments,expectedChains,expectedColliders;public string[] clothBones;public bool syncSourceBones; }
+ [Serializable] class SkirtCatalog { public string[] bundles; }
+ private HashSet<string> campusSkirtSupported;
+ private SkirtSettings campusSkirtConfig;
+ private readonly Dictionary<string,HashSet<string>> campusSkirtBoneNames=new Dictionary<string,HashSet<string>>(StringComparer.Ordinal);
+ private bool IsNativeSkirtBone(string name){
+  if(!UseNativeSkirt)return false;
+  if(!campusSkirtBoneNames.TryGetValue(CampusBodyBundle,out var names)){
+   var config=JsonUtility.FromJson<SkirtSettings>(Resources.Load<TextAsset>("WardrobeSkirts/"+CampusBodyBundle).text);
+   names=new HashSet<string>(StringComparer.Ordinal);if(!config.syncSourceBones){names.UnionWith(config.clothBones);foreach(var d in config.drivers)names.Add(d.bone);}campusSkirtBoneNames.Add(CampusBodyBundle,names);
+  }
+  return names.Contains(name);
+ }
+ private string CampusBodyBundle=>activeWardrobeBody?bodyOptions[bodyOptionIndex].BundleName:"";
+ class SkirtDriver { public Transform bone,reference;public SkirtNativeMath.Setting setting; }
+ private SkirtDriver[] campusSkirtDrivers;
+ private GameObject campusSkirtBody;
+ private ActorAnimationSwingSolver campusSkirtSwing;
+ private Vector3 campusSkirtLastPosition;
+ private Quaternion campusSkirtLastRotation;
+ private bool campusSkirtHasPosition;
+ private int wardrobeSkirtLifecycleFrame;
+ private void UpdateWardrobeSkirtLifecycle(){
+  if(!RuntimePerformance.Has("-wardrobeSkirtLifecycle"))return;
+  int cycle=wardrobeSkirtLifecycleFrame/20;
+  if(wardrobeSkirtLifecycleFrame%20==0&&cycle<bodyOptions.Length*2){
+   SetBodyOption(cycle%bodyOptions.Length);Debug.Log("WARDROBE_SKIRT_LIFECYCLE index="+cycle+" bundle="+CampusBodyBundle);
+  }
+  if(wardrobeSkirtLifecycleFrame==bodyOptions.Length*40){SetBodyOption(FindOption(bodyOptions,"mdl_chr_hski-schl-0000_body"));Debug.Log("WARDROBE_SKIRT_LIFECYCLE_DONE count="+cycle);}
+  wardrobeSkirtLifecycleFrame++;
+ }
+ private void RestoreCampusSkirtPose(){if(campusSkirtSwing)campusSkirtSwing.RestorePose();}
+ private void ReleaseCampusSkirt(){
+  if(campusSkirtSwing){campusSkirtSwing.RestorePose();campusSkirtSwing.gameObject.SetActive(false);Destroy(campusSkirtSwing.gameObject);campusSkirtSwing=null;}
+  campusSkirtDrivers=null;campusSkirtBody=null;campusSkirtHasPosition=false;
+ }
+ private static bool SkirtAuditActive=>RuntimePerformance.Has("-skirtAudit");
+ private static bool SkirtLiveAudit=>RuntimePerformance.Has("-skirtLiveAudit");
+ private static bool LegacySkirt=>RuntimePerformance.Has("-legacySkirt");
+ private bool UseNativeSkirt {
+  get {
+   if(LegacySkirt||!activeWardrobeBody)return false;
+   if(campusSkirtSupported==null)campusSkirtSupported=new HashSet<string>(JsonUtility.FromJson<SkirtCatalog>(Resources.Load<TextAsset>("WardrobeSkirtCatalog").text).bundles,StringComparer.Ordinal);
+   return campusSkirtSupported.Contains(CampusBodyBundle);
+  }
+ }
+ private void ApplyCampusSkirt() {
+  if(!UseNativeSkirt)return;
+  if(campusSkirtBody!=activeWardrobeBody||campusSkirtDrivers==null){
+   campusSkirtBody=activeWardrobeBody;
+   var bones=activeWardrobeBody.GetComponentsInChildren<Transform>(true).ToDictionary(x=>x.name,x=>x);
+   var asset=Resources.Load<TextAsset>("WardrobeSkirts/"+CampusBodyBundle);
+   var config=campusSkirtConfig=JsonUtility.FromJson<SkirtSettings>(asset.text);
+   campusSkirtDrivers=config.drivers.Select(s=>new SkirtDriver{bone=bones[s.bone],reference=bones[s.reference],setting=s}).ToArray();
+   if(!RuntimePerformance.Has("-skirtRootOnly")){
+    if(campusSkirtSwing)Destroy(campusSkirtSwing.gameObject);
+    var host=new GameObject("Wardrobe skirt swing");host.SetActive(false);host.transform.SetParent(visual.transform,false);
+    campusSkirtSwing=host.AddComponent<ActorAnimationSwingSolver>();campusSkirtSwing.configuration=asset;campusSkirtSwing.campusBindings=bones;campusSkirtSwing.rootMotionSource=bones["Hips"];campusSkirtSwing.manualSimulation=true;campusSkirtSwing.enableQuartzHair=false;campusSkirtSwing.enableWind=false;host.SetActive(true);campusSkirtSwing.Initialize();
+    var paddingArg=Environment.GetCommandLineArgs().FirstOrDefault(a=>a.StartsWith("-skirtPadding="));
+    if(paddingArg!=null&&float.TryParse(paddingArg.Substring(14),System.Globalization.NumberStyles.Float,System.Globalization.CultureInfo.InvariantCulture,out float padding))
+     foreach(var collider in campusSkirtSwing.bodyColliders){collider.radius+=padding;if(collider.endRadius>=0)collider.endRadius+=padding;}
+    if(campusSkirtSwing.MatchedNodes!=config.expectedNodes||campusSkirtSwing.SimulatedNodes!=config.expectedSegments||campusSkirtSwing.ActiveChainLayers!=config.expectedChains||campusSkirtSwing.ImportedColliders!=config.expectedColliders||campusSkirtSwing.MissingColliderAnchors!=0)throw new InvalidOperationException("Incomplete skirt swing bindings: "+CampusBodyBundle);
+   }
+   Debug.Log("CAMPUS_SKIRT_BOUND bundle="+CampusBodyBundle+" drivers="+campusSkirtDrivers.Length);
+  }
+  foreach(var d in campusSkirtDrivers)d.bone.localRotation=SkirtNativeMath.Calculate(d.setting.initialReferenceRotation,d.reference.localRotation,d.setting);
+  if(campusSkirtSwing){
+   var position=visual.transform.position;var rotation=visual.transform.rotation;
+   if(campusSkirtHasPosition&&((position-campusSkirtLastPosition).sqrMagnitude>4f||Quaternion.Angle(rotation,campusSkirtLastRotation)>100f))campusSkirtSwing.RequestReset();
+   campusSkirtLastPosition=position;campusSkirtLastRotation=rotation;campusSkirtHasPosition=true;
+   campusSkirtSwing.CapturePose();campusSkirtSwing.Step(Time.deltaTime);
+   if(CampusHairBenchmark)Debug.Log(FormattableString.Invariant($"CAMPUS_SKIRT_SAMPLE frame={Time.frameCount} finite={campusSkirtSwing.IsFinite} length={campusSkirtSwing.MaxLengthError:F9} proxyOverlap={campusSkirtSwing.MaxPenetration:F9} resets={campusSkirtSwing.ResetCount}"));
+  }
+ }
+
+ private int skirtAuditFrame;
+ private bool skirtAuditDone;
+ private int skirtAuditCycles=1;
+ private float SkirtAuditTime=>skirtAuditCycles>1?Mathf.Repeat(skirtAuditFrame/60f,skirtAuditClip.length):Mathf.Min(skirtAuditFrame/60f,skirtAuditClip.length);
+ private string skirtAuditOutput;
+ private AnimationClip skirtAuditClip;
+ private Mesh skirtAuditMesh;
+ private SkinnedMeshRenderer skirtAuditRenderer;
+ private readonly List<Vector3> skirtAuditVertices=new List<Vector3>();
+ private readonly List<string> skirtAuditRows=new List<string>();
+ private void InitializeSkirtAudit() {
+  if(skirtAuditClip==null){
+   Time.captureDeltaTime=1f/60f;QualitySettings.vSyncCount=0;Application.targetFrameRate=-1;
+   skirtAuditClip=RuntimePerformance.Has("-skirtWalk")?WalkClip:RunClip;
+   if(RuntimePerformance.Has("-skirtLong"))skirtAuditCycles=3;
+   skirtAuditOutput=Environment.GetCommandLineArgs().FirstOrDefault(s=>s.StartsWith("-skirtOutput="))?.Substring(13)??Path.Combine(Application.persistentDataPath,"SkirtAudit");
+   Directory.CreateDirectory(skirtAuditOutput);
+   skirtAuditRenderer=activeWardrobeBody.GetComponentsInChildren<SkinnedMeshRenderer>().First(r=>r.bones.Any(b=>b&&b.name.Contains("Skirt")));
+   skirtAuditMesh=new Mesh();skirtAuditMesh.MarkDynamic();
+   skirtAuditRenderer.BakeMesh(skirtAuditMesh);
+   var mesh=skirtAuditRenderer.sharedMesh;var weights=mesh.boneWeights;var bones=skirtAuditRenderer.bones;
+   using(var w=new BinaryWriter(File.Create(Path.Combine(skirtAuditOutput,"topology.bin")))){
+    w.Write(mesh.vertexCount);var tri=skirtAuditMesh.triangles;if(tri.Length==0)throw new InvalidOperationException("Baked skirt topology is empty");w.Write(tri.Length);foreach(int t in tri)w.Write(t);
+    foreach(var bw in weights){float skirt=0,left=0,right=0;
+     int[] ids={bw.boneIndex0,bw.boneIndex1,bw.boneIndex2,bw.boneIndex3};float[] ws={bw.weight0,bw.weight1,bw.weight2,bw.weight3};
+     for(int j=0;j<4;j++){string n=bones[ids[j]]?bones[ids[j]].name:"";if(n.Contains("Skirt"))skirt+=ws[j];else if(n.Contains("Leg")){if(n.StartsWith("Left"))left+=ws[j];if(n.StartsWith("Right"))right+=ws[j];}}
+     w.Write((byte)(skirt>.45f?1:left>.45f?2:right>.45f?3:0));
+    }
+   }
+   if(skirtAuditRows.Count==0)skirtAuditRows.Add("frame,time,clip,mode,state");
+  }
+ }
+ private void UpdateSkirtAudit() {
+  if(skirtAuditDone)return;
+  InitializeSkirtAudit();
+  float time=SkirtAuditTime;
+  SampleAndCorrect(skirtAuditClip,time,false);locomotionTime=time;walkTime=time;skirtPoseBlend=1;skirtPoseBlendVelocity=0;
+  ApplyAuthoredSkirtPose(1,true,skirtAuditClip==WalkClip);
+  wasGrounded=true;verticalVelocity=-2;stateName="Skirt validation";
+ }
+ private void RecordSkirtAudit() {
+  if((!SkirtAuditActive&&!SkirtLiveAudit)||skirtAuditDone)return;
+  if(SkirtLiveAudit){
+   if(!UseNativeSkirt){skirtAuditFrame++;return;}
+   if(!skirtAuditRenderer){skirtAuditClip=null;InitializeSkirtAudit();}
+  }
+  if(!skirtAuditRenderer)return;
+  playerCamera.transform.position=playerRoot.transform.TransformPoint(new Vector3(.9f,1.0f,2.7f));
+  playerCamera.transform.LookAt(playerRoot.transform.TransformPoint(new Vector3(0,.85f,0)));
+  playerCamera.fieldOfView=32;
+  skirtAuditRenderer.BakeMesh(skirtAuditMesh);skirtAuditMesh.GetVertices(skirtAuditVertices);
+  using(var w=new BinaryWriter(File.Create(Path.Combine(skirtAuditOutput,$"frame_{skirtAuditFrame:000}.bin"))))foreach(var v in skirtAuditVertices){var p=playerRoot.transform.InverseTransformPoint(skirtAuditRenderer.transform.TransformPoint(v));w.Write(p.x);w.Write(p.y);w.Write(p.z);}
+  skirtAuditRows.Add(FormattableString.Invariant($"{skirtAuditFrame},{(SkirtLiveAudit?selfTestTime:SkirtAuditTime):F6},{(SkirtLiveAudit?"self-test":skirtAuditClip.name)},{(LegacySkirt?"legacy":campusSkirtSwing?"native-root-and-swing":"native-root")},{stateName}"));
+  int last=SkirtLiveAudit?839:Mathf.CeilToInt(skirtAuditClip.length*60*skirtAuditCycles);
+  if(skirtAuditFrame==9||skirtAuditFrame==20||skirtAuditFrame==40||skirtAuditFrame==49||skirtAuditFrame==60||skirtAuditFrame>=last)CaptureSkirtFrame(skirtAuditFrame,skirtAuditFrame>=last);
+  skirtAuditFrame++;
+ }
+ private void CaptureSkirtFrame(int frame,bool last){
+  var target=RenderTexture.GetTemporary(1280,720,24,RenderTextureFormat.ARGB32);var oldTarget=playerCamera.targetTexture;var oldActive=RenderTexture.active;
+  playerCamera.targetTexture=target;playerCamera.Render();RenderTexture.active=target;
+  var image=new Texture2D(1280,720,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,1280,720),0,0);image.Apply();
+  File.WriteAllBytes(Path.Combine(skirtAuditOutput,$"view_{frame:000}.png"),image.EncodeToPNG());Destroy(image);playerCamera.targetTexture=oldTarget;RenderTexture.active=oldActive;RenderTexture.ReleaseTemporary(target);
+  if(last){skirtAuditDone=true;File.WriteAllLines(Path.Combine(skirtAuditOutput,"frames.csv"),skirtAuditRows);Debug.Log("SKIRT_AUDIT_DONE frames="+(skirtAuditRows.Count-1));if(!SkirtLiveAudit)Application.Quit();}}
+}

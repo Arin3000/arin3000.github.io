@@ -1,0 +1,1897 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+
+public sealed partial class LocomotionInteractivePlayer : MonoBehaviour
+{
+    private static readonly float[] SkirtFrontKeys = { 0.5f, 1f, 2f, 1.5f, 0.5f, 0.25f, 1f, 1.25f, 0.5f };
+    private static readonly float[] SkirtBackKeys = { 1f, 0.5f, 0.5f, 1f, 1.5f, 2.5f, 3f, 2f, 1f };
+    private static readonly float[] SkirtLateralKeys = { 2f, 3f, 5f, 3.5f, 2f, 2.5f, 4.5f, 3f, 2f };
+    public GameObject TargetModel;
+    public AnimationClip IdleClip;
+    public AnimationClip WalkClip;
+    public AnimationClip RunClip;
+    public AnimationClip JumpClip;
+    public Material[] CharacterMaterials;
+    public Cubemap CharacterSpecCube;
+
+    public float RunSpeed = 3.2f;
+    public float WalkSpeed = 1.65f;
+    public float SprintSpeed = 5.0f;
+    public float TurnSpeed = 720f;
+    public float Gravity = -22f;
+    public float JumpHeight = 1.25f;
+
+    private sealed class CorrectionRig
+    {
+        public Transform Hips, Chest, LeftUpperArm, RightUpperArm, LeftLowerArm, RightLowerArm;
+        public Transform LeftUpperLeg, RightUpperLeg, LeftLowerLeg, RightLowerLeg, LeftFoot, RightFoot;
+    }
+
+    private sealed class SkirtChain
+    {
+        public string Name;
+        public Transform[] Bones;
+        public Vector3[] RestLocalPositions;
+        public Quaternion[] RestLocalRotations;
+        public bool Left;
+        public bool Right;
+        public bool Front;
+        public bool Back;
+        public bool Side;
+    }
+
+    private sealed class WardrobeOption
+    {
+        public string Label;
+        public string BundleName;
+        public string Owner;
+        public GameObject Prefab;
+        public Mesh Mesh;
+        public Texture2D Thumbnail;
+    }
+
+    private sealed class CharacterPreset
+    {
+        public string Label;
+        public string Owner;
+        public string FaceBundle;
+        public string BodyBundle;
+        public string HairBundle;
+        public Texture2D Thumbnail;
+    }
+
+    private sealed class BoneBinding
+    {
+        public Transform Source;
+        public Transform Target;
+    }
+
+    private GameObject playerRoot;
+    private GameObject visual;
+    private CharacterController characterController;
+    private Camera playerCamera;
+    private CorrectionRig rig;
+    private SkirtChain[] skirtChains;
+    private float verticalVelocity;
+    private float locomotionTime;
+    private float walkTime;
+    private float idleTime;
+    private float airTime;
+    private float yaw = 15f;
+    private SetGlobalAttributes characterAttributes;
+    private float pitch = 12f;
+    private float cameraDistance = 4.2f;
+    private bool ready;
+    private readonly SparseSoleSampler sparseSoles = new SparseSoleSampler();
+    private readonly List<Vector3> sparseVertices = new List<Vector3>(8192);
+    private readonly RaycastHit[] cameraHitBuffer = new RaycastHit[64];
+    private Renderer[] cameraRenderers;
+    private GUIStyle hudStyle;
+    private static readonly string[] PeriodNames={"MORNING","DAY","SUNSET","NIGHT"};
+    private float maximumSoleDifference;
+    private int soleValidationFrames;
+    public bool IsReady => ready;
+    private bool reference0514;
+    private bool wasGrounded;
+    private Mesh soleMesh;
+    private readonly List<Vector3> soleVertices = new List<Vector3>();
+    private readonly List<string> soleTrace = new List<string> { "time,state,grounded,samples,before_m,after_m,legacy_ankle_m,lift_m" };
+    private readonly RaycastHit[] soleHits = new RaycastHit[32];
+    private float soleLift;
+    private GameObject soleBody;
+    private SkinnedMeshRenderer[] soleRenderers;
+    private float groundedGrace;
+    private Vector3 lastSafeGroundPosition;
+    private bool hasSafeGroundPosition;
+    private float skirtPoseBlend;
+    private float skirtPoseBlendVelocity;
+    private Quaternion leftUpperLegIdleLocalRotation;
+    private Quaternion rightUpperLegIdleLocalRotation;
+    private Quaternion leftLowerLegIdleLocalRotation;
+    private Quaternion rightLowerLegIdleLocalRotation;
+    private bool legReferencePoseReady;
+    private string stateName = "Loading";
+    private string previousLoggedState = string.Empty;
+    private bool selfTestActive;
+    private float selfTestTime;
+    private readonly HashSet<string> selfTestCaptures = new HashSet<string>();
+    private readonly List<string> selfTestTrace = new List<string>();
+    private readonly HashSet<string> skirtMetricSamples = new HashSet<string>();
+    private readonly List<string> skirtMetricTrace = new List<string> { "sample,time,baseline_candidates,corrected_candidates,reduction_percent" };
+    private readonly List<AssetBundle> wardrobeBundles = new List<AssetBundle>();
+    private readonly CampusBundleCache wardrobeCache = new CampusBundleCache();
+    private readonly List<BoneBinding> wardrobeBoneBindings = new List<BoneBinding>();
+    private readonly Dictionary<string, GameObject> faceInstanceCache = new Dictionary<string, GameObject>(StringComparer.OrdinalIgnoreCase);
+    private Dictionary<string, Transform> wardrobeTargetBones = new Dictionary<string, Transform>(StringComparer.OrdinalIgnoreCase);
+    private WardrobeOption[] bodyOptions = Array.Empty<WardrobeOption>();
+    private WardrobeOption[] hairOptions = Array.Empty<WardrobeOption>();
+    private WardrobeOption[] faceOptions = Array.Empty<WardrobeOption>();
+    private CharacterPreset[] characterPresets = Array.Empty<CharacterPreset>();
+    private SkinnedMeshRenderer[] originalBodyRenderers = Array.Empty<SkinnedMeshRenderer>();
+    private SkinnedMeshRenderer[] originalHairRenderers = Array.Empty<SkinnedMeshRenderer>();
+    private Renderer[] originalFaceRenderers = Array.Empty<Renderer>();
+    private GameObject activeWardrobeBody;
+    private GameObject activeWardrobeHair;
+    private GameObject activeWardrobeFace;
+    private int bodyOptionIndex;
+    private int hairOptionIndex;
+    private int faceOptionIndex;
+    private int characterPresetIndex;
+    private int wardrobeTab;
+    private bool wardrobeOpen = true;
+    private Vector2 wardrobeScroll;
+    private Texture2D panelTexture;
+    private Texture2D cardTexture;
+    private Texture2D selectedCardTexture;
+    private GUIStyle wardrobeTitleStyle;
+    private GUIStyle wardrobeTabStyle;
+    private GUIStyle wardrobeCardStyle;
+    private GUIStyle wardrobeCardLabelStyle;
+    private GUIStyle wardrobeMetaStyle;
+    private bool wardrobeSelfTestActive;
+    private RecordedActorProfile recordedActor;
+    private int wardrobeSelfTestStep = -1;
+    private static string SelfTestOutput => "E:/ArinLee/简历/output/interactive_test" +
+        (Environment.GetCommandLineArgs().Contains("-timeOfDaySelfTest") ? "/" + CampusAssetBundleLoader.ClassroomPeriod : "");
+
+    private IEnumerator Start()
+    {
+        reference0514 = Environment.GetCommandLineArgs().Contains("-gpa0514Compare");
+        if (reference0514) Screen.SetResolution(1600, 900, false);
+        if (Environment.GetCommandLineArgs().Contains("-campusReferenceTest")) yield break;
+        if (TargetModel == null || IdleClip == null || WalkClip == null || RunClip == null || JumpClip == null)
+            throw new InvalidOperationException("Interactive locomotion assets are not assigned.");
+
+        GameObject loaderCharacter = null;
+        recordedActor = RecordedActorProfile.Load();
+        // An unloaded scene can render hundreds of empty frames while its AB loads.
+        // Bound startup by wall time, not frame count (especially after reload).
+        float loaderDeadline = Time.realtimeSinceStartup + 60f;
+        while ((loaderCharacter == null || Camera.main == null) && Time.realtimeSinceStartup < loaderDeadline)
+        {
+            loaderCharacter = GameObject.Find("Campus Character - HSKI");
+            yield return null;
+        }
+        if (loaderCharacter == null || Camera.main == null)
+            throw new InvalidOperationException("Campus scene or comparison character failed to load.");
+
+        foreach (var renderer in loaderCharacter.GetComponentsInChildren<Renderer>(true))
+            renderer.enabled = false;
+        if(!RuntimePerformance.Legacy)
+            foreach(var driver in loaderCharacter.GetComponentsInChildren<SetGlobalAttributes>(true)) driver.enabled=false;
+
+        CreateCampusMeshColliders(loaderCharacter.transform);
+        if (!CampusAssetBundleLoader.Indoor) CreateLocomotionCollisionGround();
+        playerRoot = new GameObject("HSKI Interactive Player");
+        playerRoot.layer = 0;
+        var spawn = CampusAssetBundleLoader.Indoor ? FindIndoorSpawn() : new Vector3(-15f, 0.20f, -4f);
+        playerRoot.transform.SetPositionAndRotation(spawn, Quaternion.identity);
+        if (CampusAssetBundleLoader.Indoor) { cameraDistance = 3.1f; yaw = 180f; pitch = 12f; wardrobeOpen = false; }
+        characterController = playerRoot.AddComponent<CharacterController>();
+        characterController.height = 1.8f;
+        characterController.radius = 0.28f;
+        characterController.center = new Vector3(0f, 0.9f, 0f);
+        characterController.stepOffset = 0.28f;
+        characterController.slopeLimit = 48f;
+        characterController.skinWidth = 0.03f;
+        lastSafeGroundPosition = playerRoot.transform.position;
+        hasSafeGroundPosition = true;
+
+        // Keep the animated FBX unparented. Its baked Generic Transform curves were
+        // validated in this exact hierarchy; parenting it under CharacterController
+        // can make Unity cull the skinned meshes despite correct world bounds.
+        visual = Instantiate(TargetModel);
+        visual.name = "HSKI Locomotion Visual";
+        visual.transform.localPosition = Vector3.zero;
+        visual.transform.localRotation = Quaternion.identity;
+        visual.SetActive(true);
+        ApplyCharacterMaterials(visual);
+        ConfigureCharacterGlobals(visual);
+        ScaleToHeight(visual, 1.62f);
+        SetLayerRecursively(visual.transform, 0);
+        foreach (var skinned in visual.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            skinned.updateWhenOffscreen = true;
+
+        var animator = visual.GetComponentInChildren<Animator>(true);
+        rig = BuildRig(animator);
+        skirtChains = BuildSkirtChains(visual.transform);
+        animator.runtimeAnimatorController = null;
+        animator.avatar = null;
+        animator.enabled = false;
+        InitializeWardrobe();
+        InitializeCampusHairBenchmark();
+
+        playerCamera = Camera.main;
+        playerCamera.cullingMask = ~0;
+        playerCamera.fieldOfView = 43f;
+        playerCamera.nearClipPlane = 0.05f;
+        playerCamera.farClipPlane = 600f;
+
+        foreach(var arg in Environment.GetCommandLineArgs())
+            if(arg.StartsWith("-soleWardrobeIndex=") && int.TryParse(arg.Substring(19),out int testBody)) SetBodyOption(testBody);
+        foreach(var arg in Environment.GetCommandLineArgs())
+            if(arg.StartsWith("-skirtBody="))SetBodyOption(FindOption(bodyOptions,arg.Substring(11)));
+        SampleAndCorrect(IdleClip, 0f, false);
+        leftUpperLegIdleLocalRotation = rig.LeftUpperLeg.localRotation;
+        rightUpperLegIdleLocalRotation = rig.RightUpperLeg.localRotation;
+        leftLowerLegIdleLocalRotation = rig.LeftLowerLeg.localRotation;
+        rightLowerLegIdleLocalRotation = rig.RightLowerLeg.localRotation;
+        legReferencePoseReady = true;
+        AlignVisualFeet();
+        Physics.SyncTransforms();
+        UpdateCamera(true);
+        var readyBounds = CalculateBounds(visual);
+        Debug.Log($"LOCOMOTION_VISUAL_READY renderers={visual.GetComponentsInChildren<Renderer>(true).Count(r => r.enabled)} skirtChains={skirtChains.Length} boundsCenter={readyBounds.center} boundsSize={readyBounds.size}");
+        wasGrounded = ProbeGrounded();
+        selfTestActive = Environment.GetCommandLineArgs().Any(arg =>
+            string.Equals(arg, "-locomotionSelfTest", StringComparison.OrdinalIgnoreCase));
+        wardrobeSelfTestActive = Environment.GetCommandLineArgs().Any(arg =>
+            string.Equals(arg, "-wardrobeSelfTest", StringComparison.OrdinalIgnoreCase));
+        selfTestActive |= CampusHairBenchmark;
+        if (selfTestActive)
+        {
+            Directory.CreateDirectory(SelfTestOutput);
+            Application.targetFrameRate = 60;
+            selfTestTrace.Add("time,state,x,y,z");
+            if(RuntimePerformance.Has("-validateSoles"))
+            {
+                // Fixed simulation steps retain all 720 poses without waiting for VSync.
+                Time.captureDeltaTime=1f/60f;Application.targetFrameRate=-1;QualitySettings.vSyncCount=0;
+            }
+        }
+        if (CampusHairBenchmark) { Time.captureDeltaTime=1f/60f; QualitySettings.vSyncCount=0; Application.targetFrameRate=-1; }
+        ready = true;
+        if (reference0514)
+        {
+            foreach (var renderer in visual.GetComponentsInChildren<Renderer>(true)) renderer.enabled = false;
+            StartCoroutine(CaptureReference0514());
+        }
+        Debug.Log("LOCOMOTION_INTERACTIVE_READY controls=WASD,Shift,Space,RMB+Mouse,Wheel");
+    }
+
+    private void Update()
+    {
+        if (!ready) return;
+        if (reference0514) return;
+        if (SkirtAuditActive) { UpdateSkirtAudit(); return; }
+        UpdateWardrobeSkirtLifecycle();
+        UpdateCampusHairControls();
+
+        if (!selfTestActive && Input.GetMouseButtonDown(1)) Cursor.lockState = CursorLockMode.Locked;
+        if (!selfTestActive && Input.GetMouseButtonUp(1)) Cursor.lockState = CursorLockMode.None;
+        if (!selfTestActive && Input.GetMouseButton(1))
+        {
+            yaw += Input.GetAxis("Mouse X") * 150f * Time.deltaTime;
+            pitch = Mathf.Clamp(pitch - Input.GetAxis("Mouse Y") * 110f * Time.deltaTime, -10f, 55f);
+        }
+        if (!selfTestActive)
+            cameraDistance = Mathf.Clamp(cameraDistance - Input.mouseScrollDelta.y * 0.35f, 2.4f, 7f);
+        if (!selfTestActive) HandleWardrobeInput();
+
+        if (selfTestActive) selfTestTime += Time.deltaTime;
+        if (selfTestActive && RuntimePerformance.Has("-roomOrbitSelfTest"))
+        {
+            yaw = 180f + Mathf.Floor(selfTestTime) * 45f;
+            pitch = 8f;
+            cameraDistance = 2.8f;
+        }
+        if (selfTestActive && wardrobeSelfTestActive) UpdateWardrobeSelfTest();
+        var input = selfTestActive
+            ? (wardrobeSelfTestActive ? Vector2.zero : SelfTestInput(selfTestTime))
+            : Vector2.ClampMagnitude(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")), 1f);
+        if (selfTestActive && RuntimePerformance.Has("-roomOrbitSelfTest")) input = Vector2.zero;
+        if (RuntimePerformance.Has("-renderPerformanceTest")) input = Vector2.zero;
+        var cameraYaw = Quaternion.Euler(0f, yaw, 0f);
+        var direction = cameraYaw * new Vector3(input.x, 0f, input.y);
+        var grounded = ProbeGrounded();
+        if (grounded && verticalVelocity < 0f) verticalVelocity = -2f;
+        var jumpPressed = selfTestActive
+            ? !wardrobeSelfTestActive && selfTestTime >= 8.0f && selfTestTime - Time.deltaTime < 8.0f
+            : Input.GetKeyDown(KeyCode.Space);
+        if (grounded && jumpPressed && !RuntimePerformance.Has("-renderPerformanceTest"))
+        {
+            verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
+            grounded = false;
+            airTime = 0f;
+        }
+        verticalVelocity += Gravity * Time.deltaTime;
+
+        var walk = selfTestActive
+            ? !wardrobeSelfTestActive && selfTestTime >= 1f && selfTestTime < 5f
+            : Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        var sprint = selfTestActive
+            ? !wardrobeSelfTestActive && selfTestTime >= 7f && selfTestTime < 8f
+            : Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        var moveSpeed = walk ? WalkSpeed : sprint ? SprintSpeed : RunSpeed;
+        var velocity = direction * moveSpeed;
+        velocity.y = verticalVelocity;
+        characterController.Move(velocity * Time.deltaTime);
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            var desiredRotation = Quaternion.LookRotation(direction, Vector3.up);
+            playerRoot.transform.rotation = Quaternion.RotateTowards(
+                playerRoot.transform.rotation, desiredRotation, TurnSpeed * Time.deltaTime);
+        }
+
+        grounded = ProbeGrounded();
+        if (grounded && verticalVelocity <= 0f)
+        {
+            lastSafeGroundPosition = playerRoot.transform.position;
+            hasSafeGroundPosition = true;
+        }
+        else if (hasSafeGroundPosition &&
+                 playerRoot.transform.position.y < lastSafeGroundPosition.y - 4f)
+        {
+            characterController.enabled = false;
+            playerRoot.transform.position = lastSafeGroundPosition + Vector3.up * 0.08f;
+            characterController.enabled = true;
+            verticalVelocity = -2f;
+            groundedGrace = 0.08f;
+            grounded = true;
+            Debug.LogWarning($"LOCOMOTION_GROUND_RECOVERY position={lastSafeGroundPosition}");
+        }
+        if (!grounded)
+        {
+            airTime += Time.deltaTime;
+            SampleAndCorrect(JumpClip, Mathf.Min(airTime, JumpClip.length), false);
+            stateName = verticalVelocity >= 0f ? "Jump" : "Fall (hold Jump end)";
+        }
+        else if (input.sqrMagnitude > 0.001f)
+        {
+            if (walk)
+            {
+                walkTime += Time.deltaTime;
+                SampleAndCorrect(WalkClip, Mathf.Repeat(walkTime, WalkClip.length), false);
+                // Preserve the native Gakumas walk, including knee and ankle articulation.
+                stateName = "Walk " + ResolveFourWayName(input);
+            }
+            else
+            {
+                var playbackRate = sprint ? 1.35f : 1f;
+                locomotionTime += Time.deltaTime * playbackRate;
+                // Native Gakumas run: preserve authored pelvis, arms, knees and ankles.
+                SampleAndCorrect(RunClip, Mathf.Repeat(locomotionTime, RunClip.length), false);
+                stateName = sprint ? "Sprint (Run 1.35x)" : "Run";
+            }
+        }
+        else
+        {
+            idleTime += Time.deltaTime;
+            SampleAndCorrect(IdleClip, Mathf.Repeat(idleTime, IdleClip.length), false);
+            stateName = wasGrounded ? "Idle" : "Land → Idle";
+        }
+        long skirtTick=RuntimePerformance.Tick(), skirtBytes=RuntimePerformance.Bytes();
+        ApplyAuthoredSkirtPose(input.magnitude, grounded, walk);
+        RuntimePerformance.Record("SkirtCorrection",skirtTick,skirtBytes);
+        if (selfTestActive && !RuntimePerformance.Enabled && grounded && input.sqrMagnitude > 0.001f && !walk)
+            UpdateSkirtMetrics(input.magnitude);
+        wasGrounded = grounded;
+        if (selfTestActive && !CampusHairBenchmark) UpdateSelfTestEvidence();
+    }
+
+    private void LateUpdate()
+    {
+        if (!ready) return;
+        long lateTick=RuntimePerformance.Tick(), lateBytes=RuntimePerformance.Bytes();
+        // Ordered pose pipeline: sampled base pose -> authored skirt -> clothing sync
+        // -> world-space foot clearance -> clothing resync -> shader matrices -> camera.
+        // The legacy branch retains the original competing global driver for A/B tests.
+        if(RuntimePerformance.Legacy)
+        {
+            Shader.SetGlobalVector("_MatCapRimLight", Vector4.zero);
+            Shader.SetGlobalColor("_MatCapRimColor", Color.clear);
+        }
+        SyncWardrobeBones();
+        long soleTick=RuntimePerformance.Tick(), soleBytes=RuntimePerformance.Bytes();
+        AlignVisualFeet();
+        RuntimePerformance.Record("Sole",soleTick,soleBytes);
+        SyncWardrobeBones();
+        ApplyCampusSkirt();
+        StepCampusHair();
+        // Manual animation sampling has now updated the head; override the hidden
+        // comparison actor's global driver before the frame is rendered.
+        long globalsTick=RuntimePerformance.Tick(), globalsBytes=RuntimePerformance.Bytes();
+        if (characterAttributes != null) characterAttributes.ApplyNow();
+        RuntimePerformance.Record("CharacterGlobals",globalsTick,globalsBytes);
+        long cameraTick=RuntimePerformance.Tick(), cameraBytes=RuntimePerformance.Bytes();
+        UpdateCamera(false);
+        RuntimePerformance.Record("Camera",cameraTick,cameraBytes);
+        RuntimePerformance.Record("LateUpdate",lateTick,lateBytes);
+        RecordSkirtAudit();
+    }
+
+    private void SampleAndCorrect(AnimationClip clip, float time, bool runCorrection)
+    {
+        long tick=RuntimePerformance.Tick(), bytes=RuntimePerformance.Bytes();
+        RestoreCampusHairPose();
+        RestoreCampusSkirtPose();
+        clip.SampleAnimation(visual, time);
+        RuntimePerformance.Record("AnimationSample",tick,bytes);
+        visual.transform.SetPositionAndRotation(playerRoot.transform.position, playerRoot.transform.rotation);
+        ResetSkirtPose();
+        if (!runCorrection) return;
+
+        var right = playerRoot.transform.right;
+        RotateWorld(rig.Hips, right, 3f);
+        RotateWorld(rig.Chest, right, 6.5f);
+        var phase = time / Mathf.Max(0.001f, RunClip.length) * Mathf.PI * 2f;
+        var swing = Mathf.Sin(phase) * 11f;
+        RotateWorld(rig.LeftUpperArm, right, swing);
+        RotateWorld(rig.RightUpperArm, right, -swing);
+        RotateWorld(rig.LeftLowerArm, right, swing * 0.28f + 3f);
+        RotateWorld(rig.RightLowerArm, right, -swing * 0.28f + 3f);
+    }
+
+    private void ResetSkirtPose()
+    {
+        if (skirtChains == null) return;
+        foreach (var chain in skirtChains)
+            for (var i = 0; i < chain.Bones.Length; i++)
+                chain.Bones[i].localRotation = chain.RestLocalRotations[i];
+        foreach (var chain in skirtChains)
+            for (var i = 0; i < chain.Bones.Length; i++)
+                chain.Bones[i].localPosition = chain.RestLocalPositions[i];
+    }
+
+    private void ApplyAuthoredSkirtPose(float movementAmount, bool grounded, bool walking)
+    {
+        if (UseNativeSkirt) return;
+        if (skirtChains == null || skirtChains.Length == 0) return;
+
+        // Authored run-cycle skirt keys. Only the panel beside the forward leg opens;
+        // the opposite panel returns toward rest. SmoothDamp handles state transitions,
+        // and smooth interpolation between keys avoids the previous radial "explosion".
+        var targetBlend = grounded ? movementAmount * (walking ? 0.55f : 1f) : 0.38f;
+        skirtPoseBlend = Mathf.SmoothDamp(skirtPoseBlend, targetBlend,
+            ref skirtPoseBlendVelocity, grounded ? 0.08f : 0.16f);
+        var phase = Mathf.Repeat(locomotionTime / Mathf.Max(0.001f, RunClip.length), 1f);
+
+        foreach (var chain in skirtChains)
+        {
+            var panelPhase = chain.Right ? Mathf.Repeat(phase + 0.5f, 1f) : phase;
+            var sagittal = chain.Front
+                ? EvaluateLoopKeys(SkirtFrontKeys, panelPhase)
+                : chain.Back ? EvaluateLoopKeys(SkirtBackKeys, panelPhase) : 0f;
+            var frontClearance = 0f;
+            if (chain.Front)
+            {
+                var upperLeg = chain.Left ? rig.LeftUpperLeg : rig.RightUpperLeg;
+                var lowerLeg = chain.Left ? rig.LeftLowerLeg : rig.RightLowerLeg;
+                var thighForward = Vector3.Dot((lowerLeg.position - upperLeg.position).normalized,
+                    playerRoot.transform.forward);
+                var forwardAmount = Mathf.InverseLerp(-0.12f, 0.42f, thighForward);
+                sagittal += forwardAmount * (walking ? 0.8f : 2.0f);
+                if (!walking)
+                    frontClearance = (0.015f + forwardAmount * 0.020f) * skirtPoseBlend;
+            }
+            var lateralMagnitude = chain.Side ? EvaluateLoopKeys(SkirtLateralKeys, panelPhase) : 0f;
+            var lateral = chain.Left ? -lateralMagnitude : chain.Right ? lateralMagnitude : 0f;
+            // Keep the two central front panels meeting at the hem. Retargeted
+            // forward thigh motion otherwise separates them and exposes a tall
+            // triangular gap even when neither panel actually intersects the leg.
+            if (chain.Front && !chain.Side)
+                lateral += chain.Left ? 4f : -4f;
+            sagittal *= skirtPoseBlend;
+            lateral *= skirtPoseBlend;
+
+            if (chain.Bones.Length > 0)
+            {
+                RotateWorld(chain.Bones[0], playerRoot.transform.right, sagittal);
+                RotateWorld(chain.Bones[0], playerRoot.transform.forward, lateral);
+                if (frontClearance > 0f)
+                    chain.Bones[0].position += playerRoot.transform.forward * frontClearance;
+            }
+            // A very small follow-through on the first child keeps the hem from
+            // looking rigid without accumulating rotations down the entire chain.
+            if (chain.Bones.Length > 1)
+            {
+                RotateWorld(chain.Bones[1], playerRoot.transform.right, sagittal * 0.08f);
+                RotateWorld(chain.Bones[1], playerRoot.transform.forward, lateral * 0.08f);
+            }
+        }
+    }
+
+    private void ApplyLegStrideCorrection(bool walking)
+    {
+        if (!legReferencePoseReady) return;
+
+        if (walking)
+        {
+            // Leg edits must not rotate the sampled ankle a second time through
+            // the parent chain. Keep the source heel/toe roll in world space.
+            var leftFootRotation = rig.LeftFoot.rotation;
+            var rightFootRotation = rig.RightFoot.rotation;
+            // Re-author the lower-body walk on HSKI's idle reference pose. The
+            // retargeted source can put both thighs in front of the pelvis because
+            // its hip translation does not match HSKI's shorter proportions.
+            // Strictly opposite thigh phases plus rear-leg knee flexion produce a
+            // compact walk while the source clip still supplies torso/arm motion.
+            var phase = Mathf.Repeat(walkTime / Mathf.Max(0.001f, WalkClip.length), 1f);
+            var swing = Mathf.Sin(phase * Mathf.PI * 2f);
+            rig.LeftUpperLeg.localRotation = leftUpperLegIdleLocalRotation;
+            rig.RightUpperLeg.localRotation = rightUpperLegIdleLocalRotation;
+            rig.LeftLowerLeg.localRotation = leftLowerLegIdleLocalRotation;
+            rig.RightLowerLeg.localRotation = rightLowerLegIdleLocalRotation;
+
+            RotateWorld(rig.LeftUpperLeg, playerRoot.transform.right, -swing * 15f);
+            RotateWorld(rig.RightUpperLeg, playerRoot.transform.right, swing * 15f);
+            RotateWorld(rig.LeftLowerLeg, playerRoot.transform.right,
+                3f + Mathf.Max(0f, -swing) * 15f);
+            RotateWorld(rig.RightLowerLeg, playerRoot.transform.right,
+                3f + Mathf.Max(0f, swing) * 15f);
+            rig.LeftFoot.rotation = leftFootRotation;
+            rig.RightFoot.rotation = rightFootRotation;
+            return;
+        }
+
+        // The run source only needs a mild forward-swing compression.
+        CompressForwardThigh(rig.LeftUpperLeg, rig.LeftLowerLeg,
+            leftUpperLegIdleLocalRotation, 0.30f, 0.40f);
+        CompressForwardThigh(rig.RightUpperLeg, rig.RightLowerLeg,
+            rightUpperLegIdleLocalRotation, 0.30f, 0.40f);
+    }
+
+    private void CompressForwardThigh(Transform upperLeg, Transform lowerLeg,
+        Quaternion idleLocalRotation, float maximumBlend, float correctionStart)
+    {
+        var thighForward = Vector3.Dot((lowerLeg.position - upperLeg.position).normalized,
+            playerRoot.transform.forward);
+        var excess = Mathf.InverseLerp(correctionStart, 0.82f, thighForward);
+        upperLeg.localRotation = Quaternion.Slerp(upperLeg.localRotation,
+            idleLocalRotation, excess * maximumBlend);
+    }
+
+    private static float EvaluateLoopKeys(float[] keys, float normalizedTime)
+    {
+        var position = Mathf.Repeat(normalizedTime, 1f) * (keys.Length - 1);
+        var index = Mathf.Min(Mathf.FloorToInt(position), keys.Length - 2);
+        var t = Mathf.SmoothStep(0f, 1f, position - index);
+        return Mathf.Lerp(keys[index], keys[index + 1], t);
+    }
+
+    private void UpdateSkirtMetrics(float movementAmount)
+    {
+        var sampleIndex = Mathf.FloorToInt((selfTestTime - 5.15f) / 0.14f);
+        if (sampleIndex < 0 || sampleIndex > 5) return;
+        var key = sampleIndex.ToString();
+        if (!skirtMetricSamples.Add(key)) return;
+
+        ResetSkirtPose();
+        var baseline = CountSkirtLegPenetrationCandidates();
+        ApplyAuthoredSkirtPose(movementAmount, true, false);
+        var corrected = CountSkirtLegPenetrationCandidates();
+        var reduction = baseline > 0 ? (baseline - corrected) * 100f / baseline : 0f;
+        var line = $"phase_{sampleIndex},{selfTestTime:F3},{baseline},{corrected},{reduction:F1}";
+        skirtMetricTrace.Add(line);
+        Debug.Log("LOCOMOTION_SKIRT_METRIC " + line);
+    }
+
+    private int CountSkirtLegPenetrationCandidates()
+    {
+        var count = 0;
+        foreach (var renderer in visual.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            var source = renderer.sharedMesh;
+            if (source == null || source.boneWeights.Length != source.vertexCount) continue;
+            var boneIsSkirt = renderer.bones.Select(bone => bone != null &&
+                bone.name.IndexOf("Skirt", StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+            if (!boneIsSkirt.Any(value => value)) continue;
+
+            var baked = new Mesh();
+            renderer.BakeMesh(baked);
+            var vertices = baked.vertices;
+            var weights = source.boneWeights;
+            for (var i = 0; i < vertices.Length; i++)
+            {
+                var weight = weights[i];
+                var skirtWeight = 0f;
+                if (weight.boneIndex0 < boneIsSkirt.Length && boneIsSkirt[weight.boneIndex0]) skirtWeight += weight.weight0;
+                if (weight.boneIndex1 < boneIsSkirt.Length && boneIsSkirt[weight.boneIndex1]) skirtWeight += weight.weight1;
+                if (weight.boneIndex2 < boneIsSkirt.Length && boneIsSkirt[weight.boneIndex2]) skirtWeight += weight.weight2;
+                if (weight.boneIndex3 < boneIsSkirt.Length && boneIsSkirt[weight.boneIndex3]) skirtWeight += weight.weight3;
+                if (skirtWeight < 0.45f) continue;
+
+                var world = renderer.transform.TransformPoint(vertices[i]);
+                var hipLimit = Mathf.Min(rig.LeftUpperLeg.position.y, rig.RightUpperLeg.position.y) - 0.09f;
+                if (world.y > hipLimit) continue;
+                if (DistanceToSegment(world, rig.LeftUpperLeg.position, rig.LeftLowerLeg.position) < 0.105f
+                    || DistanceToSegment(world, rig.RightUpperLeg.position, rig.RightLowerLeg.position) < 0.105f)
+                    count++;
+            }
+            Destroy(baked);
+        }
+        return count;
+    }
+
+    private static float DistanceToSegment(Vector3 point, Vector3 start, Vector3 end)
+    {
+        var segment = end - start;
+        var t = Mathf.Clamp01(Vector3.Dot(point - start, segment) / Mathf.Max(0.000001f, segment.sqrMagnitude));
+        return Vector3.Distance(point, start + segment * t);
+    }
+
+    private static SkirtChain[] BuildSkirtChains(Transform root)
+    {
+        var all = root.GetComponentsInChildren<Transform>(true);
+        var anchors = all.Where(transform =>
+        {
+            var name = transform.name;
+            if (name.IndexOf("Skirt", StringComparison.OrdinalIgnoreCase) < 0) return false;
+            return name.EndsWith("_A", StringComparison.OrdinalIgnoreCase);
+        }).ToArray();
+
+        return anchors.Select(anchor =>
+        {
+            var name = anchor.name;
+            var bones = anchor.GetComponentsInChildren<Transform>(true)
+                .Where(transform => transform.name.IndexOf("Skirt", StringComparison.OrdinalIgnoreCase) >= 0)
+                .Take(5).ToArray();
+            return new SkirtChain
+            {
+                Name = name,
+                Bones = bones,
+                RestLocalPositions = bones.Select(bone => bone.localPosition).ToArray(),
+                RestLocalRotations = bones.Select(bone => bone.localRotation).ToArray(),
+                Left = name.IndexOf("Left", StringComparison.OrdinalIgnoreCase) >= 0,
+                Right = name.IndexOf("Right", StringComparison.OrdinalIgnoreCase) >= 0,
+                Front = name.IndexOf("Front", StringComparison.OrdinalIgnoreCase) >= 0,
+                Back = name.IndexOf("Back", StringComparison.OrdinalIgnoreCase) >= 0,
+                Side = name.IndexOf("Side", StringComparison.OrdinalIgnoreCase) >= 0
+            };
+        }).ToArray();
+    }
+
+    private void AlignVisualFeet()
+    {
+        if (rig.LeftFoot == null || rig.RightFoot == null) return;
+        bool grounded = !ready || (wasGrounded && verticalVelocity <= 0f);
+        if (!grounded)
+        {
+            // Preserve the sampled jump trajectory; no ground projection in flight.
+            soleLift = 0f;
+            if (selfTestActive && !RuntimePerformance.Enabled) soleTrace.Add($"{selfTestTime:F4},{stateName},false,0,0,0,0,0");
+            return;
+        }
+        var body = activeWardrobeBody != null ? activeWardrobeBody : visual;
+        if (soleRenderers == null || soleBody != body)
+        {
+            soleBody = body;
+            soleRenderers = body.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        }
+        if (soleMesh == null) { soleMesh = new Mesh { name = "Runtime sole probe" }; soleMesh.MarkDynamic(); }
+        RaycastHit leftGround, rightGround;
+        bool leftValid = FindSoleGround(rig.LeftFoot.position, out leftGround);
+        bool rightValid = FindSoleGround(rig.RightFoot.position, out rightGround);
+        RaycastHit support;
+        float supportOffset = FindSoleGround(playerRoot.transform.position, out support)
+            ? support.point.y - playerRoot.transform.position.y : 0f;
+        float minimum = float.PositiveInfinity;
+        float lift = 0f;
+        int samples = 0;
+        foreach (var renderer in soleRenderers)
+        {
+            if (renderer == null || !renderer.enabled || !renderer.gameObject.activeInHierarchy || renderer.sharedMesh == null) continue;
+            // Bake into our own readable mesh: never read vertices from runtime AB meshes.
+            string bundle = activeWardrobeBody != null && bodyOptions.Length>0 ? bodyOptions[bodyOptionIndex].BundleName : null;
+            bool sparse = !RuntimePerformance.Legacy && sparseSoles.Fill(renderer,bundle,sparseVertices);
+            var vertices=sparse ? sparseVertices : soleVertices;
+            if(!sparse){renderer.BakeMesh(soleMesh, false);soleMesh.GetVertices(soleVertices);}
+            float rendererMinimum=float.PositiveInfinity, rendererLift=0f;int rendererSamples=0;
+            EvaluateSoleVertices(renderer,vertices,sparse,supportOffset,leftGround,leftValid,rightGround,rightValid,
+                ref rendererMinimum,ref rendererLift,ref rendererSamples);
+            if(sparse && RuntimePerformance.Has("-validateSoles"))
+            {
+                renderer.BakeMesh(soleMesh,false);soleMesh.GetVertices(soleVertices);
+                float exactMinimum=float.PositiveInfinity,exactLift=0f;int exactSamples=0;
+                EvaluateSoleVertices(renderer,soleVertices,false,supportOffset,leftGround,leftValid,rightGround,rightValid,
+                    ref exactMinimum,ref exactLift,ref exactSamples);
+                float difference=Mathf.Abs(rendererLift-exactLift);
+                maximumSoleDifference=Mathf.Max(maximumSoleDifference,difference);soleValidationFrames++;
+                if(difference>0.002f)
+                {
+                    Debug.LogError($"SPARSE_SOLE_MISMATCH mesh={renderer.name} difference={difference:F6}; reverting renderer to BakeMesh");
+                    sparseSoles.Reject(renderer);rendererMinimum=exactMinimum;rendererLift=exactLift;rendererSamples=exactSamples;
+                }
+            }
+            minimum=Mathf.Min(minimum,rendererMinimum);lift=Mathf.Max(lift,rendererLift);samples+=rendererSamples;
+        }
+        soleLift = Mathf.Max(lift, Mathf.MoveTowards(soleLift, lift, Time.deltaTime * 1.2f));
+        if (samples == 0) soleLift = 0f;
+        float legacy = samples > 0 ? minimum - supportOffset + playerRoot.transform.position.y -
+            Mathf.Min(rig.LeftFoot.position.y, rig.RightFoot.position.y) : 0f;
+        visual.transform.position += Vector3.up * (supportOffset + soleLift);
+        if (selfTestActive && samples > 0 && !RuntimePerformance.Enabled)
+            soleTrace.Add($"{selfTestTime:F4},{stateName},true,{samples},{minimum:F5},{minimum + soleLift * Mathf.Min(leftValid ? leftGround.normal.y : 1f, rightValid ? rightGround.normal.y : 1f):F5},{legacy:F5},{soleLift:F5}");
+    }
+    private void EvaluateSoleVertices(SkinnedMeshRenderer renderer,List<Vector3> vertices,bool worldSpace,float supportOffset,
+        RaycastHit leftGround,bool leftValid,RaycastHit rightGround,bool rightValid,ref float minimum,ref float lift,ref int samples)
+    {
+            // Cache native Transform reads outside the candidate loop.
+            Vector3 leftPosition=rig.LeftFoot.position, rightPosition=rig.RightFoot.position;
+            foreach (var vertex in vertices)
+            {
+                var world = (worldSpace ? vertex : renderer.transform.TransformPoint(vertex)) + Vector3.up * supportOffset;
+                bool left = RuntimePerformance.Legacy
+                    ? (world - rig.LeftFoot.position).sqrMagnitude < (world - rig.RightFoot.position).sqrMagnitude
+                    : (world-leftPosition).sqrMagnitude < (world-rightPosition).sqrMagnitude;
+                var foot = RuntimePerformance.Legacy ? (left ? rig.LeftFoot.position : rig.RightFoot.position) : (left ? leftPosition : rightPosition);
+                if (world.y > foot.y + 0.12f || (world-foot).sqrMagnitude > 0.16f) continue;
+                if (left ? !leftValid : !rightValid) continue;
+                var hit = left ? leftGround : rightGround;
+                float clearance = Vector3.Dot(world - hit.point, hit.normal);
+                minimum = Mathf.Min(minimum, clearance);
+                lift = Mathf.Max(lift, (0.003f-clearance)/Mathf.Max(0.3f, hit.normal.y));
+                samples++;
+            }
+    }
+
+    private bool FindSoleGround(Vector3 foot, out RaycastHit result)
+    {
+        // Only walkable surfaces near the controller's support height count.
+        var origin = new Vector3(foot.x, playerRoot.transform.position.y + 0.45f, foot.z);
+        int count = Physics.RaycastNonAlloc(origin, Vector3.down, soleHits, 0.95f, ~0, QueryTriggerInteraction.Ignore);
+        result = default;
+        float closest = float.PositiveInfinity;
+        for (int i = 0; i < count; i++)
+        {
+            var hit = soleHits[i];
+            if (hit.normal.y < Mathf.Cos(characterController.slopeLimit * Mathf.Deg2Rad) ||
+                hit.transform.IsChildOf(playerRoot.transform) || hit.transform.IsChildOf(visual.transform) ||
+                (activeWardrobeBody != null && hit.transform.IsChildOf(activeWardrobeBody.transform))) continue;
+            if (hit.distance < closest) { closest = hit.distance; result = hit; }
+        }
+        return closest < float.PositiveInfinity;
+    }
+
+    private void OnDestroy()
+    {
+        wardrobeCache.Dispose();
+        if(panelTexture!=null)Destroy(panelTexture);
+        if(cardTexture!=null)Destroy(cardTexture);
+        if(selectedCardTexture!=null)Destroy(selectedCardTexture);
+        RuntimePerformance.Flush();
+        if(soleValidationFrames>0)Debug.Log($"SPARSE_SOLE_VALIDATION samples={soleValidationFrames} maxDifference={maximumSoleDifference:F6}");
+        if (soleMesh != null) Destroy(soleMesh);
+    }
+
+    private void InitializeWardrobe()
+    {
+        originalBodyRenderers = visual.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+            .Where(renderer => renderer.name.IndexOf("Geo_Body", StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+        originalHairRenderers = visual.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+            .Where(renderer => renderer.name.IndexOf("Geo_Hair", StringComparison.OrdinalIgnoreCase) >= 0).ToArray();
+        originalFaceRenderers = visual.GetComponentsInChildren<Renderer>(true)
+            .Where(renderer => renderer.name.IndexOf("Geo_Body", StringComparison.OrdinalIgnoreCase) < 0 &&
+                               renderer.name.IndexOf("Geo_Hair", StringComparison.OrdinalIgnoreCase) < 0).ToArray();
+        wardrobeTargetBones = visual.GetComponentsInChildren<Transform>(true)
+            .GroupBy(transform => transform.name)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.OrdinalIgnoreCase);
+
+        var root = Path.Combine(Application.streamingAssetsPath, "GakumasWardrobe");
+        LoadWardrobeBundle(Path.Combine(root, "actor-shader"), false);
+        faceOptions = LoadWardrobeOptions(root, new[]
+        {
+            ("Saki Hanami", "", "HSKI", "img_cos_costume_head_hski-cstm-0002_head"),
+            ("Kotone Fujita", "mdl_chr_fktn-base-0000_face", "FKTN", "img_cos_costume_head_fktn-cstm-0001_head"),
+            ("China Kuramoto", "mdl_chr_kcna-base-0000_face", "KCNA", "img_cos_costume_head_kcna-cstm-0008_head")
+        }, true);
+        bodyOptions = LoadWardrobeOptions(root, new[]
+        {
+            ("School 0000", "mdl_chr_hski-schl-0000_body", "HSKI", ""),
+            ("Custom 0000", "mdl_chr_hski-cstm-0000_body", "HSKI", ""),
+            ("Custom 0002", "mdl_chr_hski-cstm-0002_body", "HSKI", "img_cos_hski-cstm-0002_body"),
+            ("Custom 0029", "mdl_chr_hski-cstm-0029_body", "HSKI", "img_cos_hski-cstm-0029_body"),
+            ("Custom 0070", "mdl_chr_hski-cstm-0070_body", "HSKI", "img_cos_hski-cstm-0070_body"),
+            ("Custom 0112", "mdl_chr_hski-cstm-0112_body", "HSKI", "img_cos_hski-cstm-0112_body"),
+            ("Training", "mdl_chr_fktn-trng-0000_body", "FKTN", ""),
+            ("Casual", "mdl_chr_fktn-casl-0000_body", "FKTN", ""),
+            ("Custom 0000", "mdl_chr_fktn-cstm-0000_body", "FKTN", ""),
+            ("Custom 0001", "mdl_chr_fktn-cstm-0001_body", "FKTN", "img_cos_fktn-cstm-0001_body"),
+            ("Custom 0027", "mdl_chr_fktn-cstm-0027_body", "FKTN", "img_cos_fktn-cstm-0027_body"),
+            ("Custom 0112", "mdl_chr_fktn-cstm-0112_body", "FKTN", "img_cos_fktn-cstm-0112_body"),
+            ("Custom 0119", "mdl_chr_fktn-cstm-0119_body", "FKTN", "img_cos_fktn-cstm-0119_body"),
+            ("Casual", "mdl_chr_kcna-casl-0000_body", "KCNA", ""),
+            ("Custom 0000", "mdl_chr_kcna-cstm-0000_body", "KCNA", ""),
+            ("Custom 0008", "mdl_chr_kcna-cstm-0008_body", "KCNA", "img_cos_kcna-cstm-0008_body"),
+            ("Custom 0033", "mdl_chr_kcna-cstm-0033_body", "KCNA", "img_cos_kcna-cstm-0033_body"),
+            ("Custom 0119", "mdl_chr_kcna-cstm-0119_body", "KCNA", "img_cos_kcna-cstm-0119_body"),
+            ("Other 0002", "mdl_chr_kcna-othr-0002_body", "KCNA", "img_cos_kcna-othr-0002_body")
+        }, true);
+        hairOptions = LoadWardrobeOptions(root, new[]
+        {
+            ("Base 0000", "mdl_chr_hski-base-0000_hair", "HSKI", "img_cos_costume_head_hski-cstm-0002_head"),
+            ("Custom 0000", "mdl_chr_hski-cstm-0000_hair", "HSKI", ""),
+            ("Custom 0002", "mdl_chr_hski-cstm-0002_hair", "HSKI", "img_cos_costume_head_hski-cstm-0002_head"),
+            ("Custom 0029", "mdl_chr_hski-cstm-0029_hair", "HSKI", "img_cos_costume_head_hski-cstm-0029_head"),
+            ("Custom 0070", "mdl_chr_hski-cstm-0070_hair", "HSKI", "img_cos_costume_head_hski-cstm-0070_head"),
+            ("Custom 0112", "mdl_chr_hski-cstm-0112_hair", "HSKI", "img_cos_costume_head_hski-cstm-0112_head"),
+            ("Base 0000", "mdl_chr_fktn-base-0000_hair", "FKTN", "img_cos_costume_head_fktn-cstm-0001_head"),
+            ("Custom 0000", "mdl_chr_fktn-cstm-0000_hair", "FKTN", ""),
+            ("Custom 0001", "mdl_chr_fktn-cstm-0001_hair", "FKTN", "img_cos_costume_head_fktn-cstm-0001_head"),
+            ("Custom 0027", "mdl_chr_fktn-cstm-0027_hair", "FKTN", "img_cos_costume_head_fktn-cstm-0027_head"),
+            ("Custom 0112", "mdl_chr_fktn-cstm-0112_hair", "FKTN", "img_cos_costume_head_fktn-cstm-0112_head"),
+            ("Base 0000", "mdl_chr_kcna-base-0000_hair", "KCNA", "img_cos_costume_head_kcna-cstm-0008_head"),
+            ("Custom 0008", "mdl_chr_kcna-cstm-0008_hair", "KCNA", "img_cos_costume_head_kcna-cstm-0008_head"),
+            ("Custom 0033", "mdl_chr_kcna-cstm-0033_hair", "KCNA", "img_cos_costume_head_kcna-cstm-0033_head")
+        }, true);
+        characterPresets = new[]
+        {
+            new CharacterPreset { Label = "Saki Hanami", Owner = "HSKI", FaceBundle = "", BodyBundle = "mdl_chr_hski-schl-0000_body", HairBundle = "mdl_chr_hski-cstm-0070_hair", Thumbnail = faceOptions[0].Thumbnail },
+            new CharacterPreset { Label = "Kotone Fujita", Owner = "FKTN", FaceBundle = "mdl_chr_fktn-base-0000_face", BodyBundle = "mdl_chr_fktn-cstm-0001_body", HairBundle = "mdl_chr_fktn-base-0000_hair", Thumbnail = faceOptions[1].Thumbnail },
+            new CharacterPreset { Label = "China Kuramoto", Owner = "KCNA", FaceBundle = "mdl_chr_kcna-base-0000_face", BodyBundle = "mdl_chr_kcna-cstm-0008_body", HairBundle = "mdl_chr_kcna-base-0000_hair", Thumbnail = faceOptions[2].Thumbnail }
+        };
+        foreach (var option in bodyOptions.Where(item => item.Thumbnail == null && item.Prefab != null))
+            option.Thumbnail = RenderOutfitThumbnail(option);
+        if (bodyOptions.Length > 1 && bodyOptions[0].Thumbnail == null)
+            bodyOptions[0].Thumbnail = bodyOptions[1].Thumbnail;
+        Debug.Log($"WARDROBE_BODY_ICONS ready={bodyOptions.Count(item => item.Thumbnail != null)}/{bodyOptions.Length}");
+        SetCharacterPreset(0);
+        Debug.Log($"WARDROBE_READY characters={characterPresets.Length} face={faceOptions.Length} body={bodyOptions.Length} hair={hairOptions.Length}");
+    }
+
+    private WardrobeOption[] LoadWardrobeOptions(string root,
+        (string label, string bundle, string owner, string iconBundle)[] entries, bool includeOriginal)
+    {
+        var options = new List<WardrobeOption>();
+        if (includeOriginal)
+            options.Add(new WardrobeOption { Label = "Original HSKI", BundleName = string.Empty, Owner = "HSKI", Prefab = null,
+                Thumbnail = LoadWardrobeIcon(root, entries.FirstOrDefault(entry => entry.owner == "HSKI").iconBundle) });
+        foreach (var entry in entries)
+        {
+            GameObject prefab = null;
+            Mesh mesh = null;
+            if (!string.IsNullOrEmpty(entry.bundle))
+            {
+                var bundle = LoadWardrobeBundle(Path.Combine(root, entry.bundle), true);
+                prefab = bundle == null ? null : bundle.LoadAllAssets<GameObject>().FirstOrDefault();
+                mesh = bundle == null ? null : bundle.LoadAllAssets<Mesh>().FirstOrDefault();
+                if (prefab == null)
+                {
+                    Debug.LogWarning($"WARDROBE_OPTION_MISSING bundle={entry.bundle}");
+                    continue;
+                }
+            }
+            if (string.IsNullOrEmpty(entry.bundle) && includeOriginal) continue;
+            options.Add(new WardrobeOption { Label = entry.label, BundleName = entry.bundle, Owner = entry.owner,
+                Prefab = prefab, Mesh = mesh, Thumbnail = LoadWardrobeIcon(root, entry.iconBundle) });
+        }
+        return options.ToArray();
+    }
+
+    private Texture2D LoadWardrobeIcon(string root, string bundleName)
+    {
+        if (string.IsNullOrEmpty(bundleName)) return null;
+        var bundle = LoadWardrobeBundle(Path.Combine(root, bundleName), false);
+        return bundle == null ? null : bundle.LoadAllAssets<Texture2D>().FirstOrDefault();
+    }
+
+    private Texture2D RenderOutfitThumbnail(WardrobeOption option)
+    {
+        // Render the actual outfit when the dump contains no matching UI sprite.
+        var instance = Instantiate(option.Prefab);
+        instance.transform.position = new Vector3(10000f, -10000f, 0f);
+        SetLayerRecursively(instance.transform, 29);
+        var previewMaterials = new List<Material>();
+        var cameraObject = new GameObject("Outfit Thumbnail Camera");
+        var camera = cameraObject.AddComponent<Camera>();
+        camera.enabled = false;
+        camera.cullingMask = 1 << 29;
+        camera.clearFlags = CameraClearFlags.SolidColor;
+        camera.backgroundColor = Color.clear;
+        camera.orthographic = true;
+        camera.nearClipPlane = 0.01f;
+        camera.farClipPlane = 20f;
+        var renderers = instance.GetComponentsInChildren<Renderer>(true);
+        var previewShader = Shader.Find("Universal Render Pipeline/Unlit");
+        var target = RenderTexture.GetTemporary(256, 256, 24, RenderTextureFormat.ARGB32);
+        var previous = RenderTexture.active;
+        try
+        {
+            if (previewShader == null || renderers.Length == 0) return null;
+            foreach (var renderer in renderers)
+            {
+                renderer.sharedMaterials = renderer.sharedMaterials.Select(source =>
+                {
+                    var material = new Material(previewShader);
+                    if (source != null) material.SetTexture("_BaseMap", source.GetTexture("_BaseMap"));
+                    material.SetColor("_BaseColor", Color.white);
+                    material.SetFloat("_Cull", 0f);
+                    previewMaterials.Add(material);
+                    return material;
+                }).ToArray();
+                if (renderer is SkinnedMeshRenderer skinned) skinned.updateWhenOffscreen = true;
+            }
+            var bounds = renderers[0].bounds;
+            foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+            camera.orthographicSize = Mathf.Max(bounds.extents.y, bounds.extents.x) * 1.12f;
+            camera.transform.position = bounds.center + Vector3.forward * 5f;
+            camera.transform.LookAt(bounds.center);
+            camera.targetTexture = target;
+            camera.Render();
+            RenderTexture.active = target;
+            var thumbnail = new Texture2D(256, 256, TextureFormat.RGBA32, false) { name = option.BundleName + "_Preview" };
+            RuntimeAssetOwner.For(gameObject).Own(thumbnail);
+            thumbnail.ReadPixels(new Rect(0, 0, 256, 256), 0, 0);
+            thumbnail.Apply();
+            return thumbnail;
+        }
+        finally
+        {
+            camera.targetTexture = null;
+            RenderTexture.active = previous;
+            RenderTexture.ReleaseTemporary(target);
+            instance.SetActive(false);
+            Destroy(instance);
+            Destroy(cameraObject);
+            foreach (var material in previewMaterials) Destroy(material);
+        }
+    }
+
+    private AssetBundle LoadWardrobeBundle(string path, bool reportMissing)
+    {
+        if (!File.Exists(path))
+        {
+            if (reportMissing) Debug.LogWarning($"WARDROBE_FILE_MISSING path={path}");
+            return null;
+        }
+        var bundle = wardrobeCache.Load(path);
+        if (bundle != null) wardrobeBundles.Add(bundle);
+        else if (reportMissing) Debug.LogWarning($"WARDROBE_LOAD_FAILED path={path}");
+        return bundle;
+    }
+
+    private void HandleWardrobeInput()
+    {
+        if (Input.GetKeyDown(KeyCode.B)) wardrobeOpen = !wardrobeOpen;
+        if (Input.GetKeyDown(KeyCode.Q)) SetCharacterPreset(characterPresetIndex - 1);
+        if (Input.GetKeyDown(KeyCode.E)) SetCharacterPreset(characterPresetIndex + 1);
+        if (Input.GetKeyDown(KeyCode.Z)) SetBodyOption(bodyOptionIndex - 1);
+        if (Input.GetKeyDown(KeyCode.X)) SetBodyOption(bodyOptionIndex + 1);
+    }
+
+    private void SetCharacterPreset(int index)
+    {
+        if (characterPresets.Length == 0) return;
+        characterPresetIndex = WrapIndex(index, characterPresets.Length);
+        var preset = characterPresets[characterPresetIndex];
+        SetFaceOption(FindOption(faceOptions, preset.FaceBundle));
+        SetBodyOption(FindOption(bodyOptions, preset.BodyBundle));
+        SetHairOption(FindOption(hairOptions, preset.HairBundle));
+        Debug.Log($"WARDROBE_CHARACTER_CHANGED index={characterPresetIndex} owner={preset.Owner}");
+    }
+
+    private void SetFaceOption(int index)
+    {
+        if (faceOptions.Length == 0) return;
+        ReleaseCampusHair();
+        ReleaseCampusSkirt();
+        faceOptionIndex = WrapIndex(index, faceOptions.Length);
+        if (activeWardrobeFace != null) activeWardrobeFace.SetActive(false);
+        var option = faceOptions[faceOptionIndex];
+        activeWardrobeFace = null;
+        if (option.Prefab != null)
+        {
+            if (!faceInstanceCache.TryGetValue(option.BundleName, out activeWardrobeFace) || activeWardrobeFace == null)
+            {
+                activeWardrobeFace = CreateWardrobeInstance(option, "Face");
+                faceInstanceCache[option.BundleName] = activeWardrobeFace;
+            }
+            else activeWardrobeFace.SetActive(true);
+        }
+        foreach (var renderer in originalFaceRenderers) renderer.enabled = activeWardrobeFace == null;
+        RebuildWardrobeBoneBindings();
+        Debug.Log($"WARDROBE_FACE_CHANGED index={faceOptionIndex} label={faceOptions[faceOptionIndex].Label}");
+    }
+
+    private void SetBodyOption(int index)
+    {
+        if (bodyOptions.Length == 0) return;
+        ReleaseCampusHair();
+        ReleaseCampusSkirt();
+        bodyOptionIndex = WrapIndex(index, bodyOptions.Length);
+        if (activeWardrobeBody != null) Destroy(activeWardrobeBody);
+        activeWardrobeBody = CreateWardrobeInstance(bodyOptions[bodyOptionIndex], "Body");
+        foreach (var renderer in originalBodyRenderers) renderer.enabled = RuntimePerformance.Legacy ? bodyOptionIndex == 0 : activeWardrobeBody == null;
+        RebuildWardrobeBoneBindings();
+        Debug.Log($"WARDROBE_BODY_CHANGED index={bodyOptionIndex} label={bodyOptions[bodyOptionIndex].Label}");
+    }
+
+    private void SetHairOption(int index)
+    {
+        if (hairOptions.Length == 0) return;
+        ReleaseCampusHair();
+        ReleaseCampusSkirt();
+        hairOptionIndex = WrapIndex(index, hairOptions.Length);
+        if (activeWardrobeHair != null) Destroy(activeWardrobeHair);
+        activeWardrobeHair = CreateWardrobeInstance(hairOptions[hairOptionIndex], "Hair");
+        foreach (var renderer in originalHairRenderers) renderer.enabled = RuntimePerformance.Legacy ? hairOptionIndex == 0 : activeWardrobeHair == null;
+        RebuildWardrobeBoneBindings();
+        Debug.Log($"WARDROBE_HAIR_CHANGED index={hairOptionIndex} label={hairOptions[hairOptionIndex].Label}");
+    }
+
+    private GameObject CreateWardrobeInstance(WardrobeOption option, string category)
+    {
+        if (option == null || option.Prefab == null) return null;
+        var attachToHead = string.Equals(category, "Face", StringComparison.OrdinalIgnoreCase) ||
+                           string.Equals(category, "Hair", StringComparison.OrdinalIgnoreCase);
+        var parent = visual.transform;
+        if (attachToHead && wardrobeTargetBones.TryGetValue("Head", out var head)) parent = head;
+        var instance = Instantiate(option.Prefab, parent);
+        instance.name = $"Wardrobe {option.Owner} {option.Label} {category}";
+        if (string.Equals(category, "Face", StringComparison.OrdinalIgnoreCase))
+        {
+            // Face vertices use the source idol's body space; hair is Head-local.
+            // Read the original prefab, independent of the currently worn outfit.
+            var preset = characterPresets.First(item => item.Owner == option.Owner);
+            var sourceBody = bodyOptions.First(item => item.BundleName == preset.BodyBundle).Prefab;
+            var sourceHead = sourceBody.GetComponentsInChildren<Transform>(true).First(item => item.name == "Head");
+            var sourcePosition = sourceBody.transform.InverseTransformPoint(sourceHead.position);
+            var sourceRotation = Quaternion.Inverse(sourceBody.transform.rotation) * sourceHead.rotation;
+            var inverseBindRotation = Quaternion.Inverse(sourceRotation);
+            instance.transform.localRotation = inverseBindRotation;
+            instance.transform.localPosition = inverseBindRotation * -sourcePosition;
+            Debug.Log($"WARDROBE_SOURCE_HEAD owner={option.Owner} position={sourcePosition.ToString("F6")}");
+        }
+        else
+        {
+            instance.transform.localPosition = Vector3.zero;
+            instance.transform.localRotation = Quaternion.identity;
+        }
+        instance.transform.localScale = Vector3.one;
+        SetLayerRecursively(instance.transform, 0);
+        if (string.Equals(category, "Face", StringComparison.OrdinalIgnoreCase) && option.Mesh != null)
+        {
+            foreach (var renderer in instance.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                var filter = renderer.GetComponent<MeshFilter>() ?? renderer.gameObject.AddComponent<MeshFilter>();
+                filter.sharedMesh = option.Mesh;
+                renderer.enabled = true;
+            }
+        }
+        ApplyWardrobeMaterials(instance, category);
+        foreach (var renderer in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            renderer.updateWhenOffscreen = true;
+        return instance;
+    }
+
+    private void ApplyWardrobeMaterials(GameObject instance, string category)
+    {
+        var reference = CharacterMaterials.Where(material => material != null)
+            .ToDictionary(material => material.name.Replace(" 2_fixed", string.Empty), material => material,
+                StringComparer.OrdinalIgnoreCase);
+        foreach (var renderer in instance.GetComponentsInChildren<Renderer>(true))
+        {
+            var materials = renderer.sharedMaterials;
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var source = materials[i];
+                if (source == null) continue;
+                var material = new Material(source) { name = source.name + "_WardrobeRuntime" };
+                RuntimeAssetOwner.For(instance).Own(material);
+                var key = source.name.Replace(" (Instance)", string.Empty);
+                Material template;
+                reference.TryGetValue(key, out template);
+                if (template == null && string.Equals(category, "Hair", StringComparison.OrdinalIgnoreCase))
+                    reference.TryGetValue(key.IndexOf("co", StringComparison.OrdinalIgnoreCase) >= 0 ? "m_hirco" : "m_hir", out template);
+                else if (template == null && string.Equals(category, "Body", StringComparison.OrdinalIgnoreCase))
+                    reference.TryGetValue("m_bdy", out template);
+                else if (template == null)
+                    reference.TryGetValue("m_fcp", out template);
+                if (template != null && (material.shader == null || material.shader.name == "Hidden/InternalErrorShader"))
+                    material.shader = template.shader;
+                if (recordedActor) recordedActor.Apply(material, instance.name.StartsWith("Wardrobe HSKI ", StringComparison.Ordinal));
+                materials[i] = material;
+            }
+            renderer.sharedMaterials = materials;
+        }
+    }
+
+    private void RebuildWardrobeBoneBindings()
+    {
+        campusHairDirty = true;
+        soleRenderers=null;
+        cameraRenderers=null;
+        sparseSoles.Invalidate();
+        if(characterAttributes!=null)characterAttributes.InvalidateRenderers();
+        wardrobeBoneBindings.Clear();
+        AddWardrobeBindings(activeWardrobeBody, wardrobeTargetBones, "Body");
+    }
+
+    private static int WrapIndex(int index, int length)
+    {
+        return length <= 0 ? 0 : (index % length + length) % length;
+    }
+
+    private static int FindOption(WardrobeOption[] options, string bundleName)
+    {
+        for (var i = 0; i < options.Length; i++)
+            if (string.Equals(options[i].BundleName, bundleName, StringComparison.OrdinalIgnoreCase)) return i;
+        return 0;
+    }
+
+    private void AddWardrobeBindings(GameObject instance, Dictionary<string, Transform> targets, string category)
+    {
+        if (instance == null) return;
+        foreach (var source in instance.GetComponentsInChildren<Transform>(true))
+        {
+            if (source == instance.transform) continue;
+            var isBody = string.Equals(category, "Body", StringComparison.OrdinalIgnoreCase);
+            var isFaceAnchor = string.Equals(category, "Face", StringComparison.OrdinalIgnoreCase) &&
+                               string.Equals(source.name, "Head_Face", StringComparison.OrdinalIgnoreCase);
+            var isHairAnchor = string.Equals(category, "Hair", StringComparison.OrdinalIgnoreCase) &&
+                               string.Equals(source.name, "Head_Hair", StringComparison.OrdinalIgnoreCase);
+            if (isBody && IsNativeSkirtBone(source.name)) continue;
+            if ((isBody || isFaceAnchor || isHairAnchor) && targets.TryGetValue(source.name, out var target))
+                wardrobeBoneBindings.Add(new BoneBinding { Source = source, Target = target });
+        }
+    }
+
+    private void SyncWardrobeBones()
+    {
+        foreach (var binding in wardrobeBoneBindings)
+            if (binding.Source != null && binding.Target != null)
+                binding.Source.SetPositionAndRotation(binding.Target.position, binding.Target.rotation);
+    }
+
+    private void UpdateWardrobeSelfTest()
+    {
+        yaw = 180f;
+        pitch = 5f;
+        cameraDistance = 2.8f;
+        var step = Mathf.Min(5, Mathf.FloorToInt(selfTestTime / 1.6f));
+        if (step == wardrobeSelfTestStep) return;
+        wardrobeSelfTestStep = step;
+        if (step < 3)
+        {
+            SetCharacterPreset(step);
+        }
+        else
+        {
+            SetCharacterPreset(step % characterPresets.Length);
+            var previewOwners = new[] { "FKTN", "KCNA", "HSKI" };
+            SetBodyOption(Array.FindIndex(bodyOptions, item => item.Owner == previewOwners[step - 3] && item.Prefab != null));
+            wardrobeScroll.y = (bodyOptionIndex / 3) * 163f;
+        }
+        wardrobeTab = step < 3 ? 0 : 1;
+        StartCoroutine(CaptureSelfTestFrameAtEndOfFrame($"WardrobeMix_{step + 1:00}"));
+    }
+
+    private void UpdateCamera(bool immediate)
+    {
+        if (reference0514)
+        {
+            playerCamera.transform.SetPositionAndRotation(new Vector3(-0.40078932f,1.37180614f,-4.35819054f),
+                Quaternion.LookRotation(new Vector3(0.432106733f,-0.081938557f,0.89809233f), Vector3.up));
+            playerCamera.fieldOfView = 44.958872f;
+            playerCamera.nearClipPlane = 0.1f;
+            playerCamera.farClipPlane = 5000f;
+            // Preserve the captured vertical FOV, extend the view horizontally for 16:9.
+            playerCamera.aspect = 16f / 9f;
+            return;
+        }
+        var bounds = RuntimePerformance.Legacy ? CalculateBounds(visual) : CachedCameraBounds();
+        var focus = new Vector3(bounds.center.x, bounds.min.y + bounds.size.y * 0.56f, bounds.center.z);
+        var orbit = Quaternion.Euler(pitch, yaw, 0f);
+        var direction = orbit * Vector3.back;
+        if (RuntimePerformance.Has("-recordedActorCloseup"))
+        {
+            focus.y = bounds.min.y + bounds.size.y * .88f;
+            playerCamera.transform.SetPositionAndRotation(focus + direction * .85f,
+                Quaternion.LookRotation(-direction, Vector3.up));
+            return;
+        }
+        var desired = focus + direction * cameraDistance;
+        float nearest=float.PositiveInfinity;
+        if(RuntimePerformance.Legacy)
+        {
+            var hits=Physics.SphereCastAll(focus,0.16f,direction,cameraDistance,~0,QueryTriggerInteraction.Ignore)
+                .Where(h=>!h.transform.IsChildOf(playerRoot.transform)&&(!CampusAssetBundleLoader.Indoor||h.collider.bounds.size.y>2f)).OrderBy(h=>h.distance).ToArray();
+            if(hits.Length>0)nearest=hits[0].distance;
+        }
+        else
+        {
+            int count=Physics.SphereCastNonAlloc(focus,0.16f,direction,cameraHitBuffer,cameraDistance,~0,QueryTriggerInteraction.Ignore);
+            // Overflow fallback preserves collision correctness in unusually dense scenes.
+            var hits=count==cameraHitBuffer.Length ? Physics.SphereCastAll(focus,0.16f,direction,cameraDistance,~0,QueryTriggerInteraction.Ignore) : cameraHitBuffer;
+            if(hits!=cameraHitBuffer)count=hits.Length;
+            for(int i=0;i<count;i++){var h=hits[i];if(!h.transform.IsChildOf(playerRoot.transform)&&(!CampusAssetBundleLoader.Indoor||h.collider.bounds.size.y>2f))nearest=Mathf.Min(nearest,h.distance);}
+        }
+        if(!float.IsPositiveInfinity(nearest))desired=focus+direction*Mathf.Max(0.65f,nearest-0.18f);
+        playerCamera.transform.position = immediate
+            ? desired
+            : Vector3.Lerp(playerCamera.transform.position, desired, 1f - Mathf.Exp(-12f * Time.deltaTime));
+        playerCamera.transform.LookAt(focus);
+    }
+
+    private void OnGUI()
+    {
+        if (!ready) return;
+        if (CampusSceneTransition.Busy) return;
+        if (reference0514) return;
+        UpdateCampusHairControls();
+        if (CampusAssetBundleLoader.Indoor)
+        {
+            var names = PeriodNames;
+            for (int i = 0; i < names.Length; i++)
+            {
+                GUI.enabled = CampusAssetBundleLoader.ClassroomPeriod != CampusAssetBundleLoader.ClassroomPeriods[i];
+                if (GUI.Button(new Rect(18 + i * 91, 184, 87, 32), names[i]))
+                {
+                    ready = false;
+                    CampusAssetBundleLoader.SwitchClassroomPeriod(CampusAssetBundleLoader.ClassroomPeriods[i]);
+                }
+            }
+            GUI.enabled = true;
+        }
+        if (GUI.Button(new Rect(18, 140, 220, 36), CampusAssetBundleLoader.Indoor ? "CLASSROOM  >  CAMPUS" : "CAMPUS  >  CLASSROOM"))
+        {
+            ready = false;
+            CampusAssetBundleLoader.SwitchLocation();
+            return;
+        }
+        if (wardrobeTitleStyle == null) CreateWardrobeUiStyles();
+        if(hudStyle==null)hudStyle = new GUIStyle(GUI.skin.box)
+        {
+            alignment = TextAnchor.UpperLeft,
+            fontSize = 15,
+            normal = { textColor = Color.white }
+        };
+        GUI.Box(new Rect(18, 18, 430, 114),
+            $"GAKUMAS CAMPUS · MIX & MATCH\nWASD Move  ·  Ctrl Walk  ·  Shift Sprint  ·  Space Jump\nRMB Orbit  ·  Wheel Zoom  ·  B Wardrobe\nState  {stateName}", hudStyle);
+
+        DrawCampusHairControls();
+        if (GUI.Button(new Rect(Screen.width - 154, 18, 136, 34), wardrobeOpen ? "CLOSE  WARDROBE" : "OPEN  WARDROBE"))
+            wardrobeOpen = !wardrobeOpen;
+        if (wardrobeOpen) DrawWardrobePanel();
+    }
+
+    private void CreateWardrobeUiStyles()
+    {
+        panelTexture = MakeTexture(new Color(0.035f, 0.045f, 0.075f, 0.96f));
+        cardTexture = MakeTexture(new Color(0.10f, 0.12f, 0.18f, 0.98f));
+        selectedCardTexture = MakeTexture(new Color(0.14f, 0.36f, 0.48f, 1f));
+        wardrobeTitleStyle = new GUIStyle(GUI.skin.label) { fontSize = 23, fontStyle = FontStyle.Bold };
+        wardrobeTitleStyle.normal.textColor = Color.white;
+        wardrobeTabStyle = new GUIStyle(GUI.skin.button) { fontSize = 13, fontStyle = FontStyle.Bold };
+        wardrobeCardStyle = new GUIStyle(GUI.skin.button) { alignment = TextAnchor.LowerCenter, fontSize = 12,
+            fontStyle = FontStyle.Bold, padding = new RectOffset(6, 6, 6, 9), wordWrap = true };
+        wardrobeCardStyle.normal.background = cardTexture;
+        wardrobeCardStyle.hover.background = selectedCardTexture;
+        wardrobeCardStyle.normal.textColor = Color.white;
+        wardrobeCardStyle.hover.textColor = Color.white;
+        wardrobeCardLabelStyle = new GUIStyle(GUI.skin.label) { fontSize = 12, fontStyle = FontStyle.Bold,
+            alignment = TextAnchor.MiddleCenter, clipping = TextClipping.Clip };
+        wardrobeCardLabelStyle.normal.textColor = Color.white;
+        wardrobeMetaStyle = new GUIStyle(GUI.skin.label) { fontSize = 11, alignment = TextAnchor.UpperLeft };
+        wardrobeMetaStyle.normal.textColor = new Color(0.68f, 0.75f, 0.86f);
+    }
+
+    private void DrawWardrobePanel()
+    {
+        var width = Mathf.Min(486f, Screen.width - 36f);
+        var height = Mathf.Min(650f, Screen.height - 82f);
+        var panel = new Rect(Screen.width - width - 18f, 64f, width, height);
+        GUI.DrawTexture(panel, panelTexture);
+        GUI.Label(new Rect(panel.x + 22f, panel.y + 16f, 280f, 32f), "WARDROBE STUDIO", wardrobeTitleStyle);
+        GUI.Label(new Rect(panel.x + 23f, panel.y + 47f, 330f, 22f),
+            "Three idols · shared outfit & hair library", wardrobeMetaStyle);
+
+        var tabNames = new[] { "IDOL + HAIR", "SHARED OUTFITS" };
+        var tabWidth = (width - 44f) / 2f;
+        for (var i = 0; i < tabNames.Length; i++)
+        {
+            var old = GUI.backgroundColor;
+            GUI.backgroundColor = wardrobeTab == i ? new Color(0.20f, 0.78f, 0.92f) : new Color(0.25f, 0.28f, 0.38f);
+            if (GUI.Button(new Rect(panel.x + 16f + i * tabWidth, panel.y + 78f, tabWidth - 4f, 34f), tabNames[i], wardrobeTabStyle))
+            {
+                wardrobeTab = i;
+                wardrobeScroll = Vector2.zero;
+            }
+            GUI.backgroundColor = old;
+        }
+
+        var content = new Rect(panel.x + 14f, panel.y + 124f, width - 28f, height - 200f);
+        if (wardrobeTab == 0) DrawCharacterCards(content);
+        else DrawOptionCards(content, bodyOptions, bodyOptionIndex, SetBodyOption);
+
+        var face = faceOptions.Length == 0 ? "-" : faceOptions[faceOptionIndex].Owner;
+        var body = bodyOptions.Length == 0 ? "-" : bodyOptions[bodyOptionIndex].Owner + " / " + bodyOptions[bodyOptionIndex].Label;
+        var hair = hairOptions.Length == 0 ? "-" : hairOptions[hairOptionIndex].Owner + " / " + hairOptions[hairOptionIndex].Label;
+        GUI.Label(new Rect(panel.x + 20f, panel.yMax - 66f, width - 40f, 48f),
+            $"IDOL + LOCKED HAIR  {face} / {hair}\nSHARED OUTFIT      {body}", wardrobeMetaStyle);
+    }
+
+    private void DrawCharacterCards(Rect area)
+    {
+        var gap = 10f;
+        var cardWidth = (area.width - gap * 2f) / 3f;
+        for (var i = 0; i < characterPresets.Length; i++)
+        {
+            var card = new Rect(area.x + i * (cardWidth + gap), area.y, cardWidth, 182f);
+            var selected = i == characterPresetIndex;
+            if (GUI.Button(card, string.Empty, CardStyle(selected))) SetCharacterPreset(i);
+            DrawThumbnail(characterPresets[i].Thumbnail, new Rect(card.x + 8f, card.y + 8f, card.width - 16f, 116f), characterPresets[i].Owner);
+            GUI.Label(new Rect(card.x + 8f, card.y + 128f, card.width - 16f, 22f), characterPresets[i].Label, wardrobeCardLabelStyle);
+            GUI.Label(new Rect(card.x + 8f, card.y + 151f, card.width - 16f, 19f), characterPresets[i].Owner,
+                new GUIStyle(wardrobeMetaStyle) { alignment = TextAnchor.MiddleCenter });
+        }
+        GUI.Label(new Rect(area.x + 5f, area.y + 200f, area.width - 10f, 58f),
+            "Face and hairstyle are locked as one verified idol set.\nOnly outfits can be shared safely across all three characters.", wardrobeMetaStyle);
+        if (GUI.Button(new Rect(area.x + 4f, area.y + 274f, area.width - 8f, 38f), "SURPRISE ME · RANDOM OUTFIT"))
+        {
+            SetBodyOption(UnityEngine.Random.Range(0, bodyOptions.Length));
+        }
+    }
+
+    private void DrawOptionCards(Rect area, WardrobeOption[] options, int selectedIndex, Action<int> select)
+    {
+        const float gap = 9f;
+        const float cardHeight = 154f;
+        var cardWidth = (area.width - gap * 2f) / 3f;
+        var rows = Mathf.CeilToInt(options.Length / 3f);
+        var view = new Rect(0f, 0f, area.width - 18f, rows * (cardHeight + gap));
+        wardrobeScroll = GUI.BeginScrollView(area, wardrobeScroll, view);
+        for (var i = 0; i < options.Length; i++)
+        {
+            var column = i % 3;
+            var row = i / 3;
+            var card = new Rect(column * (cardWidth + gap), row * (cardHeight + gap), cardWidth, cardHeight);
+            if (GUI.Button(card, string.Empty, CardStyle(i == selectedIndex))) select(i);
+            DrawThumbnail(options[i].Thumbnail, new Rect(card.x + 7f, card.y + 7f, card.width - 14f, 96f), options[i].Owner);
+            GUI.Label(new Rect(card.x + 7f, card.y + 106f, card.width - 14f, 20f), options[i].Label, wardrobeCardLabelStyle);
+            GUI.Label(new Rect(card.x + 7f, card.y + 128f, card.width - 14f, 18f), options[i].Owner,
+                new GUIStyle(wardrobeMetaStyle) { alignment = TextAnchor.MiddleCenter });
+        }
+        GUI.EndScrollView();
+    }
+
+    private GUIStyle CardStyle(bool selected)
+    {
+        if (!selected) return wardrobeCardStyle;
+        var style = new GUIStyle(wardrobeCardStyle);
+        style.normal.background = selectedCardTexture;
+        return style;
+    }
+
+    private void DrawThumbnail(Texture2D thumbnail, Rect rect, string owner)
+    {
+        if (thumbnail != null)
+        {
+            GUI.DrawTexture(rect, thumbnail, ScaleMode.ScaleToFit, true);
+            return;
+        }
+        var old = GUI.color;
+        GUI.color = OwnerColor(owner);
+        GUI.DrawTexture(rect, Texture2D.whiteTexture);
+        GUI.color = old;
+        var initials = string.IsNullOrEmpty(owner) ? "?" : owner;
+        GUI.Label(rect, initials, new GUIStyle(wardrobeTitleStyle) { alignment = TextAnchor.MiddleCenter });
+    }
+
+    private static Color OwnerColor(string owner)
+    {
+        if (owner == "FKTN") return new Color(0.95f, 0.52f, 0.68f, 1f);
+        if (owner == "KCNA") return new Color(0.72f, 0.68f, 0.38f, 1f);
+        return new Color(0.30f, 0.66f, 0.90f, 1f);
+    }
+
+    private static Texture2D MakeTexture(Color color)
+    {
+        var texture = new Texture2D(1, 1, TextureFormat.RGBA32, false) { hideFlags = HideFlags.HideAndDontSave };
+        texture.SetPixel(0, 0, color);
+        texture.Apply();
+        return texture;
+    }
+
+    private IEnumerator CaptureReference0514()
+    {
+        yield return new WaitForSeconds(3f);
+        yield return new WaitForEndOfFrame();
+        var directory = "E:/ArinLee/简历/output/reference_20250514_211414";
+        Directory.CreateDirectory(directory);
+        var captureName = Environment.GetCommandLineArgs().Contains("-gpaAlbedo") ? "Unity_landscape_albedo.png" : "Unity_landscape_background.png";
+        ScreenCapture.CaptureScreenshot(Path.Combine(directory,captureName));
+        yield return new WaitForSeconds(1f);
+        Debug.Log("GPA0514_REFERENCE_CAPTURE_OK position=CB7309[21] verticalFov=44.958872 aspect=16:9 horizontalExtension=true");
+        Application.Quit(0);
+    }
+
+    private static Vector2 SelfTestInput(float time)
+    {
+        if (time < 1f || time >= 11f) return Vector2.zero;
+        if (time < 2f) return Vector2.up;
+        if (time < 3f) return Vector2.right;
+        if (time < 4f) return Vector2.down;
+        if (time < 5f) return Vector2.left;
+        if (time < 6f) return Vector2.up;
+        if (time < 7f) return Vector2.down;
+        if (time < 8.5f) return Vector2.up;
+        if (time < 9.2f) return Vector2.zero;
+        return new Vector2(0.7f, 0.7f).normalized;
+    }
+
+    private static string ResolveFourWayName(Vector2 input)
+    {
+        if (Mathf.Abs(input.y) >= Mathf.Abs(input.x)) return input.y >= 0f ? "Forward" : "Back";
+        return input.x >= 0f ? "Right" : "Left";
+    }
+
+    private bool ProbeGrounded()
+    {
+        var contact = characterController.isGrounded;
+        if (!contact && verticalVelocity <= 0f)
+        {
+            var origin = playerRoot.transform.position + Vector3.up * 0.14f;
+            contact = Physics.Raycast(origin, Vector3.down, out var hit, 0.34f, ~0, QueryTriggerInteraction.Ignore)
+                      && !hit.transform.IsChildOf(playerRoot.transform);
+        }
+        if (contact) groundedGrace = 0.08f;
+        else groundedGrace = Mathf.Max(0f, groundedGrace - Time.deltaTime);
+        return contact || (verticalVelocity <= 0f && groundedGrace > 0f);
+    }
+
+    private void UpdateSelfTestEvidence()
+    {
+        if (!string.Equals(previousLoggedState, stateName, StringComparison.Ordinal))
+        {
+            var p = playerRoot.transform.position;
+            var line = $"{selfTestTime:F3},{stateName},{p.x:F3},{p.y:F3},{p.z:F3}";
+            selfTestTrace.Add(line);
+            Debug.Log("LOCOMOTION_SELF_TEST_STATE " + line);
+            previousLoggedState = stateName;
+        }
+
+        CaptureSelfTestFrame("01_Idle", 0.7f);
+        CaptureSelfTestFrame("02_WalkForward", 1.5f);
+        CaptureSelfTestFrame("03_WalkRight", 2.5f);
+        CaptureSelfTestFrame("04_WalkBack", 3.5f);
+        CaptureSelfTestFrame("05_WalkLeft", 4.5f);
+        CaptureSelfTestFrame("06_Run", 6.2f);
+        CaptureSelfTestFrame("07_Sprint", 7.5f);
+        CaptureSelfTestFrame("08_Jump", 8.35f);
+        CaptureSelfTestFrame("09_Land", 10.7f);
+        if (selfTestTime >= 12f)
+        {
+            var report = Path.Combine(SelfTestOutput, "LocomotionInteractiveSelfTest.csv");
+            File.WriteAllLines(report, selfTestTrace);
+            File.WriteAllLines(Path.Combine(SelfTestOutput, "SkirtAntiClippingMetrics.csv"), skirtMetricTrace);
+            File.WriteAllLines(Path.Combine(SelfTestOutput, "FootGroundingMetrics.csv"), soleTrace);
+            Debug.Log($"LOCOMOTION_SELF_TEST_OK report={report} captures={selfTestCaptures.Count} position={playerRoot.transform.position}");
+            if (CampusAssetBundleLoader.AdvanceSwitchTest()) { ready = false; return; }
+            Application.Quit(0);
+        }
+    }
+
+    private void CaptureSelfTestFrame(string name, float threshold)
+    {
+        if (RuntimePerformance.Enabled) return;
+        if (selfTestTime < threshold || selfTestCaptures.Contains(name)) return;
+        selfTestCaptures.Add(name);
+        StartCoroutine(CaptureSelfTestFrameAtEndOfFrame(name));
+    }
+
+    private IEnumerator CaptureSelfTestFrameAtEndOfFrame(string name)
+    {
+        if (RuntimePerformance.Enabled) yield break;
+        // Capture the composed Game View after skinning. Direct Camera.Render() omits
+        // this project's manually sampled skinned character in URP.
+        yield return new WaitForEndOfFrame();
+        ScreenCapture.CaptureScreenshot(Path.Combine(SelfTestOutput, name + ".png"), 1);
+    }
+
+    private static CorrectionRig BuildRig(Animator animator)
+    {
+        if (animator == null || !animator.isHuman) throw new InvalidOperationException("HSKI Humanoid Avatar is invalid.");
+        return new CorrectionRig
+        {
+            Hips = animator.GetBoneTransform(HumanBodyBones.Hips),
+            Chest = animator.GetBoneTransform(HumanBodyBones.UpperChest) ?? animator.GetBoneTransform(HumanBodyBones.Chest),
+            LeftUpperArm = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm),
+            RightUpperArm = animator.GetBoneTransform(HumanBodyBones.RightUpperArm),
+            LeftLowerArm = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm),
+            RightLowerArm = animator.GetBoneTransform(HumanBodyBones.RightLowerArm),
+            LeftUpperLeg = animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg),
+            RightUpperLeg = animator.GetBoneTransform(HumanBodyBones.RightUpperLeg),
+            LeftLowerLeg = animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg),
+            RightLowerLeg = animator.GetBoneTransform(HumanBodyBones.RightLowerLeg),
+            LeftFoot = animator.GetBoneTransform(HumanBodyBones.LeftFoot),
+            RightFoot = animator.GetBoneTransform(HumanBodyBones.RightFoot)
+        };
+    }
+
+    private void ApplyCharacterMaterials(GameObject target)
+    {
+        var replacements = CharacterMaterials.Where(material => material != null)
+            .ToDictionary(material => material.name.Split(' ')[0], material => material, StringComparer.OrdinalIgnoreCase);
+        if (recordedActor)
+        {
+            foreach (var key in replacements.Keys.ToArray())
+            {
+                var copy = new Material(replacements[key]);
+                RuntimeAssetOwner.For(target).Own(copy);
+                recordedActor.Apply(copy, true);
+                replacements[key] = copy;
+            }
+        }
+        foreach (var renderer in target.GetComponentsInChildren<Renderer>(true))
+        {
+            var materials = renderer.sharedMaterials;
+            var changed = false;
+            for (var i = 0; i < materials.Length; i++)
+            {
+                if (materials[i] == null) continue;
+                if (!replacements.TryGetValue(materials[i].name.Split(' ')[0], out var replacement)) continue;
+                materials[i] = replacement;
+                changed = true;
+            }
+            if (renderer.name.IndexOf("Geo_Body", StringComparison.OrdinalIgnoreCase) >= 0 && replacements.TryGetValue("m_bdy", out var body))
+            { materials = new[] { body }; changed = true; }
+            else if (materials.Length == 9)
+            {
+                var keys = new[] { "m_fcp", "m_fce", "m_fce", "m_fcp", "m_ebs", "m_fce", "m_eye", "m_ehl", "m_fce" };
+                var mapped = keys.Select(key => replacements.TryGetValue(key, out var value) ? value : null).ToArray();
+                if (mapped.All(material => material != null)) { materials = mapped; changed = true; }
+            }
+            else if (renderer.name.IndexOf("Geo_HairProp", StringComparison.OrdinalIgnoreCase) >= 0 && replacements.ContainsKey("m_hirco") && replacements.ContainsKey("m_hir"))
+            { materials = new[] { replacements["m_hirco"], replacements["m_hir"] }; changed = true; }
+            else if (renderer.name.IndexOf("Geo_Hair", StringComparison.OrdinalIgnoreCase) >= 0 && replacements.ContainsKey("m_hir"))
+            { materials = new[] { replacements["m_hir"] }; changed = true; }
+            if (changed) renderer.sharedMaterials = materials;
+            renderer.enabled = true;
+            renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+            renderer.receiveShadows = true;
+        }
+    }
+
+    private void ConfigureCharacterGlobals(GameObject target)
+    {
+        var attributes = target.GetComponent<SetGlobalAttributes>() ?? target.AddComponent<SetGlobalAttributes>();
+        characterAttributes = attributes;
+        attributes.enabled=RuntimePerformance.Legacy;
+        attributes.Head = target.GetComponentsInChildren<Transform>(true).FirstOrDefault(bone => bone.name == "Head");
+        Debug.Log($"CHARACTER_HEAD_LIGHTING head={attributes.Head?.name}");
+        attributes.GlobalLightParameter = new Vector4(0.25f, 1f, 0.01f, 1f);
+        attributes.MainLightDirection = new Vector4(0.34f, 0.57f, 0.74f, 0f);
+        attributes.MainLightColor = Color.white;
+        attributes.MatCapParam = new Vector4(0.3f, 1f, 1f, 0f);
+        attributes.MatCapRimLight = Vector4.zero;
+        attributes.MatCapRimColor = Color.clear;
+        attributes.MultiplyColor = Color.white;
+        attributes.ShadeMultiplyColor = new Color(0.9622642f, 0.6203275f, 0.6203275f, 1f);
+        attributes.ShadeAdditiveColor = Color.black;
+        attributes.SkinSaturation = 1f;
+        attributes.EyeHightlightColor = recordedActor ? Color.white : new Color(7.395248f, 7.395248f, 7.395248f, 1f);
+        attributes.VLSpecCube = recordedActor ? recordedActor.actorCube : CharacterSpecCube;
+        attributes.VLSpecColor = Color.white;
+        attributes.VLEyeSpecColor = Color.white;
+        attributes.OutlineParam = new Vector4(0.025f, 2.5f, 0.011f, 0.45f);
+        if (CampusAssetBundleLoader.Indoor && !Environment.GetCommandLineArgs().Contains("-legacyIndoorActorLighting"))
+        {
+            // GPA 2025-05-14, actor draws 4695/4745/4776: CB 7043 float4[147..156].
+            // Values are already shader-space numbers: do not apply Color.linear again.
+            attributes.GlobalLightParameter = new Vector4(0f, 0f, 1f, 0f);
+            attributes.MainLightColor = new Color(0.94509804f, 0.89411765f, 0.89411765f, 1f);
+            attributes.MainLightDirection = new Vector4(0.34618860f, 0.57357639f, 0.74240386f, 0f);
+            attributes.MatCapParam = new Vector4(0.27f, 1f, 1f, 0f);
+            attributes.ShadeMultiplyColor = new Color(0.79215688f, 0.64313728f, 0.62352943f, 1f);
+            attributes.SkinSaturation = 1.03f;
+            // Latest request supersedes the earlier rim-off preference.
+            attributes.UseCapturedActorMath = true;
+            attributes.MatCapRimLight = new Vector4(-0.078989923f, -0.422618300f, 0.902858973f, 28f);
+            attributes.MatCapRimColor = new Color(1.498039246f, 1.442392707f, 1.349648476f, 0.5f);
+            Debug.Log("INDOOR_ACTOR_GPA_CONSTANTS source=CB7043[147..156] sky=0 additional=0 rim=captured exponent=28");
+        }
+        if (CampusAssetBundleLoader.Indoor && !CampusAssetBundleLoader.CapturedNight &&
+            !Environment.GetCommandLineArgs().Contains("-legacyDayActorLighting"))
+        {
+            var period = CampusAssetBundleLoader.ClassroomPeriod;
+            var folder = "GakumasClassroom" + char.ToUpperInvariant(period[0]) + period.Substring(1) + "Bundles";
+            var values = JsonUtility.FromJson<PeriodActorLighting>(File.ReadAllText(Path.Combine(Application.streamingAssetsPath, folder, "actor_lighting.json")));
+            attributes.MainLightColor = values.lightColor;
+            // Verified with night profile: (25,35) maps to captured (.346,.574,.742).
+            float azimuth = values.mainLightAngle.x * Mathf.Deg2Rad;
+            float elevation = values.mainLightAngle.y * Mathf.Deg2Rad;
+            attributes.MainLightDirection = new Vector4(Mathf.Sin(azimuth)*Mathf.Cos(elevation), Mathf.Sin(elevation), Mathf.Cos(azimuth)*Mathf.Cos(elevation), values.mainLightSpace);
+            attributes.MatCapParam = new Vector4(values.matCapOffset, values.matCapSmoothScale, values.shadeApplyRatio, 0);
+            attributes.ShadeMultiplyColor = values.shadeColorMultiply;
+            attributes.ShadeAdditiveColor = values.shadeColorAdditive;
+            azimuth = values.rimAngle.x * Mathf.Deg2Rad;
+            elevation = values.rimAngle.y * Mathf.Deg2Rad;
+            attributes.MatCapRimLight = new Vector4(Mathf.Sin(azimuth)*Mathf.Cos(elevation), -Mathf.Sin(elevation), Mathf.Cos(azimuth)*Mathf.Cos(elevation), values.rimPower);
+            var rim = values.rimColor; rim.a = values.rimBaseColorRatio;
+            attributes.MatCapRimColor = rim;
+            attributes.GlobalLightParameter = new Vector4(values.giScale, values.additiveLightScale, values.additiveLightSpecularScale, 0);
+            attributes.SkinSaturation = 1f + values.skinSaturation;
+            attributes.EyeHightlightColor = values.eyeHighlightColor;
+            attributes.VLSpecColor = values.reflectionColor;
+            attributes.VLEyeSpecColor = values.eyeReflectionColor;
+            Debug.Log("ACTOR_PERIOD_PROFILE " + values.source + " main=" + attributes.MainLightDirection + " saturation=" + attributes.SkinSaturation);
+        }
+        if (CampusAssetBundleLoader.Indoor && CampusAssetBundleLoader.ClassroomPeriod == "morning")
+        {
+            // 2025-07-14 15:48:32 actor event 2683, CB3146[146..154].
+            // Shader-space constants: no additional sRGB conversion or guessed exposure.
+            attributes.MainLightColor = Color.white;
+            attributes.MainLightDirection = new Vector4(-0.309975535f, 0.422618270f, 0.851650715f, 0f);
+            attributes.MatCapParam = new Vector4(0.3f, 1f, 1f, 0f);
+            attributes.ShadeMultiplyColor = new Color(0.792452812f, 0.612028301f, 0.601815581f, 1f);
+            attributes.ShadeAdditiveColor = Color.black;
+            attributes.MatCapRimColor = new Color(0.867924511f, 0.867924511f, 0.867924511f, 0.85f);
+            attributes.MatCapRimLight = new Vector4(0.071393803f, -0.573576450f, 0.816034913f, 32f);
+            attributes.GlobalLightParameter = new Vector4(0f, 0f, 1f, 0f);
+            attributes.SkinSaturation = 1f;
+            attributes.UseCapturedActorMath = true;
+            Debug.Log("ACTOR_CAPTURE_0714_154832 event=2683 CB=3146 main/shade/rim/skin applied");
+        }
+        if (CampusAssetBundleLoader.Indoor && CampusAssetBundleLoader.ClassroomPeriod == "noon")
+        {
+            // 2025-07-14 15:55:48, actor draws 757/793/832/987/1021, CB1084[146..155].
+            // These are shader-space values, not UI sRGB swatches.
+            attributes.MainLightColor = Color.white;
+            attributes.MainLightDirection = new Vector4(-0.00000000652471854f, 0.173648164f, 0.984807730f, 0f);
+            attributes.MatCapParam = new Vector4(0.3f, 1f, 1f, 0f);
+            attributes.ShadeMultiplyColor = new Color(0.8f, 0.670588255f, 0.647058845f, 1f);
+            attributes.ShadeAdditiveColor = Color.black;
+            attributes.MatCapRimColor = new Color(0.773584902f, 0.773584902f, 0.773584902f, 0.8f);
+            attributes.MatCapRimLight = new Vector4(-0.157378688f, -0.422618270f, 0.892538905f, 32f);
+            attributes.GlobalLightParameter = new Vector4(0f, 0f, 1f, 0f);
+            attributes.SkinSaturation = 1f;
+            attributes.UseCapturedActorMath = true;
+            Debug.Log("ACTOR_CAPTURE_0714_155548 event=757 CB=1084 main/shade/rim/skin applied; DAY exposure=0.840896428 LUT=165 bloom=0.692071199/0.148698330");
+        }
+    }
+
+    [Serializable] private sealed class PeriodActorLighting
+    {
+        public string source;
+        public Color lightColor, shadeColorMultiply, shadeColorAdditive, rimColor, eyeHighlightColor, reflectionColor, eyeReflectionColor;
+        public Vector2 mainLightAngle, rimAngle;
+        public float mainLightSpace, matCapOffset, matCapSmoothScale, shadeApplyRatio, rimBaseColorRatio, rimPower;
+        public float giScale, additiveLightScale, additiveLightSpecularScale, skinSaturation;
+    }
+
+    private static void ScaleToHeight(GameObject target, float desiredHeight)
+    {
+        var renderers = target.GetComponentsInChildren<Renderer>(true);
+        if (renderers.Length == 0) return;
+        var bounds = renderers[0].bounds;
+        foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+        if (bounds.size.y > 0.01f) target.transform.localScale *= desiredHeight / bounds.size.y;
+    }
+
+    private Bounds CachedCameraBounds()
+    {
+        if (cameraRenderers == null) cameraRenderers = visual.GetComponentsInChildren<Renderer>(true);
+        var bounds = new Bounds(visual.transform.position + Vector3.up * 0.8f, Vector3.one * 1.6f);
+        bool found = false;
+        foreach (var renderer in cameraRenderers)
+        {
+            if (renderer == null || !renderer.enabled) continue;
+            if (!found) { bounds = renderer.bounds; found = true; }
+            else bounds.Encapsulate(renderer.bounds);
+        }
+        return bounds;
+    }
+
+    private static Bounds CalculateBounds(GameObject target)
+    {
+        var renderers = target.GetComponentsInChildren<Renderer>(true)
+            .Where(renderer => renderer.enabled).ToArray();
+        if (renderers.Length == 0) return new Bounds(target.transform.position + Vector3.up * 0.8f, Vector3.one * 1.6f);
+        var bounds = renderers[0].bounds;
+        foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+        return bounds;
+    }
+
+    private static void RotateWorld(Transform bone, Vector3 axis, float degrees)
+    {
+        if (bone != null) bone.rotation = Quaternion.AngleAxis(degrees, axis) * bone.rotation;
+    }
+
+    private static void SetLayerRecursively(Transform root, int layer)
+    {
+        root.gameObject.layer = layer;
+        foreach (Transform child in root) SetLayerRecursively(child, layer);
+    }
+
+    private static void CreateCampusMeshColliders(Transform hiddenComparisonCharacter)
+    {
+        var scanned = 0;
+        var meshColliders = 0;
+        var groundProxies = 0;
+        var existing = 0;
+        var skippedDecoration = 0;
+        var unreadableSkipped = 0;
+        var failed = 0;
+        var walkableBounds = new List<Bounds>();
+        var walkableSurfaceHeights = new List<float>();
+        var decorationTokens = new[]
+        {
+            "grass", "flower", "leaf", "leaves", "tree", "bush", "plant",
+            "ivy", "nature", "effect", "particle", "shadow", "shielding"
+        };
+
+        foreach (var filter in FindObjectsOfType<MeshFilter>(true))
+        {
+            if (filter == null || filter.sharedMesh == null || !filter.gameObject.activeInHierarchy)
+                continue;
+            if (hiddenComparisonCharacter != null && filter.transform.IsChildOf(hiddenComparisonCharacter))
+                continue;
+            var renderer = filter.GetComponent<MeshRenderer>();
+            if (renderer == null || !renderer.enabled) continue;
+            scanned++;
+
+            if (filter.GetComponent<Collider>() != null)
+            {
+                existing++;
+                continue;
+            }
+
+            var path = GetTransformPath(filter.transform).ToLowerInvariant();
+            if (decorationTokens.Any(path.Contains))
+            {
+                skippedDecoration++;
+                continue;
+            }
+
+            try
+            {
+                if (filter.sharedMesh.isReadable)
+                {
+                    if (CampusAssetBundleLoader.Indoor)
+                    {
+                        var bounds = filter.sharedMesh.bounds;
+                        var size = bounds.size;
+                        bool floor = filter.sharedMesh.name.StartsWith("Geo_floor", StringComparison.OrdinalIgnoreCase);
+                        bool wall = size.y > 1.2f && Mathf.Min(size.x, size.z) < 0.55f;
+                        bool furniture = path.Contains("furniture") && size.y > 0.35f && size.y < 2.5f && size.x < 3f && size.z < 3f;
+                        if (floor || wall || furniture)
+                        {
+                            var box = filter.gameObject.AddComponent<BoxCollider>();
+                            box.center = bounds.center - (floor ? Vector3.up * 0.08f : Vector3.zero);
+                            box.size = new Vector3(Mathf.Max(size.x, 0.10f), floor ? 0.16f : Mathf.Max(size.y, 0.1f), Mathf.Max(size.z, 0.10f));
+                            groundProxies++;
+                        }
+                        continue;
+                    }
+                    var collider = filter.gameObject.AddComponent<MeshCollider>();
+                    collider.sharedMesh = filter.sharedMesh;
+                    collider.convex = false;
+                    meshColliders++;
+                }
+                else if (IsGroundSurface(path, filter.sharedMesh.name, renderer.bounds))
+                {
+                    var surfaceHeight = CreateGroundBoundsProxy(renderer.bounds, groundProxies);
+                    walkableBounds.Add(renderer.bounds);
+                    walkableSurfaceHeights.Add(surfaceHeight);
+                    groundProxies++;
+                    Debug.Log($"LOCOMOTION_GROUND_PROXY mesh={filter.sharedMesh.name} bounds={renderer.bounds}");
+                }
+                else
+                {
+                    unreadableSkipped++;
+                }
+            }
+            catch (Exception exception)
+            {
+                failed++;
+                Debug.LogWarning($"LOCOMOTION_COLLIDER_COOK_FAILED object={path} error={exception.Message}");
+            }
+        }
+
+        if (walkableBounds.Count > 0 && !CampusAssetBundleLoader.Indoor)
+            CreateCampusSafetyUnderlay(walkableBounds, walkableSurfaceHeights);
+
+        Physics.SyncTransforms();
+        Debug.Log($"LOCOMOTION_CAMPUS_COLLIDERS scanned={scanned} mesh={meshColliders} groundProxies={groundProxies} existing={existing} decorationSkipped={skippedDecoration} unreadableSkipped={unreadableSkipped} failed={failed}");
+    }
+
+    private static Vector3 FindIndoorSpawn()
+    {
+        Physics.SyncTransforms();
+        // Prefer the central aisle, reject desks and occupied capsule volumes.
+        for (int r = 0; r < 7; r++)
+            for (int x = -r; x <= r; x++)
+                for (int z = -r; z <= r; z++)
+                {
+                    var origin = new Vector3(x * 0.5f - 1f, 2f, z * 0.5f - 2f);
+                    if (!Physics.Raycast(origin, Vector3.down, out var hit, 3f, ~0, QueryTriggerInteraction.Ignore)) continue;
+                    if (hit.normal.y < 0.9f || Mathf.Abs(hit.point.y) > 0.35f) continue;
+                    var p = hit.point + Vector3.up * 0.06f;
+                    if (Physics.CheckCapsule(p + Vector3.up * 0.32f, p + Vector3.up * 1.48f, 0.29f, ~0, QueryTriggerInteraction.Ignore)) continue;
+                    Debug.Log($"CLASSROOM_SPAWN_OK position={p} floor={hit.collider.name}");
+                    return p;
+                }
+        throw new InvalidOperationException("No verified classroom floor spawn; refusing unsafe placement.");
+    }
+
+    private static bool IsGroundSurface(string path, string meshName, Bounds bounds)
+    {
+        var name = (path + "/" + meshName).ToLowerInvariant();
+        var groundTokens = new[]
+        {
+            "ground", "floor", "road", "corridor", "pavement", "street",
+            "sidewalk", "walkway", "plaza", "square", "court", "bridge", "path"
+        };
+        return groundTokens.Any(name.Contains)
+               && bounds.size.x >= 0.5f && bounds.size.z >= 0.5f;
+    }
+
+    private static float CreateGroundBoundsProxy(Bounds bounds, int index)
+    {
+        const float thickness = 0.24f;
+        // Flat ground meshes use their upper face. Corridor meshes often combine
+        // rails/walls with the floor, so their walkable plane is near bounds.min.y.
+        var surfaceHeight = bounds.size.y <= 1.25f ? bounds.max.y : bounds.min.y + 0.08f;
+        var proxy = new GameObject($"Campus Ground Proxy {index:000}");
+        proxy.transform.position = new Vector3(bounds.center.x, surfaceHeight - thickness * 0.5f, bounds.center.z);
+        var collider = proxy.AddComponent<BoxCollider>();
+        collider.size = new Vector3(
+            Mathf.Max(0.5f, bounds.size.x + 0.08f),
+            thickness,
+            Mathf.Max(0.5f, bounds.size.z + 0.08f));
+        return surfaceHeight;
+    }
+
+    private static void CreateCampusSafetyUnderlay(List<Bounds> regions, List<float> surfaceHeights)
+    {
+        var coverage = regions[0];
+        foreach (var region in regions.Skip(1)) coverage.Encapsulate(region);
+        surfaceHeights.Sort();
+        var medianSurface = surfaceHeights[surfaceHeights.Count / 2];
+        const float underlayDrop = 0.18f;
+        const float thickness = 0.20f;
+        var underlay = new GameObject("Campus Walkable Safety Underlay");
+        underlay.transform.position = new Vector3(
+            coverage.center.x, medianSurface - underlayDrop - thickness * 0.5f, coverage.center.z);
+        var collider = underlay.AddComponent<BoxCollider>();
+        collider.size = new Vector3(coverage.size.x + 1f, thickness, coverage.size.z + 1f);
+        Debug.Log($"LOCOMOTION_GROUND_UNDERLAY bounds={coverage} topY={medianSurface - underlayDrop:F3}");
+    }
+
+    private static string GetTransformPath(Transform transform)
+    {
+        var names = new List<string>();
+        for (var current = transform; current != null; current = current.parent)
+            names.Add(current.name);
+        names.Reverse();
+        return string.Join("/", names);
+    }
+
+    private static void CreateLocomotionCollisionGround()
+    {
+        // The extracted campus scene contains visual meshes but its original physics
+        // scene was not part of the available bundle dump. Add an invisible, explicit
+        // collision slab over the validated courtyard route.
+        var ground = new GameObject("Locomotion Courtyard Collision");
+        ground.transform.position = new Vector3(-15f, 0.04f, 2f);
+        var collider = ground.AddComponent<BoxCollider>();
+        collider.size = new Vector3(28f, 0.2f, 34f);
+        collider.center = Vector3.zero;
+    }
+}

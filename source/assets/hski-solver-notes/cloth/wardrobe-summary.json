@@ -1,0 +1,407 @@
+{
+  "outfitsChecked": 19,
+  "configured": 14,
+  "sampleFrames": 3878,
+  "outfitsWithZeroMeasuredCrossings": 6,
+  "lifecycle": {
+    "switches": 38,
+    "uniqueOutfits": 19,
+    "skirtBindings": 30,
+    "skirtSamples": 602,
+    "nonfinite": 0,
+    "maxLengthError": 1.252e-06,
+    "bundles": [
+      "mdl_chr_fktn-casl-0000_body",
+      "mdl_chr_fktn-cstm-0000_body",
+      "mdl_chr_fktn-cstm-0001_body",
+      "mdl_chr_fktn-cstm-0027_body",
+      "mdl_chr_fktn-cstm-0112_body",
+      "mdl_chr_fktn-cstm-0119_body",
+      "mdl_chr_fktn-trng-0000_body",
+      "mdl_chr_hski-cstm-0000_body",
+      "mdl_chr_hski-cstm-0002_body",
+      "mdl_chr_hski-cstm-0029_body",
+      "mdl_chr_hski-cstm-0070_body",
+      "mdl_chr_hski-cstm-0112_body",
+      "mdl_chr_hski-schl-0000_body",
+      "mdl_chr_kcna-casl-0000_body",
+      "mdl_chr_kcna-cstm-0000_body",
+      "mdl_chr_kcna-cstm-0008_body",
+      "mdl_chr_kcna-cstm-0033_body",
+      "mdl_chr_kcna-cstm-0119_body",
+      "mdl_chr_kcna-othr-0002_body"
+    ]
+  },
+  "outfits": [
+    {
+      "bundle": "mdl_chr_fktn-casl-0000_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 64,
+      "segments": 48,
+      "chains": 6,
+      "colliders": 9,
+      "syncSourceBones": true,
+      "referenceLimits": 28,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 31,
+        "peakPairs": 7,
+        "meanPairs": 1.2
+      },
+      "label": "Casual",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0000_body",
+      "status": "no-skirt-data"
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0001_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 52,
+      "segments": 40,
+      "chains": 4,
+      "colliders": 17,
+      "syncSourceBones": false,
+      "referenceLimits": 0,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "Custom 0001",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0027_body",
+      "status": "no-skirt-data"
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0112_body",
+      "status": "configured",
+      "drivers": 12,
+      "nodes": 58,
+      "segments": 42,
+      "chains": 5,
+      "colliders": 10,
+      "syncSourceBones": true,
+      "referenceLimits": 19,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 4,
+        "peakPairs": 6,
+        "meanPairs": 0.3
+      },
+      "label": "Custom 0112",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_fktn-cstm-0119_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 62,
+      "segments": 48,
+      "chains": 7,
+      "colliders": 6,
+      "syncSourceBones": false,
+      "referenceLimits": 20,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 80,
+        "peakPairs": 81,
+        "meanPairs": 59.725
+      },
+      "label": "Custom 0119",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 197,
+        "peakPairs": 79,
+        "meanPairs": 53.58375634517766
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_fktn-trng-0000_body",
+      "status": "configured",
+      "drivers": 0,
+      "nodes": 40,
+      "segments": 32,
+      "chains": 4,
+      "colliders": 7,
+      "syncSourceBones": false,
+      "referenceLimits": 10,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "Training",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0000_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 69,
+      "segments": 50,
+      "chains": 7,
+      "colliders": 8,
+      "syncSourceBones": true,
+      "referenceLimits": 25,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 1,
+        "peakPairs": 30,
+        "meanPairs": 0.375
+      },
+      "label": "Custom 0000",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0002_body",
+      "status": "configured",
+      "drivers": 6,
+      "nodes": 41,
+      "segments": 31,
+      "chains": 6,
+      "colliders": 7,
+      "syncSourceBones": true,
+      "referenceLimits": 5,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "Custom 0002",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0029_body",
+      "status": "no-skirt-data"
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0070_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 62,
+      "segments": 48,
+      "chains": 7,
+      "colliders": 6,
+      "syncSourceBones": false,
+      "referenceLimits": 20,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 80,
+        "peakPairs": 70,
+        "meanPairs": 51.9
+      },
+      "label": "Custom 0070",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 197,
+        "peakPairs": 74,
+        "meanPairs": 47.131979695431475
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_hski-cstm-0112_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 40,
+      "segments": 32,
+      "chains": 4,
+      "colliders": 7,
+      "syncSourceBones": false,
+      "referenceLimits": 0,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "Custom 0112",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_hski-schl-0000_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 32,
+      "segments": 24,
+      "chains": 3,
+      "colliders": 4,
+      "syncSourceBones": false,
+      "referenceLimits": 0,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "School 0000",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-casl-0000_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 64,
+      "segments": 56,
+      "chains": 7,
+      "colliders": 6,
+      "syncSourceBones": true,
+      "referenceLimits": 0,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "label": "Casual",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 0,
+        "peakPairs": 0,
+        "meanPairs": 0.0
+      },
+      "zeroCrossings": true
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0000_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 68,
+      "segments": 52,
+      "chains": 10,
+      "colliders": 8,
+      "syncSourceBones": false,
+      "referenceLimits": 24,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 63,
+        "peakPairs": 21,
+        "meanPairs": 5.8625
+      },
+      "label": "Custom 0000",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 165,
+        "peakPairs": 33,
+        "meanPairs": 5.055837563451776
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0008_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 99,
+      "segments": 76,
+      "chains": 10,
+      "colliders": 11,
+      "syncSourceBones": true,
+      "referenceLimits": 39,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 80,
+        "peakPairs": 209,
+        "meanPairs": 119.375
+      },
+      "label": "Custom 0008",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 197,
+        "peakPairs": 152,
+        "meanPairs": 120.49238578680203
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0033_body",
+      "status": "no-skirt-data"
+    },
+    {
+      "bundle": "mdl_chr_kcna-cstm-0119_body",
+      "status": "configured",
+      "drivers": 8,
+      "nodes": 62,
+      "segments": 48,
+      "chains": 7,
+      "colliders": 6,
+      "syncSourceBones": false,
+      "referenceLimits": 20,
+      "run": {
+        "frames": 80,
+        "framesWithCrossings": 80,
+        "peakPairs": 80,
+        "meanPairs": 61.7125
+      },
+      "label": "Custom 0119",
+      "walk": {
+        "frames": 197,
+        "framesWithCrossings": 197,
+        "peakPairs": 84,
+        "meanPairs": 56.46192893401015
+      },
+      "zeroCrossings": false
+    },
+    {
+      "bundle": "mdl_chr_kcna-othr-0002_body",
+      "status": "no-skirt-data"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+from pathlib import Path
+import json,copy,shutil
+R=Path(__file__).resolve().parent
+P=Path('E:/ArinLee/gkmas/yuki_Render/UnityProject/GakumasCampus')
+backup=R/'wardrobe_v1_backup';backup.mkdir(exist_ok=True)
+for name in ['CampusSkirtIntegration.cs','prepare_campus.py','SkirtNativeMath.cs']:
+ if not (backup/name).exists():shutil.copyfile(R/name,backup/name)
+stage=R/'campus_staged';dest=stage/'Assets/Resources/WardrobeSkirts';dest.mkdir(parents=True,exist_ok=True)
+catalog=[];summary=[]
+for path in sorted((R/'wardrobe_assets').glob('mdl*.json')):
+ a=json.loads(path.read_text('utf-8'));trans={t['name']:t for t in a['transforms']};dyn={e['gameObject']:e['data'] for e in a['entries'] if e['component']=='ActorSwingDynamicBone'}
+ selected={n for n in dyn if 'Skirt' in n}
+ if not selected:
+  summary.append(dict(bundle=a['bundle'],status='no-skirt-data'));continue
+ while True:
+  more={n for n,d in dyn.items() if d.get('referenceLimitInfo',{}).get('bone',{}).get('resolvedName') in selected or trans[n]['parent'] in selected}
+  more|={trans[n]['parent'] for n in selected if trans[n]['parent'] in dyn}
+  for e in a['entries']:
+   if e['component']=='ActorSwingChain':
+    for l in e['data']['chains']['layers']:
+     names={p['resolvedName'] for p in l['bones']}
+     if names&selected:more|=names
+  if more<=selected:break
+  selected|=more
+ nodes=[]
+ for name,d in dyn.items():
+  if name not in selected:continue
+  n={k:d[k] for k in ['dynamicType','damping','stiffness','rootWeight','spring','pendulum','pendulumRange','mass','wind','useWindGlobalForce','axisAddXToY','axisAddXToZ']}
+  n.update(name=name,collisionMask=d['dynamicCollider']['collisionMask'],collisionRadius=d['dynamicCollider']['float_A'],collisionOffset=d['dynamicCollider']['vector3_A'],limit=bool(d['limitInfo']['useLimit']),minAngles={x:d['limitInfo']['axis'+x.upper()]['x'] for x in 'xyz'},maxAngles={x:d['limitInfo']['axis'+x.upper()]['y'] for x in 'xyz'},referenceLimit=d.get('referenceLimitInfo'),seatDynamicCorrection=d.get('seatDynamicCorrection',0))
+  ref=d.get('referenceLimitInfo',{});n.update(referenceBone=ref.get('bone',{}).get('resolvedName'),referenceMin=ref.get('min'),referenceMax=ref.get('max'))
+  nodes.append(n)
+ effective={child for n in selected for child in trans[n]['children'] if child in selected};mask=0
+ for n in effective:mask|=dyn[n]['dynamicCollider']['collisionMask']
+ chains=[]
+ for e in a['entries']:
+  if e['component']!='ActorSwingChain':continue
+  for l in e['data']['chains']['layers']:
+   names=[p['resolvedName'] for p in l['bones']]
+   if not set(names)&selected:continue
+   assert set(names)<=selected,(a['bundle'],names)
+   chains.append(dict(l,bones=names,active=bool(l['active']),around=bool(l['around'])))
+ colliders=[dict(e['data']['staticCollider'],source=a['bundle'],anchor=e['gameObject']) for e in a['entries'] if e['component']=='ActorSwingStaticBone' and e['data']['staticCollider']['collisionMask']&mask]
+ drivers=[]
+ for e in a['entries']:
+  if e['component']!='ActorAnimationQuartzDriverSkirtBone':continue
+  d=copy.deepcopy(e['data']['setting']);ref=d['referenceBone']['resolvedName'];assert d['rotationOrder']==0
+  for axis in ('yz' if 'Left' in ref else 'z'):
+   d['innerCoefficient'][axis]*=-1;d['outerCoefficient'][axis]*=-1;d['limitMin'][axis],d['limitMax'][axis]=-d['limitMax'][axis],-d['limitMin'][axis]
+  d.update(bone=e['gameObject'],reference=ref,initialReferenceRotation=trans[ref]['rotation']);drivers.append(d)
+ segments=sum(any(sum(v*v for v in trans[c]['position'].values())>1e-10 for c in trans[n]['children']) for n in selected)
+ expectedChains=sum(l['active'] and sum(n in effective for n in l['bones']) >= (3 if l['around'] else 2) for l in chains)
+ config=dict(source=a['bundle'],sourceSha256=a['sha256'],drivers=drivers,nodes=nodes,chains=chains,staticColliders=colliders,expectedNodes=len(nodes),expectedSegments=segments,expectedChains=expectedChains,expectedColliders=len(colliders),clothBones=sorted(selected))
+ # These already-retargeted variants regress when same-name source bindings
+ # are removed (full-cycle mesh captures retained in wardrobe_skirt_v2).
+ config['syncSourceBones']=a['bundle'] in {
+  'mdl_chr_hski-cstm-0002_body','mdl_chr_hski-cstm-0000_body',
+  'mdl_chr_kcna-casl-0000_body','mdl_chr_kcna-cstm-0008_body',
+  'mdl_chr_fktn-casl-0000_body','mdl_chr_fktn-cstm-0112_body'}
+ (dest/(a['bundle']+'.json')).write_text(json.dumps(config,ensure_ascii=False,indent=2),encoding='utf-8')
+ catalog.append(a['bundle']);summary.append(dict(bundle=a['bundle'],status='configured',drivers=len(drivers),nodes=len(nodes),segments=segments,chains=expectedChains,colliders=len(colliders),syncSourceBones=config['syncSourceBones'],referenceLimits=sum(bool(n['referenceLimit']['bone']['m_PathID']) for n in nodes)))
+(stage/'Assets/Resources/WardrobeSkirtCatalog.json').write_text(json.dumps(dict(bundles=catalog),indent=2),encoding='utf-8')
+(R/'wardrobe_config_summary.json').write_text(json.dumps(summary,indent=2),encoding='utf-8')
+print(json.dumps(summary,indent=2))
+solver='Assets/LocomotionDemo/Runtime/ActorAnimationSwingSolver.cs'
+saved=backup/'ActorAnimationSwingSolver.cs'
+if not saved.exists():shutil.copyfile(P/solver,saved)
+code=saved.read_text('utf-8')
+code=code.replace('public string name;','public string name;\n        public string referenceBone;\n        public Vector3 referenceMin, referenceMax;',1)
+code=code.replace('public Node parentLink;','public Node parentLink, referenceNode;\n        public Transform referenceBone;',1)
+code=code.replace('        if (!rootMotionSource)\n','''        foreach (var node in nodes) {
+            var reference = node.limitSetting.referenceBone;
+            if (string.IsNullOrEmpty(reference)) continue;
+            if (!transforms.TryGetValue(reference, out node.referenceBone))
+                throw new InvalidOperationException("Missing skirt reference bone: " + reference);
+            nodeByBone.TryGetValue(node.referenceBone, out node.referenceNode);
+        }
+
+        if (!rootMotionSource)
+''',1)
+code=code.replace('limit.minAngles, limit.maxAngles, strength * manage.weight);','''limit.minAngles, limit.maxAngles, node.referenceBone && limit.limit ? 1f : strength * manage.weight);
+        if (node.referenceBone && limit.limit) {
+            var reference = node.referenceNode != null ? node.referenceNode.selfRotation
+                : Quaternion.Inverse(transform.rotation) * node.referenceBone.rotation;
+            var constrained = NativeReferenceLimit(node.selfRotation, reference, limit.referenceMin, limit.referenceMax);
+            var q = math.slerp(new quaternion(node.defaultRotation.x,node.defaultRotation.y,node.defaultRotation.z,node.defaultRotation.w),
+                new quaternion(constrained.x,constrained.y,constrained.z,constrained.w),strength * manage.weight).value;
+            node.selfRotation = new Quaternion(q.x,q.y,q.z,q.w);
+        }''',1)
+code=code.replace('    public static Quaternion NativeSwingRotation(','''    // CalcDynamicSwing RVA 0x9B5ACF..0x9B5D33: per-axis flags clamp
+    // animator-root Euler angles against the referenced dynamic bone.
+    public static Quaternion NativeReferenceLimit(Quaternion solved, Quaternion reference, Vector3 minimum, Vector3 maximum)
+    {
+        var a=ToUnityEuler(solved);var b=ToUnityEuler(reference);
+        for(int i=0;i<3;i++) {
+            if(maximum[i]!=0)a[i]=Mathf.Min(a[i],b[i]);
+            if(minimum[i]!=0)a[i]=Mathf.Max(a[i],b[i]);
+        }
+        return Quaternion.Euler(a);
+    }
+
+    public static Quaternion NativeSwingRotation(''',1)
+(stage/solver).write_text(code,encoding='utf-8')

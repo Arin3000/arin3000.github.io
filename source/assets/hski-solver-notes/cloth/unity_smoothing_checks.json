@@ -1,0 +1,1015 @@
+{
+    "results": [
+        {
+            "label": "around=True,smoothing=0.0,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.0,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=False,smoothing=0.029999999329447746,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=10",
+            "maxError": 3.3372032248735198e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.029999999329447746,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=14",
+            "maxError": 2.986410407856965e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=22",
+            "maxError": 3.3527612686157229e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.019999999552965164,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=8",
+            "maxError": 5.998180085953209e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=12",
+            "maxError": 3.026440253961482e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=0.009999999776482582,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=2",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.000000318337698e-06,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=0",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=1",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=2",
+            "maxError": 3.3372032248735198e-8,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=3",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=4",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=5",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=6",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=7",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=8",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=9",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=10",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=11",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=12",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=13",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=14",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=15",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=16",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=17",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=18",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=19",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=20",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=21",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=22",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        },
+        {
+            "label": "around=True,smoothing=9.999999747378752e-06,case=23",
+            "maxError": 0.0,
+            "finite": true,
+            "passed": true
+        }
+    ],
+    "count": 168,
+    "passed": 168,
+    "maxError": 5.998180085953209e-8
+}

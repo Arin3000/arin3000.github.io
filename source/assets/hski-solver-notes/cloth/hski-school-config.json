@@ -1,0 +1,2471 @@
+{
+  "source": "mdl_chr_hski-schl-0000_body",
+  "sourceSha256": "9e84f5dcd733f6b573e96115acec1ae32b828fe7023a3b06cbd9e66b60779343",
+  "drivers": [
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": -0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": -1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -35.0,
+        "z": -20.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 360.0,
+        "z": 360.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -4755269534599263475,
+        "resolvedName": "LeftUpLeg"
+      },
+      "bone": "LeftFrontSkirt_A",
+      "reference": "LeftUpLeg",
+      "initialReferenceRotation": {
+        "x": 0.5033075213432312,
+        "y": 0.49667099118232727,
+        "z": 0.5033069849014282,
+        "w": 0.4966704845428467
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": -0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": -1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -20.0,
+        "z": -20.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 360.0,
+        "z": 360.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -4755269534599263475,
+        "resolvedName": "LeftUpLeg"
+      },
+      "bone": "LeftFrontSideSkirt_A",
+      "reference": "LeftUpLeg",
+      "initialReferenceRotation": {
+        "x": 0.5033075213432312,
+        "y": 0.49667099118232727,
+        "z": 0.5033069849014282,
+        "w": 0.4966704845428467
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": 0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -360.0,
+        "z": -20.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 20.0,
+        "z": 360.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -1314364622746137843,
+        "resolvedName": "RightUpLeg"
+      },
+      "bone": "RightFrontSideSkirt_A",
+      "reference": "RightUpLeg",
+      "initialReferenceRotation": {
+        "x": -0.4966704845428467,
+        "y": 0.5033069849014282,
+        "z": -0.49667099118232727,
+        "w": 0.5033075213432312
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": 0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -360.0,
+        "z": -20.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 35.0,
+        "z": 360.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -1314364622746137843,
+        "resolvedName": "RightUpLeg"
+      },
+      "bone": "RightFrontSkirt_A",
+      "reference": "RightUpLeg",
+      "initialReferenceRotation": {
+        "x": -0.4966704845428467,
+        "y": 0.5033069849014282,
+        "z": -0.49667099118232727,
+        "w": 0.5033075213432312
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": -0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": -1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -45.0,
+        "z": -360.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 360.0,
+        "z": 25.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -4755269534599263475,
+        "resolvedName": "LeftUpLeg"
+      },
+      "bone": "LeftBackSkirt_A",
+      "reference": "LeftUpLeg",
+      "initialReferenceRotation": {
+        "x": 0.5033075213432312,
+        "y": 0.49667099118232727,
+        "z": 0.5033069849014282,
+        "w": 0.4966704845428467
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": 0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -360.0,
+        "z": -360.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 25.0,
+        "z": 30.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -1314364622746137843,
+        "resolvedName": "RightUpLeg"
+      },
+      "bone": "RightBackSideSkirt_A",
+      "reference": "RightUpLeg",
+      "initialReferenceRotation": {
+        "x": -0.4966704845428467,
+        "y": 0.5033069849014282,
+        "z": -0.49667099118232727,
+        "w": 0.5033075213432312
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": 0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -360.0,
+        "z": -360.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 45.0,
+        "z": 25.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -1314364622746137843,
+        "resolvedName": "RightUpLeg"
+      },
+      "bone": "RightBackSkirt_A",
+      "reference": "RightUpLeg",
+      "initialReferenceRotation": {
+        "x": -0.4966704845428467,
+        "y": 0.5033069849014282,
+        "z": -0.49667099118232727,
+        "w": 0.5033075213432312
+      }
+    },
+    {
+      "rotationOrder": 0,
+      "innerCoefficient": {
+        "x": 0.0,
+        "y": -0.10000000149011612,
+        "z": -0.10000000149011612
+      },
+      "outerCoefficient": {
+        "x": 1.0,
+        "y": -1.0,
+        "z": -1.0
+      },
+      "limitMin": {
+        "x": -180.0,
+        "y": -25.0,
+        "z": -360.0
+      },
+      "limitMax": {
+        "x": 180.0,
+        "y": 360.0,
+        "z": 20.0
+      },
+      "connectionAxis": 0,
+      "referenceBone": {
+        "m_FileID": 0,
+        "m_PathID": -4755269534599263475,
+        "resolvedName": "LeftUpLeg"
+      },
+      "bone": "LeftBackSideSkirt_A",
+      "reference": "LeftUpLeg",
+      "initialReferenceRotation": {
+        "x": 0.5033075213432312,
+        "y": 0.49667099118232727,
+        "z": 0.5033069849014282,
+        "w": 0.4966704845428467
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSideSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSideSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSideSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSideSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSideSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -15,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 15,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSideSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSideSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -20,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 20,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSideSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSideSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -15,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 15,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -20,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 20,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSideSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSideSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.0010000000474974513,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.0,
+      "pendulumRange": 1.0,
+      "mass": 0.0,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSideSkirt1_S",
+      "collisionMask": -1,
+      "collisionRadius": 0.05000000074505806,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -165
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 0
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSideSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightFrontSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.5,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.75,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSkirt2_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.02200000174343586,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -30,
+        "z": -170
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 30,
+        "z": 5
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSideSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSideSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.006000000052154064,
+      "rootWeight": 0.30000001192092896,
+      "spring": 0.75,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 1.0,
+      "mass": 0.800000011920929,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "RightBackSkirt3_S",
+      "collisionMask": 1,
+      "collisionRadius": 0.027000000700354576,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -35,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 35,
+        "z": 10
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSideSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftBackSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -40,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 40,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    {
+      "dynamicType": 0,
+      "damping": 0.5,
+      "stiffness": 0.004999999888241291,
+      "rootWeight": 0.30000001192092896,
+      "spring": 1.0,
+      "pendulum": 0.004999999888241291,
+      "pendulumRange": 0.699999988079071,
+      "mass": 0.8999999761581421,
+      "wind": 1.0,
+      "useWindGlobalForce": 1,
+      "axisAddXToY": 0.0,
+      "axisAddXToZ": 0.0,
+      "name": "LeftFrontSkirt4_S_End",
+      "collisionMask": 1,
+      "collisionRadius": 0.03500000014901161,
+      "collisionOffset": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "limit": true,
+      "minAngles": {
+        "x": 0,
+        "y": -25,
+        "z": -180
+      },
+      "maxAngles": {
+        "x": 0,
+        "y": 25,
+        "z": 15
+      },
+      "referenceLimit": {
+        "bone": {
+          "m_FileID": 0,
+          "m_PathID": 0,
+          "resolvedName": null
+        },
+        "min": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "max": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "seatDynamicCorrection": 0.0,
+      "referenceBone": null,
+      "referenceMin": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "referenceMax": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    }
+  ],
+  "chains": [
+    {
+      "active": false,
+      "around": false,
+      "radius": 0.05000000074505806,
+      "smoothing": 0.0,
+      "bones": [
+        "LeftBackSkirt1_S",
+        "LeftBackSideSkirt1_S",
+        "LeftFrontSideSkirt1_S",
+        "LeftFrontSkirt1_S",
+        "RightFrontSkirt1_S",
+        "RightFrontSideSkirt1_S",
+        "RightBackSideSkirt1_S",
+        "RightBackSkirt1_S"
+      ]
+    },
+    {
+      "active": true,
+      "around": true,
+      "radius": 0.015000000596046448,
+      "smoothing": 0.0,
+      "bones": [
+        "LeftBackSkirt2_S",
+        "LeftBackSideSkirt2_S",
+        "LeftFrontSideSkirt2_S",
+        "LeftFrontSkirt2_S",
+        "RightFrontSkirt2_S",
+        "RightFrontSideSkirt2_S",
+        "RightBackSideSkirt2_S",
+        "RightBackSkirt2_S"
+      ]
+    },
+    {
+      "active": true,
+      "around": true,
+      "radius": 0.021000001579523087,
+      "smoothing": 0.0,
+      "bones": [
+        "LeftBackSkirt3_S",
+        "LeftBackSideSkirt3_S",
+        "LeftFrontSideSkirt3_S",
+        "LeftFrontSkirt3_S",
+        "RightFrontSkirt3_S",
+        "RightFrontSideSkirt3_S",
+        "RightBackSideSkirt3_S",
+        "RightBackSkirt3_S"
+      ]
+    },
+    {
+      "active": true,
+      "around": true,
+      "radius": 0.030000001192092896,
+      "smoothing": 0.0,
+      "bones": [
+        "LeftBackSkirt4_S_End",
+        "LeftBackSideSkirt4_S_End",
+        "LeftFrontSideSkirt4_S_End",
+        "LeftFrontSkirt4_S_End",
+        "RightFrontSkirt4_S_End",
+        "RightFrontSideSkirt4_S_End",
+        "RightBackSideSkirt4_S_End",
+        "RightBackSkirt4_S_End"
+      ]
+    }
+  ],
+  "staticColliders": [
+    {
+      "type": 1,
+      "collisionMask": 1,
+      "vector3_A": {
+        "x": 0.0,
+        "y": -0.04000000283122063,
+        "z": -0.04000000283122063
+      },
+      "vector3_B": {
+        "x": 0.0,
+        "y": 0.010000000707805157,
+        "z": 0.0
+      },
+      "float_A": 0.055000003427267075,
+      "float_B": 0.055000003427267075,
+      "seatDynamicCorrectionDisableCollisionMask": 0,
+      "source": "mdl_chr_hski-schl-0000_body",
+      "anchor": "Hips"
+    },
+    {
+      "type": 2,
+      "collisionMask": 1,
+      "vector3_A": {
+        "x": 0.0,
+        "y": 0.08000000566244125,
+        "z": 0.0
+      },
+      "vector3_B": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "float_A": 0.07000000029802322,
+      "float_B": 0.05700000375509262,
+      "seatDynamicCorrectionDisableCollisionMask": 0,
+      "source": "mdl_chr_hski-schl-0000_body",
+      "anchor": "RightLeg"
+    },
+    {
+      "type": 2,
+      "collisionMask": 1,
+      "vector3_A": {
+        "x": 0.0,
+        "y": 0.08000000566244125,
+        "z": 0.0
+      },
+      "vector3_B": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "float_A": 0.07000000029802322,
+      "float_B": 0.05700000375509262,
+      "seatDynamicCorrectionDisableCollisionMask": 0,
+      "source": "mdl_chr_hski-schl-0000_body",
+      "anchor": "LeftLeg"
+    },
+    {
+      "type": 1,
+      "collisionMask": 1,
+      "vector3_A": {
+        "x": 0.0,
+        "y": -0.04000000283122063,
+        "z": 0.0
+      },
+      "vector3_B": {
+        "x": 0.0,
+        "y": 0.010000000707805157,
+        "z": 0.0
+      },
+      "float_A": 0.06100000441074371,
+      "float_B": 0.06100000441074371,
+      "seatDynamicCorrectionDisableCollisionMask": 0,
+      "source": "mdl_chr_hski-schl-0000_body",
+      "anchor": "Hips"
+    }
+  ],
+  "expectedNodes": 32,
+  "expectedSegments": 24,
+  "expectedChains": 3,
+  "expectedColliders": 4,
+  "clothBones": [
+    "LeftBackSideSkirt1_S",
+    "LeftBackSideSkirt2_S",
+    "LeftBackSideSkirt3_S",
+    "LeftBackSideSkirt4_S_End",
+    "LeftBackSkirt1_S",
+    "LeftBackSkirt2_S",
+    "LeftBackSkirt3_S",
+    "LeftBackSkirt4_S_End",
+    "LeftFrontSideSkirt1_S",
+    "LeftFrontSideSkirt2_S",
+    "LeftFrontSideSkirt3_S",
+    "LeftFrontSideSkirt4_S_End",
+    "LeftFrontSkirt1_S",
+    "LeftFrontSkirt2_S",
+    "LeftFrontSkirt3_S",
+    "LeftFrontSkirt4_S_End",
+    "RightBackSideSkirt1_S",
+    "RightBackSideSkirt2_S",
+    "RightBackSideSkirt3_S",
+    "RightBackSideSkirt4_S_End",
+    "RightBackSkirt1_S",
+    "RightBackSkirt2_S",
+    "RightBackSkirt3_S",
+    "RightBackSkirt4_S_End",
+    "RightFrontSideSkirt1_S",
+    "RightFrontSideSkirt2_S",
+    "RightFrontSideSkirt3_S",
+    "RightFrontSideSkirt4_S_End",
+    "RightFrontSkirt1_S",
+    "RightFrontSkirt2_S",
+    "RightFrontSkirt3_S",
+    "RightFrontSkirt4_S_End"
+  ],
+  "syncSourceBones": false
+}

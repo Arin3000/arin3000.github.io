@@ -1,0 +1,109 @@
+{
+  "results": {
+    "baseline_final_run": {
+      "frames": 80,
+      "framesWithCrossings": 78,
+      "peakPairs": 378,
+      "meanPairs": 196.2625,
+      "worstFrame": 49,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "native_run_v2": {
+      "frames": 80,
+      "framesWithCrossings": 63,
+      "peakPairs": 8,
+      "meanPairs": 2.025,
+      "worstFrame": 9,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "fixed_run": {
+      "frames": 80,
+      "framesWithCrossings": 0,
+      "peakPairs": 0,
+      "meanPairs": 0.0,
+      "worstFrame": 0,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "fixed_walk": {
+      "frames": 197,
+      "framesWithCrossings": 0,
+      "peakPairs": 0,
+      "meanPairs": 0.0,
+      "worstFrame": 0,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "fixed_long_run": {
+      "frames": 236,
+      "framesWithCrossings": 0,
+      "peakPairs": 0,
+      "meanPairs": 0.0,
+      "worstFrame": 0,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "motion_final/meshes": {
+      "frames": 840,
+      "framesWithCrossings": 0,
+      "peakPairs": 0,
+      "meanPairs": 0.0,
+      "worstFrame": 0,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    },
+    "lifecycle_final/meshes": {
+      "frames": 600,
+      "framesWithCrossings": 0,
+      "peakPairs": 0,
+      "meanPairs": 0.0,
+      "worstFrame": 0,
+      "skirtTriangles": 3928,
+      "legTriangles": 2816
+    }
+  },
+  "runtime": {
+    "motion_final": {
+      "samples": 842,
+      "nonfinite": 0,
+      "maxLengthError": 1.125e-06,
+      "maxProxyOverlap": 0.007125922,
+      "bindingCount": 1,
+      "maxResetCount": 1,
+      "states": [
+        "Fall (hold Jump end)",
+        "Idle",
+        "Jump",
+        "Land → Idle",
+        "Loading",
+        "Run",
+        "Sprint (Run 1.35x)",
+        "Walk Back",
+        "Walk Forward",
+        "Walk Left",
+        "Walk Right"
+      ]
+    },
+    "lifecycle_final": {
+      "samples": 602,
+      "nonfinite": 0,
+      "maxLengthError": 1.036e-06,
+      "maxProxyOverlap": 0.006800689,
+      "bindingCount": 2,
+      "maxResetCount": 2,
+      "states": [
+        "Fall (hold Jump end)",
+        "Idle",
+        "Jump",
+        "Land → Idle",
+        "Loading",
+        "Run",
+        "Sprint (Run 1.35x)",
+        "Walk Forward",
+        "Walk Right"
+      ]
+    }
+  }
+}

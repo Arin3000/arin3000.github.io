@@ -1,12 +1,12 @@
-# v37：接入游戏实测顺序并重放手部动作
+# native：接入游戏实测顺序并重放手部动作
 
 ## 结果
 
-已将 PID 39500 的原生碰撞列表顺序接入配置生成器、Unity 项目和 v37 播放器。19 项中 17 项完成参数与骨骼对应；两条小腿的左右身份仍未唯一确定，在实测槽位 4/5 内保留旧相对顺序。原始半径、骨长、限角、阻尼、刚度及碰撞迭代次数均未改动。
+已将 PID 39500 的原生碰撞列表顺序接入配置生成器、Unity 项目和 native 播放器。19 项中 17 项完成参数与骨骼对应；两条小腿的左右身份仍未唯一确定，在实测槽位 4/5 内保留旧相对顺序。原始半径、骨长、限角、阻尼、刚度及碰撞迭代次数均未改动。
 
 第一段动作第 24 帧（0.800 秒），RightSideHair3_S 与右手碰撞代理的重叠峰值降低，但没有消除。采样窗口平均值略升；不能称为所有时刻均改善或完整游戏运行时等价。
 
-| 指标 | v36 | v37 |
+| 指标 | numeric_refined | native |
 |---|---:|---:|
 | 第 24 帧：碰撞与骨长约束后 | 19.872 mm | 12.689 mm |
 | 第 24 帧：层末旋转与限角后 | 27.324 mm | 22.564 mm |
@@ -15,7 +15,7 @@
 
 峰值降低 17.42%，窗口平均值增加 5.37%。这些是动态球与手部胶囊的代理重叠量，不是网格穿透深度。窗口共 24 个时刻，正背面重复录制形成 48 条输入。
 
-![残差对照](../../output/HSKI_Hair_v37_hand_audit_wind0/hand_residual_comparison.png)
+![残差对照](../../output/HSKI_Hair_native_hand_audit_wind0/hand_residual_comparison.png)
 
 ## 顺序与匹配依据
 
@@ -35,11 +35,11 @@
 
 - `apply_registration_order.py` 从固定归档生成排列；参数变化、副本匹配不一致或额外歧义时拒绝套用采集。
 - `build_hski_collision_config.py` 重建配置时自动应用排列。
-- `HskiHair0070.json` 保存排列及未确认项。除列表顺序和来源记录之外，其余配置与 v36 完全相等；19 项碰撞体按内容比较完全相同。
-- `HskiHairBuilder.cs` 构建前校验骨骼、类型、mask 顺序，执行原指令检查，生成 v37 播放器。
-- `HskiAutoWindDemoRecorder.cs` 使用独立 v37 目录并保存播放器实际配置。
-- `audit_hand_frames.py` 支持指定输入、输出和基线，在完整 v37 轨迹上复算。
-- 修改前文件在 `before_v37/`；旧播放器与录像保留。
+- `HskiHair0070.json` 保存排列及未确认项。除列表顺序和来源记录之外，其余配置与 numeric_refined 完全相等；19 项碰撞体按内容比较完全相同。
+- `HskiHairBuilder.cs` 构建前校验骨骼、类型、mask 顺序，执行原指令检查，生成 native 播放器。
+- `HskiAutoWindDemoRecorder.cs` 使用独立 native 目录并保存播放器实际配置。
+- `audit_hand_frames.py` 支持指定输入、输出和基线，在完整 native 轨迹上复算。
+- 修改前文件在 `before_native/`；旧播放器与录像保留。
 
 ## 验证
 
@@ -50,16 +50,16 @@
 5. 正背面各 301 帧，1280×720、30 fps；三段动作零风，非有限值帧数 0。抽查正面第 24、150、280 帧和背面第 24 帧，未见早期版本的异常长条拉伸。
 6. 参数完整性、重排幂等性、修改半径后拒绝过期采集的检查通过。
 
-证据位于 `native_evidence/v37_registration_order/`；`manifest.json` 保存源码与录像 SHA-256。`verify_v37_capture.py` 可复核录像输入、生成图表和证据归档。手部原指令复算命令（在工作区运行）：
+证据位于 `native_evidence/native_registration_order/`；`manifest.json` 保存源码与录像 SHA-256。`verify_native_capture.py` 可复核录像输入、生成图表和证据归档。手部原指令复算命令（在工作区运行）：
 
 ```powershell
-& 'C:/Users/Arin/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe' work/actor_animation_solver/audit_hand_frames.py --trace output/HSKI_Hair_v37_hand_audit_wind0/hand_collision_trace.jsonl --output work/actor_animation_solver/native_evidence/hand_v37_actual_frame_oracle.json --baseline output/HSKI_Hair_v36_hand_audit_wind0/hand_collision_trace.jsonl
+& 'python' work/actor_animation_solver/audit_hand_frames.py --trace output/HSKI_Hair_native_hand_audit_wind0/hand_collision_trace.jsonl --output work/actor_animation_solver/native_evidence/hand_native_actual_frame_oracle.json --baseline output/HSKI_Hair_numeric_refined_hand_audit_wind0/hand_collision_trace.jsonl
 ```
 
 ## 交付与剩余问题
 
-- 播放器：`output/HSKI_EffectsPreview/Player_v37_native_registration_order/HSKI_Showcase.exe`。
-- 正面录像：`output/HSKI_Hair_v37_hand_audit_wind0/HSKI_Hair_3Actions_Wind0.mp4`。
-- 背面录像：`output/HSKI_Hair_v37_hand_audit_wind0/HSKI_RearHair_BackView_Audit.mp4`。
+- 播放器：`output/HSKI_EffectsPreview/Player_native_registration_order/HSKI_Showcase.exe`。
+- 正面录像：`output/HSKI_Hair_native_hand_audit_wind0/HSKI_Hair_3Actions_Wind0.mp4`。
+- 背面录像：`output/HSKI_Hair_native_hand_audit_wind0/HSKI_RearHair_BackView_Audit.mp4`。
 
-录像使用标准 v37 播放器的 `-autoWindDemo -handCollisionAudit` 参数生成，审计模块只记录。仍需确认两条小腿身份，并获取游戏同一动画时刻的姿态、解算输入和完整骨骼轨迹，才能继续定位剩余差异。
+录像使用标准 native 播放器的 `-autoWindDemo -handCollisionAudit` 参数生成，审计模块只记录。仍需确认两条小腿身份，并获取游戏同一动画时刻的姿态、解算输入和完整骨骼轨迹，才能继续定位剩余差异。

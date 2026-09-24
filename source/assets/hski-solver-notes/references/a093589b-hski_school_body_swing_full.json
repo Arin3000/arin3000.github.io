@@ -1,5 +1,5 @@
 {
-  "source": "E:\\ArinLee\\gkmas\\output\\asset_bundle\\mdl_chr_hski-schl-0000_body",
+  "source": "./project/output\\asset_bundle\\mdl_chr_hski-schl-0000_body",
   "counts": {
     "GameObject": 160,
     "Transform": 160,

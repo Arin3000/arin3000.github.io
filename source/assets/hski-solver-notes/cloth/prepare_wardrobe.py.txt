@@ -1,8 +1,8 @@
 from pathlib import Path
 import json,copy,shutil
 R=Path(__file__).resolve().parent
-P=Path('E:/ArinLee/gkmas/yuki_Render/UnityProject/GakumasCampus')
-backup=R/'wardrobe_v1_backup';backup.mkdir(exist_ok=True)
+P=Path('./UnityProject/GakumasCampus')
+backup=R/'wardrobe_first_pass_backup';backup.mkdir(exist_ok=True)
 for name in ['CampusSkirtIntegration.cs','prepare_campus.py','SkirtNativeMath.cs']:
  if not (backup/name).exists():shutil.copyfile(R/name,backup/name)
 stage=R/'campus_staged';dest=stage/'Assets/Resources/WardrobeSkirts';dest.mkdir(parents=True,exist_ok=True)
@@ -51,7 +51,7 @@ for path in sorted((R/'wardrobe_assets').glob('mdl*.json')):
  expectedChains=sum(l['active'] and sum(n in effective for n in l['bones']) >= (3 if l['around'] else 2) for l in chains)
  config=dict(source=a['bundle'],sourceSha256=a['sha256'],drivers=drivers,nodes=nodes,chains=chains,staticColliders=colliders,expectedNodes=len(nodes),expectedSegments=segments,expectedChains=expectedChains,expectedColliders=len(colliders),clothBones=sorted(selected))
  # These already-retargeted variants regress when same-name source bindings
- # are removed (full-cycle mesh captures retained in wardrobe_skirt_v2).
+ # are removed (full-cycle mesh captures retained in wardrobe_skirt_second_pass).
  config['syncSourceBones']=a['bundle'] in {
   'mdl_chr_hski-cstm-0002_body','mdl_chr_hski-cstm-0000_body',
   'mdl_chr_kcna-casl-0000_body','mdl_chr_kcna-cstm-0008_body',

@@ -1,4 +1,4 @@
-"""Recompute retained v37 intervals; does not launch or modify any player."""
+"""Recompute retained native intervals; does not launch or modify any player."""
 import csv
 import hashlib
 import json
@@ -8,7 +8,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-CAPTURE = ROOT / 'output/HSKI_Hair_v37_hand_audit_wind0'
+CAPTURE = ROOT / 'output/HSKI_Hair_native_hand_audit_wind0'
 os.environ.setdefault('MPLCONFIGDIR', str(HERE / '.matplotlib'))
 import numpy as np
 import matplotlib
@@ -42,7 +42,7 @@ summary = json.loads((CAPTURE / 'performance.json').read_text(encoding='utf-8-si
 assert len(steady) == summary['frames']
 result = {
     'analysisDate': '2026-09-16',
-    'scope': 'Existing v37 capture reanalysis; no new benchmark run; no v8/v16 measured timing supplied.',
+    'scope': 'Existing native capture reanalysis; no new benchmark run; no prototype/contact measured timing supplied.',
     'timingScope': 'Sample + Step + ApplyDetails to EndOfFrame; not isolated solver CPU or full wall-clock frame timing.',
     'rawRows': len(rows), 'initialRowsExcluded': 10,
     'percentileMethod': 'linear interpolation at (N-1)*p; CSV rounded to 0.0001 ms',
@@ -59,7 +59,7 @@ result = {
 assert abs(result['overall']['medianMs'] - summary['medianFrameMs']) < .0002
 assert abs(result['overall']['p95Ms'] - summary['p95FrameMs']) < .0002
 assert abs(result['overall']['intervalEquivalentFps'] - summary['averageFps']) < .01
-(HERE / 'v37_performance_reanalysis.json').write_text(
+(HERE / 'native_performance_reanalysis.json').write_text(
     json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
 plt.rcParams.update({'font.family': 'DejaVu Sans', 'font.size': 10})
@@ -79,10 +79,10 @@ axes[1].set_xticks([2, 2.5, 3, 4, 8, 16, 22], labels=['2', '2.5', '3', '4', '8',
 for ax in axes:
     ax.grid(alpha=.2)
     ax.spines[['top', 'right']].set_visible(False)
-fig.suptitle('v37 retained benchmark: distribution of measured scene intervals', fontsize=15, x=.07, ha='left')
+fig.suptitle('native retained benchmark: distribution of measured scene intervals', fontsize=15, x=.07, ha='left')
 fig.text(.07, .918, 'RTX 4060 Laptop | 1280 x 720 | Wind 0 | 4,240 samples | Existing single run', color='#555555')
-fig.text(.07, .022, 'Timing: animation sample + Step + ApplyDetails to EndOfFrame. Not isolated solver timing.\nNo comparable v8 / v16 benchmark is available; this chart shows v37 only.', fontsize=9, color='#555555')
+fig.text(.07, .022, 'Timing: animation sample + Step + ApplyDetails to EndOfFrame. Not isolated solver timing.\nNo comparable prototype / contact benchmark is available; this chart shows native only.', fontsize=9, color='#555555')
 fig.subplots_adjust(top=.86, bottom=.14, left=.08, right=.97, hspace=.4)
-fig.savefig(HERE / 'v37_frame_intervals.png', dpi=160)
+fig.savefig(HERE / 'native_frame_intervals.svg', dpi=160)
 plt.close(fig)
 print(json.dumps(result, ensure_ascii=False, indent=2))

@@ -9,7 +9,7 @@
       "skirtTriangles": 3928,
       "legTriangles": 2816
     },
-    "native_run_v2": {
+    "native_run_second_pass": {
       "frames": 80,
       "framesWithCrossings": 63,
       "peakPairs": 8,

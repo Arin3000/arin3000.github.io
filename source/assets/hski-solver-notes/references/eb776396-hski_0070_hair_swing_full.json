@@ -1,5 +1,5 @@
 {
-  "source": "E:\\ArinLee\\gkmas\\output\\asset_bundle\\mdl_chr_hski-cstm-0070_hair",
+  "source": "./project/output\\asset_bundle\\mdl_chr_hski-cstm-0070_hair",
   "counts": {
     "MonoBehaviour": 114,
     "GameObject": 130,

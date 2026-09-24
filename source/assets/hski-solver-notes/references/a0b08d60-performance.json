@@ -24,6 +24,6 @@
     "maxPenetrationNode": "RightSideHair3_S",
     "maxPenetrationCollider": "school-body:Spine2:Capsule",
     "nonfiniteFrames": 0,
-    "video": "E:/ArinLee/简历/output/HSKI_Hair_v37_hand_audit_wind0/HSKI_Hair_3Actions_Split_Integrated_Wind0.mp4",
-    "rearAuditVideo": "E:/ArinLee/简历/output/HSKI_Hair_v37_hand_audit_wind0/HSKI_RearHair_BackView_Audit.mp4"
+    "video": "./output/HSKI_Hair_native_hand_audit_wind0/HSKI_Hair_3Actions_Split_Integrated_Wind0.mp4",
+    "rearAuditVideo": "./output/HSKI_Hair_native_hand_audit_wind0/HSKI_RearHair_BackView_Audit.mp4"
 }

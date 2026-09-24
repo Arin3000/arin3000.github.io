@@ -1,6 +1,6 @@
 {
   "analysisDate": "2026-09-16",
-  "scope": "Existing v37 capture reanalysis; no new benchmark run; no v8/v16 measured timing supplied.",
+  "scope": "Existing native capture reanalysis; no new benchmark run; no prototype/contact measured timing supplied.",
   "timingScope": "Sample + Step + ApplyDetails to EndOfFrame; not isolated solver CPU or full wall-clock frame timing.",
   "rawRows": 4250,
   "initialRowsExcluded": 10,
@@ -358,15 +358,15 @@
   "nonfiniteAllRows": 0,
   "sources": [
     {
-      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\realtime_fps.csv",
+      "file": "./output\\HSKI_Hair_native_hand_audit_wind0\\realtime_fps.csv",
       "sha256": "4c8c613f16d28ab4e2ed81fc2d5173c7c54c34ffe562049af370e26777d5d0b3"
     },
     {
-      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\performance.json",
+      "file": "./output\\HSKI_Hair_native_hand_audit_wind0\\performance.json",
       "sha256": "ded0fe8382fea5a64c8257ac8cfb82eedfcdc5c6b966df55e24dcb593fbae15d"
     },
     {
-      "file": "E:\\ArinLee\\简历\\output\\HSKI_Hair_v37_hand_audit_wind0\\collider_configuration.json",
+      "file": "./output\\HSKI_Hair_native_hand_audit_wind0\\collider_configuration.json",
       "sha256": "b2e20903a526fd67904707ac9975d24e6fafa3beb6d1e6c7a115acedbc0267f7"
     }
   ]

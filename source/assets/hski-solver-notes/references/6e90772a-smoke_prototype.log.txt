@@ -1,9 +1,9 @@
-Mono path[0] = 'E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_v8/HSKI_Showcase_Data/Managed'
-Mono config path = 'E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_v8/MonoBleedingEdge/etc'
+Mono path[0] = './output/HSKI_EffectsPreview/Player_prototype/HSKI_Showcase_Data/Managed'
+Mono config path = './output/HSKI_EffectsPreview/Player_prototype/MonoBleedingEdge/etc'
 Input System module state changed to: Initialized.
 [PhysX] Initialized MultithreadedTaskDispatcher with 32 workers.
-Initialize engine version: 2022.3.56f1c1 (bb6410cfcc53)
-[Subsystems] Discovering subsystems at path E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_v8/HSKI_Showcase_Data/UnitySubsystems
+Initialize engine version: <Unity build>
+[Subsystems] Discovering subsystems at path ./output/HSKI_EffectsPreview/Player_prototype/HSKI_Showcase_Data/UnitySubsystems
 GfxDevice: creating device client; threaded=1; jobified=1
 Direct3D:
     Version:  Direct3D 11.0 [level 11.1]

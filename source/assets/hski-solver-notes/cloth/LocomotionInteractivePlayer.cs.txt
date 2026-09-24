@@ -155,7 +155,7 @@ public sealed partial class LocomotionInteractivePlayer : MonoBehaviour
     private bool wardrobeSelfTestActive;
     private RecordedActorProfile recordedActor;
     private int wardrobeSelfTestStep = -1;
-    private static string SelfTestOutput => "E:/ArinLee/简历/output/interactive_test" +
+    private static string SelfTestOutput => "./output/interactive_test" +
         (Environment.GetCommandLineArgs().Contains("-timeOfDaySelfTest") ? "/" + CampusAssetBundleLoader.ClassroomPeriod : "");
 
     private IEnumerator Start()
@@ -1412,7 +1412,7 @@ public sealed partial class LocomotionInteractivePlayer : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
         yield return new WaitForEndOfFrame();
-        var directory = "E:/ArinLee/简历/output/reference_20250514_211414";
+        var directory = "./output/reference_20250514_211414";
         Directory.CreateDirectory(directory);
         var captureName = Environment.GetCommandLineArgs().Contains("-gpaAlbedo") ? "Unity_landscape_albedo.png" : "Unity_landscape_background.png";
         ScreenCapture.CaptureScreenshot(Path.Combine(directory,captureName));

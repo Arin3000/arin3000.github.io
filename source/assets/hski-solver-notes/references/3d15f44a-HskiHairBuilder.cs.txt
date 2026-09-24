@@ -12,16 +12,16 @@ using UnityEngine.Rendering.Universal;
 
 public static class HskiHairBuilder
 {
-    const string Out="E:/ArinLee/简历/output/HSKI_EffectsPreview/hair_v37";
+    const string Out="./output/HSKI_EffectsPreview/hair_native";
     static bool handAuditBuild,allMotionsBuild;
     public static void BuildHandAudit() { handAuditBuild=true; try { Build(); } finally { handAuditBuild=false; } }
     public static void BuildAllMotionsCurrent() { handAuditBuild=true;allMotionsBuild=true;try{Build();}finally{allMotionsBuild=false;handAuditBuild=false;} }
     public static void Build()
     {
-        string version=allMotionsBuild?"v37_all_motions":handAuditBuild?"v37_hand_audit":"v37_native_registration_order";
-        if(allMotionsBuild&&Environment.GetCommandLineArgs().Contains("-sitContactBuild"))version="v37_seated_contact";
+        string version=allMotionsBuild?"native_all_motions":handAuditBuild?"native_hand_audit":"native_registration_order";
+        if(allMotionsBuild&&Environment.GetCommandLineArgs().Contains("-sitContactBuild"))version="native_seated_contact";
         ValidateRegistrationOrder(); ActorSwingNativeChecks.Run(); Directory.CreateDirectory(Out);
-        var scene=EditorSceneManager.OpenScene(allMotionsBuild?"Assets/PortfolioPreview/AllMotions/HSKI_AllMotions_v17.unity":"Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        var scene=EditorSceneManager.OpenScene(allMotionsBuild?"Assets/PortfolioPreview/AllMotions/HSKI_AllMotions_v17.unity":"Assets/PortfolioPreview/HSKI_Showcase_early_preview.unity");
         var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
         var actor=demo.actor.gameObject;
         ApplyCampusRendering(demo,actor);
@@ -33,7 +33,7 @@ public static class HskiHairBuilder
         hair.quartzHairSettings=Array.Empty<ActorAnimationSwingSolver.QuartzHairSetting>(); // Loaded from the raw asset JSON.
         // Empty scope means every ActorSwingDynamicBone exported by the
         // original 0070 hair asset. In particular this includes the long
-        // LeftSideHair/RightSideHair front curls that v26 accidentally omitted.
+        // LeftSideHair/RightSideHair front curls that early_iteration accidentally omitted.
         hair.simulatedBonePrefixes=Array.Empty<string>();
         // Native ActorAnimation manage.weight is 1.0 in the captured runtime.
         // The former .65 value was compensation for the hand-tuned legacy solver.
@@ -82,7 +82,7 @@ public static class HskiHairBuilder
         var validation=demo.gameObject.GetComponent<HskiHairValidation>();if(!validation)validation=demo.gameObject.AddComponent<HskiHairValidation>();
         validation.demo=demo;validation.hair=hair; var geometry=demo.gameObject.AddComponent<HskiHairGeometryAudit>();geometry.demo=demo;geometry.hair=hair;var live=demo.gameObject.AddComponent<HskiHairLiveAudit>();live.demo=demo;
         EditorSceneManager.SaveScene(scene,"Assets/PortfolioPreview/HSKI_Showcase_"+version+".unity");AssetDatabase.SaveAssets();
-        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_"+version+".unity"},locationPathName="E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_"+version+"/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
+        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_"+version+".unity"},locationPathName="./output/HSKI_EffectsPreview/Player_"+version+"/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
         if(result.summary.result!=BuildResult.Succeeded)throw new Exception("Hair player build failed");
         Debug.Log("HSKI_HAIR_BUILT "+version);
     }

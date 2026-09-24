@@ -10,11 +10,11 @@ using UnityEditor.Build.Reporting;
 
 public static class HskiHairBuilder
 {
-    const string Out="E:/ArinLee/简历/output/HSKI_EffectsPreview/hair_v16";
+    const string Out="./output/HSKI_EffectsPreview/hair_contact";
     public static void Build()
     {
         Directory.CreateDirectory(Out);
-        var scene=EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        var scene=EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_early_preview.unity");
         var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
         var actor=demo.actor.gameObject;
         var states=new StringBuilder();foreach(var renderer in demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>()){foreach(var m in renderer.sharedMaterials){states.Append(renderer.name+" "+m.name+" "+m.shader.name+" queue="+m.renderQueue);foreach(var prop in new[]{"_ShaderType","_ZWrite","_StencilComp","_StencilRef","_StencilReadMask","_EnalbeHairCover"})if(m.HasProperty(prop))states.Append(" "+prop+"="+m.GetFloat(prop));states.AppendLine(" HairCover="+m.GetShaderPassEnabled("HairCover"));}}File.WriteAllText(Out+"/render_states.txt",states.ToString());
@@ -91,18 +91,18 @@ public static class HskiHairBuilder
             new HskiHairDynamics.BodyCollider{anchor=bone("Neck"),start=Vector3.zero,end=new Vector3(0,.040f,0),radius=.030f},
             new HskiHairDynamics.BodyCollider{anchor=bone("Spine2"),start=new Vector3(-.11f,.018f,-.005f),end=new Vector3(.11f,.018f,-.005f),radius=.050f}
         };
-        demo.hair=hair;demo.recordingVersion="v16";demo.continuousActions=true;
+        demo.hair=hair;demo.recordingVersion="contact";demo.continuousActions=true;
         var validation=demo.gameObject.GetComponent<HskiHairValidation>();if(!validation)validation=demo.gameObject.AddComponent<HskiHairValidation>();
         validation.demo=demo;validation.hair=hair; var geometry=demo.gameObject.AddComponent<HskiHairGeometryAudit>();geometry.demo=demo;geometry.hair=hair;var live=demo.gameObject.AddComponent<HskiHairLiveAudit>();live.demo=demo;
-        EditorSceneManager.SaveScene(scene,"Assets/PortfolioPreview/HSKI_Showcase_v16.unity");AssetDatabase.SaveAssets();
-        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_v16.unity"},locationPathName="E:/ArinLee/简历/output/HSKI_EffectsPreview/Player_v16/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
+        EditorSceneManager.SaveScene(scene,"Assets/PortfolioPreview/HSKI_Showcase_contact.unity");AssetDatabase.SaveAssets();
+        var result=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{"Assets/PortfolioPreview/HSKI_Showcase_contact.unity"},locationPathName="./output/HSKI_EffectsPreview/Player_contact/HSKI_Showcase.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.None});
         if(result.summary.result!=BuildResult.Succeeded)throw new Exception("Hair player build failed");
-        Debug.Log("HSKI_HAIR_V16_BUILT");
+        Debug.Log("HSKI_HAIR_contact_BUILT");
     }
     public static void Probe()
     {
         Directory.CreateDirectory(Out);
-        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v6.unity");
+        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_early_preview.unity");
         var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();
         var s=new StringBuilder();
         s.AppendLine("Actor="+demo.actor.name+" head="+demo.lighting.Head.name+" scale="+demo.actor.transform.lossyScale.ToString("F5"));
@@ -116,11 +116,11 @@ public static class HskiHairBuilder
         Debug.Log("HSKI_HAIR_PROBE_COMPLETE");
     }
     public static void InspectBindings(){
-        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_v16.unity");var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();var s=new StringBuilder();
+        EditorSceneManager.OpenScene("Assets/PortfolioPreview/HSKI_Showcase_contact.unity");var demo=UnityEngine.Object.FindObjectOfType<HskiShowcase>();var s=new StringBuilder();
         var f=demo.face;for(int i=0;i<f.sharedMaterials.Length;i++){var m=f.sharedMaterials[i];s.AppendLine($"FACE slot={i} name={m.name} shader={m.shader.name} type={(m.HasProperty("_ShaderType")?m.GetFloat("_ShaderType"):-1)} triangles={f.sharedMesh.GetTriangles(i).Length/3}");}
         var r=demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(x=>x.name=="Geo_Hair");var w=r.sharedMesh.boneWeights;
         foreach(int i in new[]{1165,1167,1081,1178,1112,14164,2383,14247,2621,13071,2196,9054}){var b=w[i];s.AppendLine($"VERTEX {i}: {r.bones[b.boneIndex0].name}={b.weight0} {r.bones[b.boneIndex1].name}={b.weight1} {r.bones[b.boneIndex2].name}={b.weight2} {r.bones[b.boneIndex3].name}={b.weight3}");}
-        var body=demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(x=>x.name=="Geo_Body");var bodyw=body.sharedMesh.boneWeights;var handids=new List<string>();for(int i=0;i<bodyw.Length;i++){var bw=bodyw[i];int[] bi={bw.boneIndex0,bw.boneIndex1,bw.boneIndex2,bw.boneIndex3};float[] ws={bw.weight0,bw.weight1,bw.weight2,bw.weight3};float left=0,right=0;for(int j=0;j<4;j++){var n=body.bones[bi[j]].name;if(n.StartsWith("LeftHand"))left+=ws[j];if(n.StartsWith("RightHand"))right+=ws[j];}handids.Add(i+","+left+","+right);}File.WriteAllLines("E:/ArinLee/简历/work/hski_hair_audit/body_hand_weights.csv",handids);File.WriteAllText("E:/ArinLee/简历/work/hski_hair_audit/face_binding_inspection.txt",s.ToString());Debug.Log("FACE_BINDINGS_INSPECTED");
+        var body=demo.actor.GetComponentsInChildren<SkinnedMeshRenderer>().First(x=>x.name=="Geo_Body");var bodyw=body.sharedMesh.boneWeights;var handids=new List<string>();for(int i=0;i<bodyw.Length;i++){var bw=bodyw[i];int[] bi={bw.boneIndex0,bw.boneIndex1,bw.boneIndex2,bw.boneIndex3};float[] ws={bw.weight0,bw.weight1,bw.weight2,bw.weight3};float left=0,right=0;for(int j=0;j<4;j++){var n=body.bones[bi[j]].name;if(n.StartsWith("LeftHand"))left+=ws[j];if(n.StartsWith("RightHand"))right+=ws[j];}handids.Add(i+","+left+","+right);}File.WriteAllLines("./work/hski_hair_audit/body_hand_weights.csv",handids);File.WriteAllText("./work/hski_hair_audit/face_binding_inspection.txt",s.ToString());Debug.Log("FACE_BINDINGS_INSPECTED");
     }
 }
 

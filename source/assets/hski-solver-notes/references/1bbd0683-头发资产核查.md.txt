@@ -4,7 +4,7 @@
 
 ## 实际找到的资产
 
-目录：`E:/ArinLee/gkmas/output/asset_bundle`。
+目录：`./project/output/asset_bundle`。
 
 | AssetBundle | ActorSwingDynamicBone | ActorSwingChain | ActorAnimationQuartzDriverHairBone |
 |---|---:|---:|---:|
@@ -35,7 +35,7 @@
 
 ## 当前工程缺口
 
-检查 GakumasSample2 的 Assets 脚本及程序集定义，没有找到 ActorSwingDynamicBone、ActorSwingChain、ActorAnimationQuartzDriverHairBone 的实现。当前 v6 展示角色引用 `Assets/Reverse/Model/hski9.fbx`。
+检查 GakumasSample2 的 Assets 脚本及程序集定义，没有找到 ActorSwingDynamicBone、ActorSwingChain、ActorAnimationQuartzDriverHairBone 的实现。当前 early_preview 展示角色引用 `Assets/Reverse/Model/hski9.fbx`。
 
 `Assets/PortfolioPreview/Editor/HskiShowcaseBuilder.cs` 为三个动作创建 Body_v4 动画时，只复制 Animator 类型曲线；头发 Transform 曲线不会经由此步骤进入身体动画。面部曲线另行处理。目前展示脚本没有调用头发求解器。
 
@@ -58,4 +58,4 @@
 
 字段单位与求解方式需要校验；不应将原参数直接填进其他物理插件并称为原游戏一致。
 
-完整原始数据保存在相邻 `verified` 目录，每个组件以 pathId 区分，避免重名覆盖。可用 `D:/anaconda/python.exe audit_hair.py` 重现提取。
+完整原始数据保存在相邻 `verified` 目录，每个组件以 pathId 区分，避免重名覆盖。可用 `python audit_hair.py` 重现提取。

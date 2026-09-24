@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 
-ROOT = Path(r"E:\ArinLee\简历\work")
+ROOT = Path(r"./work")
 CONFIG = ROOT / "actor_animation_solver" / "HskiHair0070.json"
 HAIR = ROOT / "hski_0070_hair_swing_full.json"
 FACE = ROOT / "hski_base_face_swing_full.json"

@@ -57,10 +57,10 @@ public sealed class HskiAutoWindDemoRecorder : MonoBehaviour
 
     public HskiShowcase demo;
     static string Out => Array.IndexOf(Environment.GetCommandLineArgs(), "-handCollisionAudit") >= 0
-        ? "E:/ArinLee/简历/output/HSKI_Hair_v37_hand_audit_wind0"
+        ? "./output/HSKI_Hair_native_hand_audit_wind0"
         : Array.IndexOf(Environment.GetCommandLineArgs(), "-disableQuartzHair") >= 0
-        ? "E:/ArinLee/简历/output/HSKI_Hair_v37_native_registration_order_quartz_off_wind0"
-        : "E:/ArinLee/简历/output/HSKI_Hair_v37_native_registration_order_wind0";
+        ? "./output/HSKI_Hair_native_registration_order_quartz_off_wind0"
+        : "./output/HSKI_Hair_native_registration_order_wind0";
     readonly List<Sample> samples = new List<Sample>(4096);
     bool active, recording;
     int overlayAction;
@@ -305,9 +305,9 @@ public sealed class HskiAutoWindDemoRecorder : MonoBehaviour
     {
         string[] candidates =
         {
-            "D:/ffmpeg/bin/ffmpeg.exe",
-            "E:/ArinLee/hasu/LianAiHuoDong/ffmpeg.exe",
-            "E:/ArinLee/tools/so-vits-svc/ffmpeg/bin/ffmpeg.exe"
+            "ffmpeg",
+            "ffmpeg",
+            "ffmpeg"
         };
         foreach (var candidate in candidates) if (File.Exists(candidate)) return candidate;
         throw new FileNotFoundException("FFmpeg executable not found");

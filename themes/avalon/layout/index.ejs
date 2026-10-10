@@ -42,11 +42,11 @@ const galleryYears = Object.keys(groupedGallery).sort((a, b) => Number(b) - Numb
 
 <section id="profile" class="profile-band profile-simple section-reveal">
   <div class="profile-card">
-    <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="Arin avatar">
+    <img class="avatar" src="<%- url_for(profile.avatar || '/assets/images/avatar/profile.jpg') %>" alt="<%= profile.name %> avatar">
     <div>
       <p class="eyebrow">Profile</p>
       <div class="profile-name-row">
-        <h2>Arin</h2>
+        <h2><%= profile.name %></h2>
         <p class="alias">= 灰</p>
       </div>
       <p class="profile-line">全心全力</p>
